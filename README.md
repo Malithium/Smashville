@@ -1,4 +1,5 @@
 # Smashville
+## Class list draft
 game.js
 logic.js
 player.js
@@ -7,33 +8,33 @@ menu.js
 play.js
 boot.js
 sound.js
-------------------------------------
 client.js
 server.js
 
----Required---
+# Task priority list
+## Required
 Github - Kyle Tuckey
 Player - Joshua Petherick
 Physic's & Logic - Joshua Petherick
 Moveset & Stock - Kyle Tuckey
 Networking - Joshua Petherick
 
----Not Important---
+## Not Important
 Level Loader - Kyle Tuckey (JSON tilemap)
 Menus - Kyle Tuckey
 Pixel Art - Kyle Tuckey
 Media - Kyle Tuckey
 Music - Joshua Petherick
 
----Hardly worth considering---
+## Hardly worth considering
 AI - ?
 team selection - ?
-lobby - ? (technically a menu)
+lobby - ? (Technically a menu)
 
----Characters---
+## Characters
 Joshua nomination - Ferox
 Kyle nomination - Standard Knight
-Joshua nomination - master yi jedi skin
+Joshua nomination - Master yi jedi skin
 Kyle nomination - Lord Joshy
 Joshua nomination - Small little shite
 Kyle nomination - Destroyer of worlds (and programs) Hannah
