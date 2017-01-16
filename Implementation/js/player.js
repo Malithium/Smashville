@@ -7,6 +7,10 @@ function Player(x, y) {
     this.playerSprite.width = 45;
     this.playerSprite.height = 30;
 
+    // Properties
+    this.percentage = 0;
+    this.resetJump = false;
+
     // Physics
     game.physics.enable(this.playerSprite, Phaser.Physics.ARCADE);
     this.playerSprite.body.collideWorldBounds = true; // Thou shall never leave this world!
@@ -26,8 +30,17 @@ function Player(x, y) {
         if (this.moveRight.isDown) {
             this.playerSprite.body.velocity.x = this.speed;// Move Right
         }
-        if (this.moveJump.isDown) {
+        if (this.moveJump.isDown && this.resetJump === true) {
             this.playerSprite.body.velocity.y = -this.speed; // Jump
+            // Code to say can't jump after double jumping...
+        }
+    }
+
+    this.playerUpdate = function() {
+        this.handleInput();
+        // Stops from falling through the floor
+        if (game.physics.arcade.collide(player.playerSprite, background)) {
+            this.resetJump = true;
         }
     }
 }
