@@ -3,7 +3,7 @@
 function Player(x, y) {
     // Init
     // Might need to be changed, depending on level loading system
-    this.playerSprite = game.add.sprite(x, y, 'player');
+    this.playerSprite = game.add.sprite(x, y, '');
     this.playerSprite.width = 45;
     this.playerSprite.height = 30;
 
@@ -30,7 +30,7 @@ function Player(x, y) {
         if (this.moveRight.isDown) {
             this.playerSprite.body.velocity.x = this.speed;// Move Right
         }
-        if (this.moveJump.isDown && this.resetJump === true) {
+        if (this.moveJump.isDown && this.resetJump) {
             this.playerSprite.body.velocity.y = -this.speed; // Jump
             // Code to say can't jump after double jumping...
         }

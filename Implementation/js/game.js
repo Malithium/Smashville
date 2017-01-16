@@ -5,6 +5,7 @@
 // Core-game variables
 var GAMEHEIGHT = 600;
 var GAMEWIDTH = 900;
+var debug = true;
 
 // Sprite Variables
 var player;
@@ -22,6 +23,10 @@ var game = new Phaser.Game(GAMEWIDTH, GAMEHEIGHT, Phaser.AUTO, 'Smashville', {
 
 function preload() {
 // Load in Assets
+    if (debug) {
+        testRegisterDamage();
+        testCalculateKnockback();
+    }
 
 } //preload();
 

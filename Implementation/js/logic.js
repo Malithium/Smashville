@@ -20,5 +20,3 @@ function calculateKnockback(Obj, dmg) {
     return Obj.percentage + (dmg*2);
 }
 
-
-
