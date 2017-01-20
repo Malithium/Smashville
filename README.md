@@ -38,3 +38,7 @@ Joshua nomination - Master yi jedi skin
 Kyle nomination - Lord Joshy
 Joshua nomination - Small little shite
 Kyle nomination - Destroyer of worlds (and programs) Hannah
+
+## Kyle Note 20/01/2017
+Added in a very basic level and menu system, this needs to be redesigned a bit, the current implementation is very 'crude' but it is a starting 
+point to work with. I am also currently unsure how to test it, will look into potential test cases. 

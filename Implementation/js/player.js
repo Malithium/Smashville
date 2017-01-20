@@ -3,6 +3,7 @@
 function Player(x, y) {
     // Init
     // Might need to be changed, depending on level loading system
+    // NOTE(Kyle) : It appears 'Tiled' the map editor I am using, allows me to designate object positions, this may be a solution to X and Y positions
     this.playerSprite = game.add.sprite(x, y, '');
     this.playerSprite.width = 45;
     this.playerSprite.height = 30;
