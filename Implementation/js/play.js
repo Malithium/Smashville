@@ -18,6 +18,8 @@ var playState = {
             testRegisterDamage();
             testCalculateKnockback();
         }
+        // Used for FPS counter
+        game.time.advancedTiming = true;
     }, //preload();
 
     create: function() {
@@ -27,13 +29,14 @@ var playState = {
         //very early map loader implementation, will have to look into moving this to a different class
         map = game.add.tilemap('map' + levelNum);
         map.addTilesetImage('tiles' + levelNum, 'tiles' + levelNum);
-        map.setCollisionBetween(0, 1);
-
         GroundLayer = map.createLayer('GroundLayer');
         GroundLayer.resizeWorld();
+        map.setCollisionBetween(0, 100, true, GroundLayer);
 
         game.physics.startSystem(Phaser.Physics.ARCADE);
+        game.physics.arcade.gravity.y = 350;
         player = new Player(GAMEWIDTH/2, GAMEHEIGHT/2);
+
     }, // create()
 
     update: function() {
@@ -43,6 +46,7 @@ var playState = {
 
     render: function() {
         // Render text to screen
+        game.debug.text(game.time.fps || '--', 2, 14, '#00ff00'); // Prints FPS
         game.debug.body(player.playerSprite);
     } // render()
 
