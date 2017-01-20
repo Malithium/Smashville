@@ -8,6 +8,7 @@ var loadState = {
       game.load.image('tiles2', 'assets/tiles2.png');
       game.load.spritesheet('level1_btn', 'assets/Level1_button.png', 200, 133, 2);
       game.load.spritesheet('level2_btn', 'assets/Level2_button.png', 200, 133, 2);
+      game.load.image('player', 'assets/playerTest.png');
   },
 
   create: function() {
