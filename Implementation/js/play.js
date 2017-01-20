@@ -2,6 +2,8 @@
 
 // Core-game variables
 var debug = false;
+var debugButton;
+var debugPressed;
 
 // Sprite Variables
 var player;
@@ -14,16 +16,11 @@ var GroundLayer;
 var playState = {
     preload: function() {
     // Load in Assets
-        if (debug) {
-            testRegisterDamage();
-            testCalculateKnockback();
-        }
         // Used for FPS counter
         game.time.advancedTiming = true;
     }, //preload();
 
     create: function() {
-
         // Set game state and load Object
 
         //very early map loader implementation, will have to look into moving this to a different class
@@ -37,17 +34,30 @@ var playState = {
         game.physics.arcade.gravity.y = 350;
         player = new Player(GAMEWIDTH/2, GAMEHEIGHT/2);
 
+        debugButton = game.input.keyboard.addKey(Phaser.Keyboard.TAB);
+
     }, // create()
 
     update: function() {
         // Update Object states
         player.playerUpdate();
+        if(debugButton.isDown && !debugPressed) {
+            if (debug) {debug = false; }
+            else {
+                debug = true;
+                runAllTests();
+            }
+            debugPressed = true;
+        }
+        else if (debugButton.isUp) {debugPressed = false;}
     }, // update()
 
     render: function() {
         // Render text to screen
-        game.debug.text(game.time.fps || '--', 2, 14, '#00ff00'); // Prints FPS
-        game.debug.body(player.playerSprite);
+        if (debug) {
+            game.debug.text(game.time.fps || '--', 2, 14, '#00ff00'); // Prints FPS
+            game.debug.body(player.playerSprite);
+        }
     } // render()
 
 }

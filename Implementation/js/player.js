@@ -51,7 +51,7 @@ function Player(x, y) {
         if (this.moveJump.isDown && !this.jumpPressed) {
             if (this.jumpOnce && !this.resetJump) {
                 console.log('Jumped Twice');
-                this.resetJump = false;
+                this.resetJump = true;
                 this.playerSprite.body.velocity.y = -this.jumpHeight
             }
             else if (!this.jumpOnce) {

@@ -2,6 +2,11 @@
 
 // Functions which will test different functions in the game.
 
+function runAllTests() {
+    testRegisterDamage();
+    testCalculateKnockback();
+}
+
 function testRegisterDamage() {
     var player = new Player(0, 0);
     player.percentage = 99;
@@ -15,6 +20,7 @@ function testRegisterDamage() {
     else {
         console.log('RegisterDamage test was unsuccessful. Results are:' + results );
     }
+    player.playerSprite.kill();
 }
 
 function testCalculateKnockback() {
@@ -29,6 +35,7 @@ function testCalculateKnockback() {
     else {
         console.log('CalculateKnockback test was unsuccessful. Results are:' + results);
     }
+    player.playerSprite.kill();
 }
 
 
