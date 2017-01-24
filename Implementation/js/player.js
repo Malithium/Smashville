@@ -1,6 +1,6 @@
 // Last Updated: 20/01/2017
 
-function Player(x, y) {
+function Player(x, y, flag) {
     // Init
     // NOTE(Kyle) : It appears 'Tiled' the map editor I am using, allows me to designate object positions, this may be a solution to X and Y positions
     this.playerSprite = game.add.sprite(x, y, 'player');
@@ -34,19 +34,29 @@ function Player(x, y) {
     this.resetJump = false;
     this.jumpHeight = 200;
     //  Miscellaneous
+    this.hit = false;
+    this.dummy = flag;
     this.speed = 100; // Set base speed here!
     this.percentage = 0;
 
     // Functions
     this.handleInput = function() {
         // Movement
-        this.playerSprite.body.velocity.x = 0;
-
         if(this.moveLeft.isDown) {
-            this.playerSprite.body.velocity.x = -this.speed;// Move Left
+            if (!this.hit) {
+                this.playerSprite.body.velocity.x = -this.speed;// Move Left
+            }
+            else {
+                this.playerSprite.body.velocity.x = this.playerSprite.body.velocity.x + (this.speed/4);
+            }
         }
         if (this.moveRight.isDown) {
-            this.playerSprite.body.velocity.x = this.speed;// Move Right
+            if (!this.hit) {
+                this.playerSprite.body.velocity.x = this.speed;// Move Right
+            }
+            else {
+                this.playerSprite.body.velocity.x = this.playerSprite.body.velocity.x - (this.speed/4);
+            }
         }
         if (this.moveJump.isDown && !this.jumpPressed) {
             if (this.jumpOnce && !this.resetJump) {
@@ -68,6 +78,7 @@ function Player(x, y) {
         // Actions
         if(this.action1.isDown && !this.action1Pressed) {
             console.log('Attack Left');
+            checkCollision(this, 1, 12);
             this.action1Pressed = true;
         }
         else if (this.action1.isUp) {
@@ -76,6 +87,7 @@ function Player(x, y) {
 
         if(this.action2.isDown && !this.action2Pressed) {
             console.log('Attack Right');
+            checkCollision(this, 2, 12);
             this.action2Pressed = true;
         }
         else if (this.action2.isUp) {
@@ -84,6 +96,7 @@ function Player(x, y) {
 
         if(this.action3.isDown && !this.action3Pressed) {
             console.log('Uppercut');
+            checkCollision(this, 3, 6);
             this.action3Pressed = true;
         }
         else if (this.action3.isUp) {
@@ -101,11 +114,40 @@ function Player(x, y) {
 
     this.playerUpdate = function() {
         // Stops from falling through the floor
+        if (!this.hit) {
+            this.playerSprite.body.velocity.x = 0;
+        }
+
         if (game.physics.arcade.collide(this.playerSprite, GroundLayer)) {
             this.jumpOnce = false;
             this.resetJump = false;
-            this.playerSprite.body.velocity.y = 0;
         }
-        this.handleInput();
+
+        if(this.playerSprite.body.velocity.x <= 10 &&
+            this.playerSprite.body.velocity.x >= -10 && this.hit) {
+            this.playerSprite.body.gravity.x = 0;
+            this.hit = false;
+        }
+
+        if (!this.dummy) {
+            this.handleInput();
+        }
+    }
+
+    this.registerHit = function(knockback, dir, up) {
+        this.hit = true;
+        if(!up) {
+            this.playerSprite.body.velocity.x = knockback;
+        }
+        else {
+            this.playerSprite.body.velocity.y = knockback;
+        }
+
+        if (dir === 1) {
+            this.playerSprite.body.gravity.x = 50;
+        }
+        else {
+            this.playerSprite.body.gravity.x = -50;
+        }
     }
 }

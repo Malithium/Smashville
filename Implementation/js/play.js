@@ -6,7 +6,7 @@ var debugButton;
 var debugPressed;
 
 // Sprite Variables
-var player;
+var players = [];
 
 // Level values
 var map;
@@ -32,15 +32,18 @@ var playState = {
 
         game.physics.startSystem(Phaser.Physics.ARCADE);
         game.physics.arcade.gravity.y = 350;
-        player = new Player(GAMEWIDTH/2, GAMEHEIGHT/2);
+        players.push(new Player(GAMEWIDTH/2, GAMEHEIGHT/2, false));
+        players.push(new Player(GAMEWIDTH/4, GAMEHEIGHT/2, true));
 
         debugButton = game.input.keyboard.addKey(Phaser.Keyboard.TAB);
 
     }, // create()
 
     update: function() {
-        // Update Object states
-        player.playerUpdate();
+        for(p in players) {
+            // Update Object states
+            players[p].playerUpdate();
+        }
         if(debugButton.isDown && !debugPressed) {
             if (debug) {debug = false; }
             else {
@@ -54,9 +57,16 @@ var playState = {
 
     render: function() {
         // Render text to screen
+        game.debug.reset();
         if (debug) {
             game.debug.text(game.time.fps || '--', 2, 14, '#00ff00'); // Prints FPS
-            game.debug.body(player.playerSprite);
+            for(p in players) {
+                // Update Object states
+                game.debug.body(players[p].playerSprite);
+            }
+        }
+        for(p in players) {
+            game.debug.text(players[p].percentage, 30*p, 540, '#00ff00'); // Prints FPS
         }
     } // render()
 

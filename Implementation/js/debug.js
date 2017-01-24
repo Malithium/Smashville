@@ -18,7 +18,7 @@ function testRegisterDamage() {
         console.log('RegisterDamage test was successful');
     }
     else {
-        console.log('RegisterDamage test was unsuccessful. Results are:' + results );
+        console.log('RegisterDamage test was unsuccessful. Results are: ' + results );
     }
     player.playerSprite.kill();
 }
@@ -27,13 +27,13 @@ function testCalculateKnockback() {
     var player = new Player(0, 0);
     player.percentage = 99;
 
-    var expected = 123;
-    var results = calculateKnockback(player, 12);
+    var expected = 200;
+    var results = calculateKnockback(player, 2);
     if (expected === results) {
         console.log('CalculateKnockback test was successful');
     }
     else {
-        console.log('CalculateKnockback test was unsuccessful. Results are:' + results);
+        console.log('CalculateKnockback test was unsuccessful. Results are: ' + results);
     }
     player.playerSprite.kill();
 }
