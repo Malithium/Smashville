@@ -32,19 +32,19 @@ function checkCollision(player, dir, dmg) {
             switch(dir)
             {
                 case 1:
-                    players[p].registerHit(-(calculateKnockback(players[p], dmg)), dir);
+                    players[p].registerHit(-(calculateKnockback(players[p], dmg)), 1, 0);
                     break;
 
                 case 2:
-                    players[p].registerHit(calculateKnockback(players[p], dmg), dir);
+                    players[p].registerHit(calculateKnockback(players[p], dmg), 2, 0);
                     break;
 
                 case 3:
-                    players[p].registerHit(-(calculateKnockback(players[p], dmg)), dir, true);
+                    players[p].registerHit(-(calculateKnockback(players[p], dmg)), 0, 1);
                     break;
 
                 case 4:
-
+                    players[p].registerHit(calculateKnockback(players[p], dmg), 0, 2);
                     break;
             }
         }

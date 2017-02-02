@@ -80,7 +80,7 @@ function Player(x, y, flag) {
         // Actions
         if(this.action1.isDown && !this.action1Pressed) {
             console.log('Attack Left');
-            checkCollision(this, 1, 12);
+            checkCollision(this, 1, 6);
             this.action1Pressed = true;
         }
         else if (this.action1.isUp) {
@@ -89,7 +89,7 @@ function Player(x, y, flag) {
 
         if(this.action2.isDown && !this.action2Pressed) {
             console.log('Attack Right');
-            checkCollision(this, 2, 12);
+            checkCollision(this, 2, 6);
             this.action2Pressed = true;
         }
         else if (this.action2.isUp) {
@@ -98,7 +98,7 @@ function Player(x, y, flag) {
 
         if(this.action3.isDown && !this.action3Pressed) {
             console.log('Uppercut');
-            checkCollision(this, 3, 6);
+            checkCollision(this, 3, 8);
             this.action3Pressed = true;
         }
         else if (this.action3.isUp) {
@@ -107,7 +107,7 @@ function Player(x, y, flag) {
 
         if(this.action4.isDown && !this.action4Pressed) {
             console.log('Low Blow');
-            checkCollision(this, 3, 6);
+            checkCollision(this, 4, 12);
             this.action4Pressed = true;
         }
         else if (this.action4.isUp) {
@@ -136,7 +136,6 @@ function Player(x, y, flag) {
             this.handleInput();
         }
         else {
-            console.log(this.playerSprite.body.velocity.y);
             if(this.dummyLeft.isDown) {
                 if (!this.hit) {
                     this.playerSprite.body.velocity.x = -this.speed; // Move Left
@@ -158,20 +157,28 @@ function Player(x, y, flag) {
 
     this.registerHit = function(knockback, dir, up) {
         this.hit = true;
-        if(!up) {
-            this.playerSprite.body.velocity.x = knockback;
-            this.playerSprite.body.velocity.y = -knockback;
-        }
-        else {
-            this.playerSprite.y = this.playerSprite.y - 10;
-            this.playerSprite.body.velocity.y = knockback;
-        }
+        switch(dir)
+        {
+            case 1:
+                this.playerSprite.body.gravity.x = 50;
+                this.playerSprite.body.velocity.x = knockback;
+                break;
 
-        if (dir === 1) {
-            this.playerSprite.body.gravity.x = 50;
+            case 2:
+                this.playerSprite.body.gravity.x = -50;
+                this.playerSprite.body.velocity.x = knockback;
+                break;
         }
-        else {
-            this.playerSprite.body.gravity.x = -50;
+        switch(up)
+        {
+            case 1:
+                this.playerSprite.y = this.playerSprite.y - 10;
+                this.playerSprite.body.velocity.y = knockback;
+                break;
+
+            case 2:
+                this.playerSprite.body.velocity.y = knockback;
+                break;
         }
     }
 }
