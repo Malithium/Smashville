@@ -14,6 +14,8 @@ function Player(x, y, flag) {
     //  Movement
     this.moveLeft = game.input.keyboard.addKey(Phaser.Keyboard.A);
     this.moveRight = game.input.keyboard.addKey(Phaser.Keyboard.D);
+    this.dummyLeft = game.input.keyboard.addKey(Phaser.Keyboard.J);
+    this.dummyRight = game.input.keyboard.addKey(Phaser.Keyboard.L);
     this.moveJump = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     this.jumpPressed = false;
     //  Actions
@@ -105,6 +107,7 @@ function Player(x, y, flag) {
 
         if(this.action4.isDown && !this.action4Pressed) {
             console.log('Low Blow');
+            checkCollision(this, 3, 6);
             this.action4Pressed = true;
         }
         else if (this.action4.isUp) {
@@ -132,14 +135,35 @@ function Player(x, y, flag) {
         if (!this.dummy) {
             this.handleInput();
         }
+        else {
+            console.log(this.playerSprite.body.velocity.y);
+            if(this.dummyLeft.isDown) {
+                if (!this.hit) {
+                    this.playerSprite.body.velocity.x = -this.speed; // Move Left
+                }
+                else {
+                    this.playerSprite.body.velocity.x = this.playerSprite.body.velocity.x - (this.speed/10);
+                }
+            }
+            if(this.dummyRight.isDown) {
+                if (!this.hit) {
+                    this.playerSprite.body.velocity.x = this.speed; // Move Right
+                }
+                else {
+                    this.playerSprite.body.velocity.x = this.playerSprite.body.velocity.x + (this.speed/10);
+                }
+            }
+        }
     }
 
     this.registerHit = function(knockback, dir, up) {
         this.hit = true;
         if(!up) {
             this.playerSprite.body.velocity.x = knockback;
+            this.playerSprite.body.velocity.y = -knockback;
         }
         else {
+            this.playerSprite.y = this.playerSprite.y - 10;
             this.playerSprite.body.velocity.y = knockback;
         }
 

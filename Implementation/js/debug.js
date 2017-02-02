@@ -27,8 +27,8 @@ function testCalculateKnockback() {
     var player = new Player(0, 0);
     player.percentage = 99;
 
-    var expected = 200;
-    var results = calculateKnockback(player, 2);
+    var expected = 400;
+    var results = calculateKnockback(player, 4);
     if (expected === results) {
         console.log('CalculateKnockback test was successful');
     }

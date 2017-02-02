@@ -17,7 +17,7 @@ function registerDamage(Obj, dmg) {
  Will return velocity value for ARCADE physics.
  */
 function calculateKnockback(Obj, dmg) {
-    return (Obj.percentage*2) + dmg;
+    return (Obj.percentage*4) + dmg;
 }
 
 /*
@@ -29,14 +29,23 @@ function checkCollision(player, dir, dmg) {
     for(p in players) {
         if (game.physics.arcade.overlap(player.playerSprite, players[p].playerSprite)) {
             registerDamage(players[p], dmg);
-            if (dir === 1) {
-                players[p].registerHit(-(calculateKnockback(players[p], dmg)), dir);
-            }
-            else if (dir === 2) {
-                players[p].registerHit(calculateKnockback(players[p], dmg), dir);
-            }
-            else if (dir === 3) {
-                players[p].registerHit(-(calculateKnockback(players[p], dmg)), dir, true);
+            switch(dir)
+            {
+                case 1:
+                    players[p].registerHit(-(calculateKnockback(players[p], dmg)), dir);
+                    break;
+
+                case 2:
+                    players[p].registerHit(calculateKnockback(players[p], dmg), dir);
+                    break;
+
+                case 3:
+                    players[p].registerHit(-(calculateKnockback(players[p], dmg)), dir, true);
+                    break;
+
+                case 4:
+
+                    break;
             }
         }
     }
