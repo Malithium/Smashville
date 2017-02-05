@@ -36,7 +36,7 @@ var playState = {
         players.push(new Player(GAMEWIDTH/4, GAMEHEIGHT/2, true));
 
         debugButton = game.input.keyboard.addKey(Phaser.Keyboard.TAB);
-
+        setEventHandlers();
     }, // create()
 
     update: function() {
@@ -71,4 +71,3 @@ var playState = {
     } // render()
 
 }
-
