@@ -22,7 +22,7 @@ var players;	// Array of connected players
 
 // Create and start the http server
 var server = http.createServer(
-    ecstatic({ root: path.resolve(__dirname, '../game') })
+    ecstatic({ root: path.resolve(__dirname, '../Implementation') })
 ).listen(port, function (err) {
     if (err) {
         throw err
