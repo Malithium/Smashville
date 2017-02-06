@@ -1,8 +1,8 @@
 {
-  "name": "Implementation",
+  "name": "Smashville",
   "version": "1.0.0",
-  "description": "Smashville Multiplayer Game",
-  "main": "server.js",
+  "description": "Multiplayer Beat-em-up Game",
+  "main": "Server/server.js",
   "license": "MIT",
   "repository": {
     "type": "git",

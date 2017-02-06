@@ -1,3 +1,5 @@
+// Based off codee from: https://github.com/xicombd/phaser-multiplayer-game
+
 var util = require('util');
 var http = require('http');
 var path = require('path');
