@@ -2,14 +2,15 @@
   "name": "Implementation",
   "version": "1.0.0",
   "description": "Smashville Multiplayer Game",
-  "main": "server/server.js",
+  "main": "server.js",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/Malithium/Smashville.git"
   },
   "dependencies": {
-    "express": "^4.14.1",
+    "ecstatic": "^1.0.1",
+    "express": "^4.10.2",
     "socket.io": "^1.7.2"
   }
 }

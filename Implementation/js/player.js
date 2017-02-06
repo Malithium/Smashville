@@ -6,6 +6,8 @@ function Player(x, y, flag) {
     this.playerSprite = game.add.sprite(x, y, 'player');
     this.playerSprite.width = 32;
     this.playerSprite.height = 32;
+    this.x = x;
+    this.y = y;
 
     // Physics
     game.physics.arcade.enable(this.playerSprite);
@@ -113,7 +115,7 @@ function Player(x, y, flag) {
         else if (this.action4.isUp) {
             this.action4Pressed = false;
         }
-    }
+    };
 
     this.playerUpdate = function() {
         // Stops from falling through the floor
@@ -153,7 +155,9 @@ function Player(x, y, flag) {
                 }
             }
         }
-    }
+        this.x = this.playerSprite.x;
+        this.y = this.playerSprite.y;
+    };
 
     this.registerHit = function(knockback, dir, up) {
         this.hit = true;
@@ -180,5 +184,5 @@ function Player(x, y, flag) {
                 this.playerSprite.body.velocity.y = knockback;
                 break;
         }
-    }
+    };
 }
