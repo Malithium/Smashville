@@ -13,8 +13,6 @@ var enemies = [];
 var map;
 var levelNum;
 var GroundLayer;
-var Background;
-var Foreground;
 
 var playState = {
     preload: function() {
@@ -28,8 +26,6 @@ var playState = {
     }, //preload();
 
     create: function() {
-        Background = game.add.group();
-        Foreground = game.add.group();
         loadLevel();
         game.physics.startSystem(Phaser.Physics.ARCADE);
         game.physics.arcade.gravity.y = 350;
@@ -64,9 +60,9 @@ var playState = {
             game.debug.text(game.time.fps || '--', 2, 14, '#00ff00'); // Prints FPS
             game.debug.body(player.playerSprite);
         }
-        game.debug.text(player.percentage, 30, 540, '#00ff00'); // Prints FPS
+        game.debug.text(player.percentage, 0, 540, '#00ff00'); // Prints FPS
         for (var i = 0; i < enemies.length; i++) {
-            game.debug.text(enemies[i].percentage, 30*i, 540, '#00ff00'); // Prints FPS
+            game.debug.text(enemies[i].percentage, 30*(i+1), 540, '#00ff00'); // Prints FPS
         }
     } // render()
 

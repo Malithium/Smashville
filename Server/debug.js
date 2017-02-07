@@ -3,40 +3,41 @@ var Player = require('./client');
 var Logic = require('./logic');
 
 // Functions which will test different functions in the game.
-function runAllTests() {
-    //testRegisterDamage();
-    //testCalculateKnockback();
+var runAllTests = function() {
+    testRegisterDamage();
+    testCalculateKnockback();
 }
 
 function testRegisterDamage() {
     var player = new Player(0, 0);
-    player.percentage = 99;
-    registerDamage({Obj: player, dmg: 12});
+    player.setPercentage(Logic.registerDamage(99, 12));
 
     var expected = 111;
-    var results = player.percentage;
+    var results = player.getPercentage();
     if (expected === results) {
-        console.log('RegisterDamage test was successful');
+        console.log('  RegisterDamage test was successful');
     }
     else {
-        console.log('RegisterDamage test was unsuccessful. Results are: ' + results );
+        console.log('  RegisterDamage test was unsuccessful. Results are: ' + results );
     }
-    player.playerSprite.kill();
 }
 
 function testCalculateKnockback() {
     var player = new Player(0, 0);
-    player.percentage = 99;
+    player.setPercentage(99)
 
     var expected = 400;
-    var results = calculateKnockback(player, 4);
+    var results = Logic.calculateKnockback(player.getPercentage(), 4);
     if (expected === results) {
-        console.log('CalculateKnockback test was successful');
+        console.log('  CalculateKnockback test was successful');
     }
     else {
-        console.log('CalculateKnockback test was unsuccessful. Results are: ' + results);
+        console.log('  CalculateKnockback test was unsuccessful. Results are: ' + results);
     }
-    player.playerSprite.kill();
 }
 
-module.exports = runAllTests();
+var Debug = {
+    runAllTests: runAllTests
+};
+
+module.exports = Debug;

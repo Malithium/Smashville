@@ -7,10 +7,8 @@
  Updates a players percentage value, based on
  damage dealt by damage value.
  */
-function registerDamage(Obj, dmg) {
-    if (Obj) {
-        Obj.percentage += dmg;
-    }
+var registerDamage = function(value, dmg) {
+    return value + dmg;
 }
 
 /*
@@ -18,8 +16,8 @@ function registerDamage(Obj, dmg) {
  calculate how far back a player will be knocked.
  Will return velocity value for ARCADE physics.
  */
-function calculateKnockback(Obj, dmg) {
-    return (Obj * 4) + dmg;
+var calculateKnockback = function(val, dmg) {
+    return (val * 4) + dmg;
 }
 
 /*
@@ -27,31 +25,22 @@ function calculateKnockback(Obj, dmg) {
  players were hit by the ability. Then run two methods
  above.
  */
-function checkCollision(player, players, dir, dmg) {
-    for (p in players) {
-        if (game.physics.arcade.overlap(player.playerSprite, players[p].playerSprite)) {
-            registerDamage({Obj: players[p], dmg: dmg});
-            switch (dir) {
-                case 1:
-                    players[p].registerHit((calculateKnockback(players[p], dmg)), 1, 0);
-                    break;
-
-                case 2:
-                    players[p].registerHit(calculateKnockback(players[p], dmg), 2, 0);
-                    break;
-
-                case 3:
-                    players[p].registerHit((calculateKnockback(players[p], dmg)), 0, 1);
-                    break;
-
-                case 4:
-                    players[p].registerHit(calculateKnockback(players[p], dmg), 0, 2);
-                    break;
-            }
+var checkCollision = function (player, players) {
+    for(var i = 0; i < players.length; i++) {
+        // Replace 32 with Height and Width
+        if (player.getX() < (players[i].getX() + 32) && (player.getX() + 32) > players[i].getX() &&
+            player.getY() < (players[i].getY() + 32) && (32 + player.getY()) > players[i].getY() &&
+            player.id != players[i].id) {
+            return players[i];
         }
     }
+    return false;
 }
 
-module.exports = registerDamage();
-module.exports = calculateKnockback();
-module.exports = checkCollision();
+var Logic = {
+    registerDamage: registerDamage,
+    calculateKnockback: calculateKnockback,
+    checkCollision: checkCollision
+};
+
+module.exports = Logic;

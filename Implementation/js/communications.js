@@ -20,7 +20,10 @@ function setEventHandlers () {
     // Player removed message received
     socket.on('remove player', onRemovePlayer);
 
-    // Player removed message received
+    // Player has been hit
+    socket.on('hit player', onPlayerHit);
+
+    // Game details passed across
     socket.on('game details', onGameUpdate);
 }
 
@@ -54,7 +57,7 @@ function onNewPlayer (data) {
     }
 
     // Add new player to the remote players array
-    enemies.push(new Enemy(data.x, data.y));
+    enemies.push(new Enemy(data.x, data.y, data.percentage));
     enemies[(enemies.length-1)].id = data.id;
 }
 
@@ -71,6 +74,7 @@ function onMovePlayer (data) {
     // Update player position
     movePlayer.playerSprite.x = data.x;
     movePlayer.playerSprite.y = data.y;
+    movePlayer.percentage = data.percentage;
 }
 
 // Remove player
@@ -91,7 +95,17 @@ function onRemovePlayer (data) {
 
 // Get servers level details
 function onGameUpdate(data) {
+    console.log("id: " + data.id);
+    player.id = data.id;
     levelNum = data.level;
+}
+
+// Player has been hit
+function onPlayerHit(data) {
+    if(player.id === data.id ) {
+        player.percentage = data.percentage;
+        player.registerHit(data.knockback, data.dir, data.up);
+    }
 }
 
 // Find player by ID

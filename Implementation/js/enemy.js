@@ -1,11 +1,12 @@
 // Last Updated: 20/01/2017
 
-function Enemy(x, y) {
+function Enemy(x, y, percentage) {
     // Init
     // NOTE(Kyle) : It appears 'Tiled' the map editor I am using, allows me to designate object positions, this may be a solution to X and Y positions
     this.playerSprite = game.add.sprite(x, y, 'player');
     this.playerSprite.width = 32;
     this.playerSprite.height = 32;
+    this.percentage = percentage;
     this.x = x;
     this.y = y;
 
@@ -15,7 +16,6 @@ function Enemy(x, y) {
     // Properties
     //  Body
     this.playerSprite.body.setSize(64, 64, 0, 0); // 64x64 is default sprite size
-    Background.add(this.playerSprite);
 
     this.playerUpdate = function() {
         // Stops from falling through the floor

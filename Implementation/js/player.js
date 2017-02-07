@@ -8,6 +8,7 @@ function Player(x, y) {
     this.playerSprite.height = 32;
     this.x = x;
     this.y = y;
+    this.id;
 
     // Physics
     game.physics.arcade.enable(this.playerSprite);
@@ -42,7 +43,6 @@ function Player(x, y) {
     this.speed = 100; // Set base speed here!
     this.percentage = 0;
 
-    Foreground.add(this.playerSprite);
     // Functions
     this.handleInput = function() {
         // Movement
@@ -53,7 +53,6 @@ function Player(x, y) {
             else {
                 this.playerSprite.body.velocity.x = this.playerSprite.body.velocity.x + (this.speed/4);
             }
-            socket.emit('move player', { action: 1 });
         }
         if (this.moveRight.isDown) {
             if (!this.hit) {
@@ -62,7 +61,6 @@ function Player(x, y) {
             else {
                 this.playerSprite.body.velocity.x = this.playerSprite.body.velocity.x - (this.speed/4);
             }
-            socket.emit('move player', { action: 2 });
         }
         if (this.moveJump.isDown && !this.jumpPressed) {
             if (this.jumpOnce && !this.resetJump) {
@@ -75,7 +73,6 @@ function Player(x, y) {
                 this.jumpOnce = true;
                 this.playerSprite.body.velocity.y = -this.jumpHeight; // Jump
             }
-            socket.emit('move player', { action: 3 });
             this.jumpPressed = true;
         }
         else if (this.moveJump.isUp) {
@@ -85,8 +82,7 @@ function Player(x, y) {
         // Actions
         if(this.action1.isDown && !this.action1Pressed) {
             console.log('Attack Left');
-            //checkCollision(this, 1, 6);
-            socket.emit('move player', { action: 4 });
+            socket.emit('hit player', { action: 1, dmg: 6, id: this.id });
             this.action1Pressed = true;
         }
         else if (this.action1.isUp) {
@@ -95,8 +91,7 @@ function Player(x, y) {
 
         if(this.action2.isDown && !this.action2Pressed) {
             console.log('Attack Right');
-            //checkCollision(this, 2, 6);
-            socket.emit('move player', { action: 5 });
+            socket.emit('hit player', { action: 2, dmg: 6, id: this.id });
             this.action2Pressed = true;
         }
         else if (this.action2.isUp) {
@@ -105,8 +100,7 @@ function Player(x, y) {
 
         if(this.action3.isDown && !this.action3Pressed) {
             console.log('Uppercut');
-            //checkCollision(this, 3, 8);
-            socket.emit('move player', { action: 6 });
+            socket.emit('hit player', { action: 3, dmg: 8, id: this.id });
             this.action3Pressed = true;
         }
         else if (this.action3.isUp) {
@@ -115,8 +109,7 @@ function Player(x, y) {
 
         if(this.action4.isDown && !this.action4Pressed) {
             console.log('Low Blow');
-            //checkCollision(this, 4, 12);
-            socket.emit('move player', { action: 7 });
+            socket.emit('hit player', { action: 4, dmg: 3, id: this.id });
             this.action4Pressed = true;
         }
         else if (this.action4.isUp) {
