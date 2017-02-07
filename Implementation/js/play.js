@@ -70,10 +70,6 @@ var playState = {
 };
 
 // Based off code in: https://github.com/xicombd/phaser-multiplayer-game
-// =======================
-// SERVER COMMUNICATION
-// =======================
-
 function setEventHandlers () {
     // Socket connection successful
     socket.on('connect', onSocketConnected);

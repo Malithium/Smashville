@@ -13,7 +13,7 @@ var players = []; // Array of connected players
 var io = require('socket.io');
 var port = process.env.PORT || 8080;
 var server = http.createServer(
-    ecstatic({ root: path.resolve(__dirname, '../game') })
+    ecstatic({ root: path.resolve(__dirname, '../Implementation') })
 ).listen(port, function (err) {
     if (err) {
         throw err
