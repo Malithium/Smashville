@@ -19,7 +19,7 @@ var menuState = {
     actionOnClick1: function()
     {
         levelNum = 1;
-        game.state.start('play');
+            game.state.start('play');
     },
 
     actionOnClick2: function()

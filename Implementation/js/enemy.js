@@ -15,6 +15,7 @@ function Enemy(x, y) {
     // Properties
     //  Body
     this.playerSprite.body.setSize(64, 64, 0, 0); // 64x64 is default sprite size
+    Background.add(this.playerSprite);
 
     this.playerUpdate = function() {
         // Stops from falling through the floor

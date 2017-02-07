@@ -42,6 +42,7 @@ function Player(x, y) {
     this.speed = 100; // Set base speed here!
     this.percentage = 0;
 
+    Foreground.add(this.playerSprite);
     // Functions
     this.handleInput = function() {
         // Movement
@@ -142,6 +143,8 @@ function Player(x, y) {
 
         this.handleInput();
 
+        this.lastX = this.x;
+        this.lastY = this.y;
         this.x = this.playerSprite.x;
         this.y = this.playerSprite.y;
     };

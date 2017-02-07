@@ -6,9 +6,11 @@
 /*
  Updates a players percentage value, based on
  damage dealt by damage value.
-*/
+ */
 function registerDamage(Obj, dmg) {
-    Obj.percentage += dmg;
+    if (Obj) {
+        Obj.percentage += dmg;
+    }
 }
 
 /*
@@ -17,7 +19,7 @@ function registerDamage(Obj, dmg) {
  Will return velocity value for ARCADE physics.
  */
 function calculateKnockback(Obj, dmg) {
-    return (Obj.percentage*4) + dmg;
+    return (Obj * 4) + dmg;
 }
 
 /*
@@ -25,12 +27,11 @@ function calculateKnockback(Obj, dmg) {
  players were hit by the ability. Then run two methods
  above.
  */
-function checkCollision(player, dir, dmg) {
-    for(p in players) {
+function checkCollision(player, players, dir, dmg) {
+    for (p in players) {
         if (game.physics.arcade.overlap(player.playerSprite, players[p].playerSprite)) {
-            registerDamage(players[p], dmg);
-            switch(dir)
-            {
+            registerDamage({Obj: players[p], dmg: dmg});
+            switch (dir) {
                 case 1:
                     players[p].registerHit((calculateKnockback(players[p], dmg)), 1, 0);
                     break;
@@ -50,3 +51,7 @@ function checkCollision(player, dir, dmg) {
         }
     }
 }
+
+module.exports = registerDamage();
+module.exports = calculateKnockback();
+module.exports = checkCollision();

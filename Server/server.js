@@ -9,6 +9,10 @@ var socket;	// Socket controller
 var Player = require('./client');
 var players = []; // Array of connected players
 
+// Game variables
+var level = 2;
+var Logic = require('./logic');
+
 // Create and start the http server
 var io = require('socket.io');
 var port = process.env.PORT || 8080;
@@ -31,6 +35,11 @@ function init () {
 
     // Start listening for events
     setEventHandlers();
+
+    // Running tests
+    //var Debug = require('./debug');
+    console.log("Running tests");
+    //runAllTests();
 }
 
 function setEventHandlers() {
@@ -90,6 +99,7 @@ function onNewPlayer (data) {
         this.emit('new player', {id: existingPlayer.id, x: existingPlayer.getX(), y: existingPlayer.getY()});
     }
 
+    this.emit('game details', {level: level});
     // Add new player to the players array
     players.push(newPlayer);
 }
@@ -103,32 +113,6 @@ function onMovePlayer (data) {
     if (!movePlayer) {
         util.log('Player not found: ' + this.id);
         return
-    }
-
-    // Handle different actions
-    switch(data.action)
-    {
-        case 1:
-            // Move Left
-            break;
-        case 2:
-            // Move Right
-            break;
-        case 3:
-            // Jump
-            break;
-        case 4:
-            // Punch Left
-            break;
-        case 5:
-            // Punch Right
-            break;
-        case 6:
-            // Uppercut
-            break;
-        case 7:
-            // Low Blow
-            break;
     }
 
     // Update player position
