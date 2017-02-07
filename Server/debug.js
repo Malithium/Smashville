@@ -3,8 +3,8 @@
 // Functions which will test different functions in the game.
 
 function runAllTests() {
-    testRegisterDamage();
-    testCalculateKnockback();
+    //testRegisterDamage();
+    //testCalculateKnockback();
 }
 
 function testRegisterDamage() {

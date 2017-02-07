@@ -4,23 +4,14 @@ var util = require('util');
 var http = require('http');
 var path = require('path');
 var ecstatic = require('ecstatic');
-var io = require('socket.io');
 
-var Player = require('./client');
-
-var port = process.env.PORT || 8080;
-
-/* ************************************************
- ** GAME VARIABLES
- ************************************************ */
 var socket;	// Socket controller
-var players;	// Array of connected players
-
-/* ************************************************
- ** GAME INITIALISATION
- ************************************************ */
+var Player = require('./client');
+var players = []; // Array of connected players
 
 // Create and start the http server
+var io = require('socket.io');
+var port = process.env.PORT || 8080;
 var server = http.createServer(
     ecstatic({ root: path.resolve(__dirname, '../game') })
 ).listen(port, function (err) {
@@ -32,9 +23,6 @@ var server = http.createServer(
 });
 
 function init () {
-    // Create an empty array to store players
-    players = [];
-
     // Attach Socket.IO to server
     socket = io.listen(server);
 
@@ -45,9 +33,6 @@ function init () {
     setEventHandlers();
 }
 
-/* ************************************************
- ** GAME EVENT HANDLERS
- ************************************************ */
 function setEventHandlers() {
     // Socket.IO
     socket.sockets.on('connection', onSocketConnection);
@@ -65,6 +50,9 @@ function onSocketConnection (client) {
 
     // Listen for move player message
     client.on('move player', onMovePlayer);
+
+    // Listen for new lobby message
+    //client.on('new message', onNewMessage);
 }
 
 // Socket client has disconnected
@@ -117,6 +105,32 @@ function onMovePlayer (data) {
         return
     }
 
+    // Handle different actions
+    switch(data.action)
+    {
+        case 1:
+            // Move Left
+            break;
+        case 2:
+            // Move Right
+            break;
+        case 3:
+            // Jump
+            break;
+        case 4:
+            // Punch Left
+            break;
+        case 5:
+            // Punch Right
+            break;
+        case 6:
+            // Uppercut
+            break;
+        case 7:
+            // Low Blow
+            break;
+    }
+
     // Update player position
     movePlayer.setX(data.x);
     movePlayer.setY(data.y);
@@ -125,17 +139,12 @@ function onMovePlayer (data) {
     this.broadcast.emit('move player', {id: movePlayer.id, x: movePlayer.getX(), y: movePlayer.getY()});
 }
 
-/* ************************************************
- ** GAME HELPER FUNCTIONS
- ************************************************ */
 // Find player by ID
 function playerById (id) {
-    var i;
-    for (i = 0; i < players.length; i++) {
+    for (var i = 0; i < players.length; i++) {
         if (players[i].id === id) {
             return players[i];
         }
     }
-
-    return false
+    return false;
 }
