@@ -1,6 +1,6 @@
 // Last Updated: 20/01/2017
 
-function Player(x, y, flag) {
+function Player(x, y) {
     // Init
     // NOTE(Kyle) : It appears 'Tiled' the map editor I am using, allows me to designate object positions, this may be a solution to X and Y positions
     this.playerSprite = game.add.sprite(x, y, 'player');
@@ -39,7 +39,6 @@ function Player(x, y, flag) {
     this.jumpHeight = 200;
     //  Miscellaneous
     this.hit = false;
-    this.dummy = flag;
     this.speed = 100; // Set base speed here!
     this.percentage = 0;
 
@@ -53,6 +52,7 @@ function Player(x, y, flag) {
             else {
                 this.playerSprite.body.velocity.x = this.playerSprite.body.velocity.x + (this.speed/4);
             }
+            socket.emit('move player', { action: 1 });
         }
         if (this.moveRight.isDown) {
             if (!this.hit) {
@@ -61,6 +61,7 @@ function Player(x, y, flag) {
             else {
                 this.playerSprite.body.velocity.x = this.playerSprite.body.velocity.x - (this.speed/4);
             }
+            socket.emit('move player', { action: 2 });
         }
         if (this.moveJump.isDown && !this.jumpPressed) {
             if (this.jumpOnce && !this.resetJump) {
@@ -73,6 +74,7 @@ function Player(x, y, flag) {
                 this.jumpOnce = true;
                 this.playerSprite.body.velocity.y = -this.jumpHeight; // Jump
             }
+            socket.emit('move player', { action: 3 });
             this.jumpPressed = true;
         }
         else if (this.moveJump.isUp) {
@@ -82,7 +84,8 @@ function Player(x, y, flag) {
         // Actions
         if(this.action1.isDown && !this.action1Pressed) {
             console.log('Attack Left');
-            checkCollision(this, 1, 6);
+            //checkCollision(this, 1, 6);
+            socket.emit('move player', { action: 4 });
             this.action1Pressed = true;
         }
         else if (this.action1.isUp) {
@@ -91,7 +94,8 @@ function Player(x, y, flag) {
 
         if(this.action2.isDown && !this.action2Pressed) {
             console.log('Attack Right');
-            checkCollision(this, 2, 6);
+            //checkCollision(this, 2, 6);
+            socket.emit('move player', { action: 5 });
             this.action2Pressed = true;
         }
         else if (this.action2.isUp) {
@@ -100,7 +104,8 @@ function Player(x, y, flag) {
 
         if(this.action3.isDown && !this.action3Pressed) {
             console.log('Uppercut');
-            checkCollision(this, 3, 8);
+            //checkCollision(this, 3, 8);
+            socket.emit('move player', { action: 6 });
             this.action3Pressed = true;
         }
         else if (this.action3.isUp) {
@@ -109,7 +114,8 @@ function Player(x, y, flag) {
 
         if(this.action4.isDown && !this.action4Pressed) {
             console.log('Low Blow');
-            checkCollision(this, 4, 12);
+            //checkCollision(this, 4, 12);
+            socket.emit('move player', { action: 7 });
             this.action4Pressed = true;
         }
         else if (this.action4.isUp) {
@@ -134,27 +140,8 @@ function Player(x, y, flag) {
             this.hit = false;
         }
 
-        if (!this.dummy) {
-            this.handleInput();
-        }
-        else {
-            if(this.dummyLeft.isDown) {
-                if (!this.hit) {
-                    this.playerSprite.body.velocity.x = -this.speed; // Move Left
-                }
-                else {
-                    this.playerSprite.body.velocity.x = this.playerSprite.body.velocity.x - (this.speed/10);
-                }
-            }
-            if(this.dummyRight.isDown) {
-                if (!this.hit) {
-                    this.playerSprite.body.velocity.x = this.speed; // Move Right
-                }
-                else {
-                    this.playerSprite.body.velocity.x = this.playerSprite.body.velocity.x + (this.speed/10);
-                }
-            }
-        }
+        this.handleInput();
+
         this.x = this.playerSprite.x;
         this.y = this.playerSprite.y;
     };
@@ -165,7 +152,7 @@ function Player(x, y, flag) {
         {
             case 1:
                 this.playerSprite.body.gravity.x = 50;
-                this.playerSprite.body.velocity.x = knockback;
+                this.playerSprite.body.velocity.x = -knockback;
                 break;
 
             case 2:
@@ -177,7 +164,7 @@ function Player(x, y, flag) {
         {
             case 1:
                 this.playerSprite.y = this.playerSprite.y - 10;
-                this.playerSprite.body.velocity.y = knockback;
+                this.playerSprite.body.velocity.y = -knockback;
                 break;
 
             case 2:

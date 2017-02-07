@@ -8,7 +8,6 @@ var socket;
 
 // Sprite Variables
 var player;
-var players = [];
 var enemies = [];
 
 // Level values
@@ -36,25 +35,22 @@ var playState = {
 
         game.physics.startSystem(Phaser.Physics.ARCADE);
         game.physics.arcade.gravity.y = 350;
-        players.push(new Player(GAMEWIDTH/2, GAMEHEIGHT/2, false));
-        players.push(new Player(GAMEWIDTH/4, GAMEHEIGHT/2, true));
+        player = new Player(GAMEWIDTH/2, GAMEHEIGHT/2, false);
 
         debugButton = game.input.keyboard.addKey(Phaser.Keyboard.TAB);
         setEventHandlers();
     }, // create()
 
     update: function() {
-        player = players[0];
-        for(p in players) {
-            // Update Object states
-            players[p].playerUpdate();
+        // Update Object states
+        player.playerUpdate();
+        for (var i = 0; i < enemies.length; i++) {
+            enemies[i].playerUpdate();
         }
+
         if(debugButton.isDown && !debugPressed) {
             if (debug) {debug = false; }
-            else {
-                debug = true;
-                runAllTests();
-            }
+            else {debug = true; }
             debugPressed = true;
         }
         else if (debugButton.isUp) {debugPressed = false;}
@@ -66,14 +62,9 @@ var playState = {
         game.debug.reset();
         if (debug) {
             game.debug.text(game.time.fps || '--', 2, 14, '#00ff00'); // Prints FPS
-            for(p in players) {
-                // Update Object states
-                game.debug.body(players[p].playerSprite);
-            }
+            game.debug.body(player.playerSprite);
         }
-        for(p in players) {
-            game.debug.text(players[p].percentage, 30*p, 540, '#00ff00'); // Prints FPS
-        }
+        game.debug.text(player.percentage, 30, 540, '#00ff00'); // Prints FPS
     } // render()
 
 };
@@ -104,10 +95,9 @@ function setEventHandlers () {
 function onSocketConnected () {
     console.log('Connected to socket server');
 
-    // Reset enemies on reconnect
-    enemies.forEach(function (enemy) {
-        enemy.player.kill();
-    });
+    for (var i = 0; i < enemies.length; i++) {
+        enemies[i].remove();
+    }
     enemies = [];
 
     // Send local player data to the game server
@@ -131,7 +121,8 @@ function onNewPlayer (data) {
     }
 
     // Add new player to the remote players array
-    enemies.push(new RemotePlayer(data.id, game, player, data.x, data.y));
+    enemies.push(new Enemy(data.x, data.y));
+    enemies[(enemies.length-1)].id = data.id;
 }
 
 // Move player
@@ -145,8 +136,8 @@ function onMovePlayer (data) {
     }
 
     // Update player position
-    movePlayer.player.x = data.x;
-    movePlayer.player.y = data.y;
+    movePlayer.playerSprite.x = data.x;
+    movePlayer.playerSprite.y = data.y;
 }
 
 // Remove player
@@ -159,7 +150,7 @@ function onRemovePlayer (data) {
         return false;
     }
 
-    removePlayer.player.kill();
+    removePlayer.remove();
 
     // Remove player from array
     enemies.splice(enemies.indexOf(removePlayer), 1);
@@ -168,7 +159,7 @@ function onRemovePlayer (data) {
 // Find player by ID
 function playerById (id) {
     for (var i = 0; i < enemies.length; i++) {
-        if (enemies[i].player.name === id) {
+        if (enemies[i].id === id) {
             return enemies[i];
         }
     }
