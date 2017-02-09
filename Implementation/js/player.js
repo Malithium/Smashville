@@ -51,15 +51,15 @@ function Player(x, y) {
                 this.playerSprite.body.velocity.x = -this.speed;// Move Left
             }
             else {
-                this.playerSprite.body.velocity.x = this.playerSprite.body.velocity.x + (this.speed/4);
+                this.playerSprite.body.velocity.x = this.playerSprite.body.velocity.x - (this.speed / 20);
             }
         }
         if (this.moveRight.isDown) {
             if (!this.hit) {
-                this.playerSprite.body.velocity.x = this.speed;// Move Right
+                this.playerSprite.body.velocity.x = this.speed;// Move Left
             }
             else {
-                this.playerSprite.body.velocity.x = this.playerSprite.body.velocity.x - (this.speed/4);
+                this.playerSprite.body.velocity.x = this.playerSprite.body.velocity.x + (this.speed / 20);
             }
         }
         if (this.moveJump.isDown && !this.jumpPressed) {
@@ -128,8 +128,9 @@ function Player(x, y) {
             this.resetJump = false;
         }
 
-        if(this.playerSprite.body.velocity.x <= 10 &&
-            this.playerSprite.body.velocity.x >= -10 && this.hit) {
+        if(((this.playerSprite.body.velocity.x <= 10 && this.dir === 2) ||
+            (this.playerSprite.body.velocity.x >= -10 && this.dir === 1) ||
+            this.dir === 0 ) && this.hit) {
             this.playerSprite.body.gravity.x = 0;
             this.hit = false;
         }
@@ -144,6 +145,7 @@ function Player(x, y) {
 
     this.registerHit = function(knockback, dir, up) {
         this.hit = true;
+        this.dir = dir;
         switch(dir)
         {
             case 1:

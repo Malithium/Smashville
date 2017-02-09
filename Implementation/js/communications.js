@@ -106,6 +106,10 @@ function onPlayerHit(data) {
         player.percentage = data.percentage;
         player.registerHit(data.knockback, data.dir, data.up);
     }
+    else {
+        var hitPlayer = playerById(data.id);
+        hitPlayer.percentage = data.percentage;
+    }
 }
 
 // Find player by ID

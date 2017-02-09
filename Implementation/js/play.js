@@ -19,9 +19,11 @@ var playState = {
     // Load in Assets
         // Used for FPS counter
         game.time.advancedTiming = true;
+        // Stops game from pausing when clicking off
+        game.stage.disableVisibilityChange = true;
         // Server stuff
-        //  Need to change local Host and Port number depending on connection
-        socket = io.connect('http://localhost:8080');
+        //  Need to change IP and Port number depending on connection
+        socket = io.connect('127.0.0.1:8080');
         setEventHandlers();
     }, //preload();
 

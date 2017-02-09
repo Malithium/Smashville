@@ -30,7 +30,7 @@ function init () {
     socket = io.listen(server);
 
     // Log Port selected
-    console.log("#Listening on port:" + port);
+    console.log("#Listening on port: " + port);
 
     // Start listening for events
     setEventHandlers();
@@ -156,6 +156,8 @@ function onPlayerHit(data) {
                 up = 2;
                 break;
         }
+        this.emit('hit player', {id: hitPlayer.id, percent: hitPlayer.getPercentage(),
+            knockback: knockback, dir: dir, up: up});
 
         this.broadcast.emit('hit player', {id: hitPlayer.id, percent: hitPlayer.getPercentage(),
             knockback: knockback, dir: dir, up: up});
