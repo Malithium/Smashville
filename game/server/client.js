@@ -1,9 +1,9 @@
 
-var Player = function (startX, startY) {
-    var x = startX;
-    var y = startY;
-    var percentage = 0;
+function Player() {
+    var x = 0;
+    var y = 0;
     var id;
+    var percentage = 0;
 
     // Getters and setters
     var getX = function () {

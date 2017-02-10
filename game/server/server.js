@@ -7,7 +7,12 @@ var ecstatic = require('ecstatic');
 
 // Game variables
 var level = 2;
-var players = []; // Array of connected players
+var clients = []; // Array of connected players
+//var sessions = []; // Array of Sessions
+//var messages = [];
+
+var Message = require('./message');
+var Session = require('./session');
 var Player = require('./client');
 var Logic = require('./logic');
 
@@ -79,8 +84,8 @@ function onClientDisconnect () {
         return
     }
 
-    // Remove player from players array
-    players.splice(players.indexOf(removePlayer), 1);
+    // Remove player from clients array
+    clients.splice(clients.indexOf(removePlayer), 1);
 
     // Broadcast removed player to connected socket clients
     this.broadcast.emit('remove player', {id: this.id});
@@ -97,17 +102,17 @@ function onNewPlayer (data) {
     this.broadcast.emit('new player', {id: newPlayer.id, x: newPlayer.getX(),
         y: newPlayer.getY(), percentage: newPlayer.getPercentage()});
 
-    // Send existing players to the new player
+    // Send existing clients to the new player
     var i, existingPlayer;
-    for (i = 0; i < players.length; i++) {
-        existingPlayer = players[i];
+    for (i = 0; i < clients.length; i++) {
+        existingPlayer = clients[i];
         this.emit('new player', {id: existingPlayer.id, x: existingPlayer.getX(),
             y: existingPlayer.getY(), percentage: existingPlayer.getPercentage()});
     }
 
     this.emit('game details', {id: newPlayer.id, level: level});
-    // Add new player to the players array
-    players.push(newPlayer);
+    // Add new player to the clients array
+    clients.push(newPlayer);
 }
 
 // Player has moved
@@ -131,7 +136,7 @@ function onMovePlayer (data) {
 }
 
 function onPlayerHit(data) {
-    var hitPlayer = Logic.checkCollision(playerById(data.id), players);
+    var hitPlayer = Logic.checkCollision(playerById(data.id), clients);
     if(hitPlayer) {
         console.log(data.id + " vs " + hitPlayer.id);
         hitPlayer.setPercentage(Logic.registerDamage(hitPlayer.getPercentage(), data.dmg));
@@ -166,9 +171,9 @@ function onPlayerHit(data) {
 
 // Find player by ID
 function playerById (id) {
-    for (var i = 0; i < players.length; i++) {
-        if (players[i].id === id) {
-            return players[i];
+    for (var i = 0; i < clients.length; i++) {
+        if (clients[i].id === id) {
+            return clients[i];
         }
     }
     return false;
