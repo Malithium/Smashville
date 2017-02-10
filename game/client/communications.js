@@ -25,6 +25,9 @@ function setEventHandlers () {
 
     // Game details passed across
     socket.on('game details', onGameUpdate);
+
+    // Process new chat box message
+    //socket.on('new message', onNewMessage);
 }
 
 // Socket connected (Clear Enemies)

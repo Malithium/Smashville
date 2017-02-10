@@ -132,8 +132,8 @@ function onMovePlayer (data) {
 
 function onPlayerHit(data) {
     var hitPlayer = Logic.checkCollision(playerById(data.id), players);
-    console.log(data.id + " vs " + hitPlayer.id);
     if(hitPlayer) {
+        console.log(data.id + " vs " + hitPlayer.id);
         hitPlayer.setPercentage(Logic.registerDamage(hitPlayer.getPercentage(), data.dmg));
         var knockback = Logic.calculateKnockback(hitPlayer.getPercentage(), data.dmg);
         var dir, up;
