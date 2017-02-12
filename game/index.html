@@ -6,6 +6,7 @@
     <script type="text/javascript" src="libs/phaser.min.js"></script>
     <script type="text/javascript" src="libs/socket.io.js"></script>
     <script src="client/load.js"></script>
+    <script src="client/user.js"></script>
     <script src="client/menu.js"></script>
     <script src="client/play.js"></script>
     <script src="client/communications.js"></script>
@@ -14,6 +15,10 @@
     <script src="client/game.js"></script>
 </head>
 <body>
+<div id="user-overlay">
+    <input autocomplete="off" class="user-input" id="user-text" name="username" type="text"><br>
+    <input class="user-input" id="user-button" value="Begin" type="button" onclick="userState.evaluateName()">
+</div>
 <div id="ip-host" class="connect-overlay">
        <input class="connect-input" name="ip" type="text" ><br>
        <input class="connect-input" name="port" type="text" ><br>

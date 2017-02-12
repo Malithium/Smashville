@@ -9,7 +9,7 @@ have to do until I find a solution
  */
 var menuState = {
     create: function() {
-        nameLabel = game.add.text(10,10,'SmashVille!', {font:'30px Arial', fill:'#ffffff'});
+        nameLabel = game.add.text(10,10,'Hello, ' + playerName + ' Welcome to SmashVille!', {font:'30px Arial', fill:'#ffffff'});
         levelLabel = game.add.text(10, 60,'choose a level', {font: '25px Arial', fill: '#ffffff'});
         characterLabel = game.add.text(10, 240,'choose a character', {font: '25px Arial', fill: '#ffffff'});
 
