@@ -1,5 +1,6 @@
 <html>
 <head>
+    <link rel="stylesheet" href="smashVille.css">
 	<meta charset="utf-8">
 	<title>Smashville</title>
     <script type="text/javascript" src="libs/phaser.min.js"></script>
@@ -13,5 +14,11 @@
     <script src="client/game.js"></script>
 </head>
 <body>
+<div id="ip-host" class="connect-overlay">
+       <input class="connect-input" name="ip" type="text" ><br>
+       <input class="connect-input" name="port" type="text" ><br>
+       <input class="connect-input" value="connect" type="button" onclick="menuState.closeConnect()">
+</div>
+
 </body>
 </html>

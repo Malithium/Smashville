@@ -12,6 +12,7 @@ var enemies = [];
 // Level values
 var map;
 var levelNum;
+var playerNum;
 var GroundLayer;
 
 var playState = {
