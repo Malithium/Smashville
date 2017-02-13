@@ -26,8 +26,8 @@ var playState = {
         game.stage.disableVisibilityChange = true;
         // Server stuff
         //  Need to change IP and Port number depending on connection
-        // cmd -> ipconfig -> IPv4 address
-        socket = io.connect('127.0.0.1:44555');
+        console.log(ip + ":" + port);
+        socket = io.connect(ip + ":" + port);
         setEventHandlers();
     }, //preload();
 

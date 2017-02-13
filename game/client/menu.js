@@ -2,11 +2,14 @@
  * Last Updated on: 20/01/2017.
  */
 
+var ip = "127.0.0.1";
+var port = 44555;
+
 /*
-Very early menu implementation, Im not sure how to have 1 method for multiple button's it appears that
-adding an parameter to the 'actionOnClick' method forces it to be used without clicking, so this will
-have to do until I find a solution
- */
+    Very early menu implementation, Im not sure how to have 1 method for multiple button's it appears that
+    adding an parameter to the 'actionOnClick' method forces it to be used without clicking, so this will
+    have to do until I find a solution
+*/
 var menuState = {
     create: function() {
         nameLabel = game.add.text(10,10,'Hello, ' + playerName + ' Welcome to SmashVille!', {font:'30px Arial', fill:'#ffffff'});
@@ -88,10 +91,7 @@ var menuState = {
         var d = document.getElementById('ip-host');
         d.style.display = 'none';
 
-        var ip = document.getElementsByName('ip')[0].value;
-        var port = document.getElementsByName('port')[0].value
-
-        console.log(ip);
-        console.log(port);
+        ip = document.getElementsByName('ip')[0].value;
+        port = document.getElementsByName('port')[0].value
     }
 };
