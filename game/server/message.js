@@ -1,14 +1,16 @@
 // Last Updated: 20/01/2017
 
 function Message(id, text) {
-    var text = text;
-    var id = id;
+    this.id = id;
+    this.text = text;
 
-    return {
-        getText: text,
-        getId: id
+    this.getText = function() {
+        return this.text;
+    };
+
+    this.getId = function() {
+        return this.id;
     };
 }
-
 
 module.exports = Message;

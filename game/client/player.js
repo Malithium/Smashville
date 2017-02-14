@@ -8,7 +8,6 @@ function Player(x, y) {
     this.playerSprite.height = 32;
     this.x = x;
     this.y = y;
-    this.id;
 
     // Physics
     game.physics.arcade.enable(this.playerSprite);

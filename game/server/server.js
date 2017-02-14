@@ -8,13 +8,14 @@ var ecstatic = require('ecstatic');
 // Game variables
 var level = 2;
 var clients = []; // Array of connected players
-//var sessions = []; // Array of Sessions
-var messages = [];
+var sessions = []; // Array of Sessions
+var messages = []; // Array of Messages
 
+var Logic = require('./logic');
+var Player = require('./client');
 var Message = require('./message');
 var Session = require('./session');
-var Player = require('./client');
-var Logic = require('./logic');
+
 
 // Create and start the http server
 var socket;	// Socket controller
@@ -169,6 +170,18 @@ function onPlayerHit(data) {
     }
 }
 
+function onNewMessage(data)
+{
+    // Create and register new message
+    util.log('Message posted by: ' + data.name);
+    var newMessage = new Message(data.name, data.message);
+    messages.push(newMessage);
+    // Send messages out to users
+    this.broadcast.emit('new message', {name: newMessage.getId, message: newMessage.getText});
+    this.emit('new message', {name: newMessage.getId, message: newMessage.getText});
+}
+
+
 // Find player by ID
 function playerById (id) {
     for (var i = 0; i < clients.length; i++) {
@@ -177,13 +190,4 @@ function playerById (id) {
         }
     }
     return false;
-}
-
-function onNewMessage(data)
-{
-    util.log('Message posted by: ' + data.name);
-    var  newMessage = new Message(data.name, data.message);
-    messages.push(newMessage);
-    util.log('broadcasting message');
-    this.broadcast.emit('new message', {name: newMessage.getText, message: newMessage.getId});
 }

@@ -2,6 +2,7 @@
 
 // Socket variable
 var socket;
+var localID;
 
 // Based off code in: https://github.com/xicombd/phaser-multiplayer-game
 function setEventHandlers () {
@@ -40,7 +41,12 @@ function onSocketConnected () {
     enemies = [];
 
     // Send local player data to the game server
-    socket.emit('new player', { x: player.x, y: player.y });
+    if (player) {
+        socket.emit('new player', {x: player.x, y: player.y});
+    }
+    else {
+        socket.emit('new player', {x: 0, y: 0});
+    }
 }
 
 // Socket disconnected
@@ -99,13 +105,13 @@ function onRemovePlayer (data) {
 // Get servers level details
 function onGameUpdate(data) {
     console.log("id: " + data.id);
-    player.id = data.id;
+    localID = data.id;
     levelNum = data.level;
 }
 
 // Player has been hit
 function onPlayerHit(data) {
-    if(player.id === data.id ) {
+    if(localID === data.id ) {
         player.percentage = data.percentage;
         player.registerHit(data.knockback, data.dir, data.up);
     }
@@ -126,7 +132,6 @@ function playerById (id) {
 }
 
 function onNewMessage(data){
-    console.log("why no casty");
-    var msg = "<div class=\"message\"> <p>" + data.name + ": " + "<\p> <p>" + data.message + "</p></div>";
+    var msg = "<div class=\"message\"> <p>" + data.name + ": " + data.message + "</p></div>";
     messages.push(msg);
 }

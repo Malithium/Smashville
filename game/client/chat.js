@@ -5,9 +5,11 @@
 var messages = [];
 var sessions = [];
 var numOfMessages = 0;
+
 var chatState = {
     preload: function(){
         socket = io.connect(ip + ":" + port);
+        setEventHandlers();
     },
 
     create: function () {
@@ -24,10 +26,9 @@ var chatState = {
         a.onclick = function () {
 
             txt = document.getElementById('chat-text').value;
-            setEventHandlers();
             if (txt != "") {
-                console.log("boom");
                 socket.emit('new message', {name: playerName, message: txt.toString()});
+                document.getElementById('chat-text').value = "";
             }
         };
 
