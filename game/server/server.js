@@ -63,6 +63,18 @@ function onSocketConnection (client) {
     // Listen for new player message
     client.on('new player', onNewPlayer);
 
+    // New session created
+    client.on('new session', onNewSession);
+
+    // Session updated
+    client.on('update session', onUpdateSession);
+
+    // Join new session
+    client.on('join session', onJoinSession);
+
+    // Leave session
+    client.on('left session', onLeaveSession);
+
     // Listen for move player message
     client.on('move player', onMovePlayer);
 
@@ -181,12 +193,66 @@ function onNewMessage(data)
     this.emit('new message', {name: newMessage.getId, message: newMessage.getText});
 }
 
+function onNewSession(data) {
+    var x = 0;
+    var player = playerById(this.id);
+    var newSession = Session(player);
+
+    while (sessionByName(newSession.name)) {
+        x++;
+        newSession.name = player.name + x + ' Session';
+    }
+    this.broadcast.emit('new session', {name: newSession.name, playerCount: 1});
+    sessions.push(newSession);
+}
+
+function onUpdateSession(data) {
+    var updateSession = sessionByName(data.name);
+    if(data.level) {
+        updateSession.level = data.level;
+    }
+}
+
+function onJoinSession(data) {
+    var joinSession = sessionByName(data.name);
+    if (joinSession) {
+        joinSession.players.push(playerById(this.id));
+        this.emit('joined session', {level: joinSession.level});
+        this.broadcast.emit('Update session', {name: joinSession.name, playerCount: joinSession.players.length});
+    }
+}
+
+function onLeaveSession(data) {
+    var leftPlayer = playerById(this.id);
+    var leftSession = sessionByName(data.name);
+    leftSession.players.splice(leftSession.players.indexOf(leftPlayer), 1);
+    if (leftSession.host.id === this.id && leftSession.players.length > 0) {
+        leftSession.host = leftSession.players[0];
+    }
+    else if (leftSession.players.length === 0) {
+        this.broadcast.emit('Remove session', {name: leftSession.name});
+        sessions.splice(sessions.indexOf(leftSession), 1);
+    }
+    else {
+        this.broadcast.emit('Update session', {name: leftSession.name, playerCount: leftSession.players.length});
+    }
+}
 
 // Find player by ID
 function playerById (id) {
     for (var i = 0; i < clients.length; i++) {
         if (clients[i].id === id) {
             return clients[i];
+        }
+    }
+    return false;
+}
+
+// Find session by Name
+function sessionByName (name) {
+    for (var i = 0; i < sessions.length; i++) {
+        if (sessions[i].name === name) {
+            return sessions[i];
         }
     }
     return false;
