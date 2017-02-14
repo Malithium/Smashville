@@ -132,6 +132,7 @@ function playerById (id) {
 }
 
 function onNewMessage(data){
+    console.log(data);
     var msg = "<div class=\"message\"> <p>" + data.name + ": " + data.message + "</p></div>";
     messages.push(msg);
 }

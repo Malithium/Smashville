@@ -20,7 +20,7 @@ var Session = require('./session');
 // Create and start the http server
 var socket;	// Socket controller
 var io = require('socket.io');
-var port = process.env.PORT || 44555;
+var port = process.env.PORT || 2626;
 var server = http.createServer(
     ecstatic({ root: path.resolve(__dirname, '../client') })
 ).listen(port, function (err) {
@@ -177,8 +177,8 @@ function onNewMessage(data)
     var newMessage = new Message(data.name, data.message);
     messages.push(newMessage);
     // Send messages out to users
-    this.broadcast.emit('new message', {name: newMessage.getId, message: newMessage.getText});
-    this.emit('new message', {name: newMessage.getId, message: newMessage.getText});
+    this.broadcast.emit('new message', {name: data.name, message: data.message});
+    this.emit('new message', {name: data.name, message: data.message});
 }
 
 
