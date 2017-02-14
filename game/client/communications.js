@@ -27,7 +27,7 @@ function setEventHandlers () {
     socket.on('game details', onGameUpdate);
 
     // Process new chat box message
-    //socket.on('new message', onNewMessage);
+    socket.on('new message', onNewMessage);
 }
 
 // Socket connected (Clear Enemies)
@@ -123,4 +123,10 @@ function playerById (id) {
         }
     }
     return false;
+}
+
+function onNewMessage(data){
+    console.log("why no casty");
+    var msg = "<div class=\"message\"> <p>" + data.name + ": " + "<\p> <p>" + data.message + "</p></div>";
+    messages.push(msg);
 }

@@ -92,6 +92,8 @@ var menuState = {
         d.style.display = 'none';
 
         ip = document.getElementsByName('ip')[0].value;
-        port = document.getElementsByName('port')[0].value
+        port = document.getElementsByName('port')[0].value;
+
+        game.state.start('chat');
     }
 };

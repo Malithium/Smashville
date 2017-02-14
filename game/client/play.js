@@ -27,7 +27,7 @@ var playState = {
         // Server stuff
         //  Need to change IP and Port number depending on connection
         console.log(ip + ":" + port);
-        socket = io.connect(ip + ":" + port);
+
         setEventHandlers();
     }, //preload();
 

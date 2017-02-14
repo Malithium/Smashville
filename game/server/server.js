@@ -9,7 +9,7 @@ var ecstatic = require('ecstatic');
 var level = 2;
 var clients = []; // Array of connected players
 //var sessions = []; // Array of Sessions
-//var messages = [];
+var messages = [];
 
 var Message = require('./message');
 var Session = require('./session');
@@ -69,7 +69,7 @@ function onSocketConnection (client) {
     client.on('hit player', onPlayerHit);
 
     // Listen for new lobby message
-    //client.on('new message', onNewMessage);
+    client.on('new message', onNewMessage);
 }
 
 // Socket client has disconnected
@@ -177,4 +177,13 @@ function playerById (id) {
         }
     }
     return false;
+}
+
+function onNewMessage(data)
+{
+    util.log('Message posted by: ' + data.name);
+    var  newMessage = new Message(data.name, data.message);
+    messages.push(newMessage);
+    util.log('broadcasting message');
+    this.broadcast.emit('new message', {name: newMessage.getText, message: newMessage.getId});
 }
