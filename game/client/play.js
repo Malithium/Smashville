@@ -28,7 +28,7 @@ var playState = {
         //  Need to change IP and Port number depending on connection
         console.log(ip + ":" + port);
 
-        setEventHandlers();
+        //setEventHandlers();
     }, //preload();
 
     create: function() {
@@ -55,7 +55,7 @@ var playState = {
         }
         else if (debugButton.isUp) {debugPressed = false;}
         if (player.lastX != player.x || player.lastY != player.y) {
-            socket.emit('move player', {x: player.x, y: player.y});
+            sendPacket('move player', {x: player.x, y: player.y});
         }
     }, // update()
 

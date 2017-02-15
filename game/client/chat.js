@@ -29,7 +29,7 @@ var chatState = {
 
             txt = document.getElementById('chat-text').value;
             if (txt != "") {
-                socket.emit('new message', {name: playerName, message: txt.toString()});
+                sendPacket('new message', {name: playerName, message: txt.toString()});
                 document.getElementById('chat-text').value = "";
             }
         };
@@ -71,11 +71,9 @@ var chatState = {
                 //var innerName = sessionCol[i].getElementsByClassName('session-name');
                 var innerName = this.getElementsByClassName('session-name')[0].innerText;
                 console.log(innerName);
-                //socket.emit('join session', {name: innerName.toString()});
+                //sendPacket('join session', {name: innerName.toString()});
             };
         }
-
-
     },
 
     update: function () {
@@ -90,7 +88,7 @@ var chatState = {
     },
 
     hostSession: function(){
-        socket.emit('new session', {id: this.id, name: playerName});
+        sendPacket('new session', {id: localID, name: playerName});
         levelNum = 1;
         playerNum = 1;
         d = document.getElementById('chat-overlay').style.display = 'none';

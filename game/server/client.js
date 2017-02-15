@@ -1,11 +1,11 @@
 
-function Client() {
+function Client(name) {
     this.id;
     this.x = 0;
     this.y = 0;
-    this.name = "";
+    this.name = name;
     this.percentage = 0;
-    this.characterID = 1;
+    this.characterID = 0;
 
     // Getters and setters
     this.getX = function () {

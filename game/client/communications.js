@@ -1,16 +1,27 @@
 // Last Updated: 20/01/2017
 
-// Socket variable
+// Server-to-Client variables
+var local = true;
 var socket;
 var localID;
 
 // Based off code in: https://github.com/xicombd/phaser-multiplayer-game
 function setEventHandlers () {
+    local = false;
     // Socket connection successful
     socket.on('connect', onSocketConnected);
 
     // Socket disconnection
     socket.on('disconnect', onSocketDisconnect);
+
+    // Game details passed across
+    socket.on('game details', onGameUpdate);
+
+    // Process new chat box message
+    socket.on('new message', onNewMessage);
+
+    // Process new session
+    socket.on('new session', onNewSession);
 
     // New player message received
     socket.on('new player', onNewPlayer);
@@ -23,12 +34,12 @@ function setEventHandlers () {
 
     // Player has been hit
     socket.on('hit player', onPlayerHit);
+}
 
-    // Game details passed across
-    socket.on('game details', onGameUpdate);
-
-    // Process new chat box message
-    socket.on('new message', onNewMessage);
+function sendPacket(type, data) {
+    if(!local) {
+        socket.emit(type, data);
+    }
 }
 
 // Socket connected (Clear Enemies)
@@ -41,12 +52,7 @@ function onSocketConnected () {
     enemies = [];
 
     // Send local player data to the game server
-    if (player) {
-        socket.emit('new player', {x: player.x, y: player.y});
-    }
-    else {
-        socket.emit('new player', {x: 0, y: 0});
-    }
+    socket.emit('new player', {name: playerName});
 }
 
 // Socket disconnected
@@ -121,6 +127,16 @@ function onPlayerHit(data) {
     }
 }
 
+function onNewMessage(data){
+    var msg = "<div class=\"message\"> <p>" + data.name + ": " + data.message + "</p></div>";
+    messages.push(msg);
+}
+
+function onNewSession(data){
+    //var session = "<div class=\"message\"> <p>" + data.name + ": " + data.message + "</p></div>";
+    //sessions.push(session);
+}
+
 // Find player by ID
 function playerById (id) {
     for (var i = 0; i < enemies.length; i++) {
@@ -129,10 +145,4 @@ function playerById (id) {
         }
     }
     return false;
-}
-
-function onNewMessage(data){
-    console.log(data);
-    var msg = "<div class=\"message\"> <p>" + data.name + ": " + data.message + "</p></div>";
-    messages.push(msg);
 }
