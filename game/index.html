@@ -28,12 +28,25 @@
 </div>
 <div id="chat-overlay">
     <div id="chat-area">
-
     </div>
     <div id="chat-messaging">
         <textarea autocomplete="off" class="chat-input" id="chat-text" name="message" type="text"></textarea>
         <div class="chat-input" id="chat-button" value="post">post</div>
     </div>
 </div>
+<div id="session-overlay">
+    <div id="session-area">
+        <div class="session">
+            <div class="session-name">malithium</div>
+            <div class="session-count">players: 5</div>
+        </div>
+        <div class="session">
+            <div class="session-name">Joshua</div>
+            <div class="session-count">players: 2</div>
+        </div>
+    </div>
+    <input value="host" type="button" onclick="chatState.hostSession()">
+</div>
+
 </body>
 </html>
