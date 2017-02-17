@@ -15,7 +15,7 @@ var chatState = {
 
     create: function () {
         numOfMessages = messages.length;
-
+        numOfSessions = sessions.length;
         nameLabel = game.add.text(10, 10, 'Chat', {font: '30px Arial', fill: '#ffffff'});
         d = document.getElementById('chat-overlay');
         d.style.left = GAMEWIDTH / 8 + 'px';
@@ -48,6 +48,17 @@ var chatState = {
         s.style.left = GAMEWIDTH - (300 + (GAMEWIDTH / 8)) + 'px';
         s.style.top = GAMEHEIGHT/ 8 + 'px';
         s.style.display = 'block';
+
+        innerSessions = document.getElementById('session-area');
+
+        if(sessions.length > 0)
+        {
+            console.log("Made it 1")
+            sessions.forEach(function (sess) {
+                console.log("Made it 2")
+                innerSessions += sess;
+            });
+        }
         for(var i = 0; i < sessions.length; i++)
         {
             sessions[i]
@@ -85,6 +96,41 @@ var chatState = {
                  m.innerHTML += msg;
              });
          }
+
+
+        if(numOfSessions != sessions.length)
+        {
+            numOfSessions = sessions.length;
+            innerSessions = document.getElementById('session-area');
+            console.log("Made it 1")
+            sessions.forEach(function (sess) {
+                console.log("Made it 2")
+                innerSessions.innerHTML += sess.body;
+            });
+
+            sessionCol = document.getElementsByClassName('session');
+
+            for(var i = 0; i < sessionCol.length; i++)
+            {
+                console.log(sessionCol[i]);
+                sessionCol[i].onmouseover = function (){
+                    this.style.backgroundColor = 'white';
+                    this.style.color = 'black';
+                };
+
+                sessionCol[i].onmouseout = function (){
+                    this.style.backgroundColor = 'transparent';
+                    this.style.color = 'white';
+                };
+
+                sessionCol[i].onclick = function (){
+                    //var innerName = sessionCol[i].getElementsByClassName('session-name');
+                    var innerName = this.getElementsByClassName('session-name')[0].innerText;
+                    console.log(innerName);
+                    //sendPacket('join session', {name: innerName.toString()});
+                };
+            }
+        }
     },
 
     hostSession: function(){

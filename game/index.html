@@ -10,6 +10,7 @@
     <script src="client/chat.js"></script>
     <script src="client/menu.js"></script>
     <script src="client/play.js"></script>
+    <script src="client/session.js"></script>
     <script src="client/communications.js"></script>
     <script src="client/player.js"></script>
     <script src="client/enemy.js"></script>
@@ -22,9 +23,12 @@
     <input class="user-input" id="user-button" value="Begin" type="button" onclick="userState.evaluateName()">
 </div>
 <div id="ip-host" class="connect-overlay">
+    <div id="connect-title">Enter an ip and port</div>
+    <div id="connect-controls">
        <input class="connect-input" name="ip" type="text" ><br>
        <input class="connect-input" name="port" type="text" ><br>
-       <input class="connect-input" value="connect" type="button" onclick="menuState.closeConnect()"><br>
+       <input class="connect-button" value="Connect" type="button" onclick="menuState.closeConnect()"><br>
+    </div>
 </div>
 <div id="chat-overlay">
     <div id="chat-area">
@@ -36,16 +40,8 @@
 </div>
 <div id="session-overlay">
     <div id="session-area">
-        <div class="session">
-            <div class="session-name">malithium</div>
-            <div class="session-count">players: 5</div>
-        </div>
-        <div class="session">
-            <div class="session-name">Joshua</div>
-            <div class="session-count">players: 2</div>
-        </div>
     </div>
-    <input value="host" type="button" onclick="chatState.hostSession()">
+    <input id="host-button" value="host" type="button" onclick="chatState.hostSession()">
 </div>
 
 </body>

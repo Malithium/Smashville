@@ -92,6 +92,9 @@ var menuState = {
         d.style.display = 'none';
 
         ip = document.getElementsByName('ip')[0].value;
+        if (ip === 'local') {
+            ip = '127.0.0.1';
+        }
         port = document.getElementsByName('port')[0].value;
 
         game.state.start('chat');

@@ -1,23 +1,57 @@
 
 .connect-overlay {
-    height: 300px;
+    height: 170px;
     width: 300px;
     position: fixed;
     z-index: 2;
-    background-color: cyan;
+    background-color: black;
+    border: 1px solid;
+    border-color: white;
+}
+
+#host-button {
+    color: white;
+    background-color: transparent;
+    outline: none;
+    border: 1px solid;
+    border-color: white;
+    margin: 10px 0px;
+}
+
+#connect-controls{
+    margin-top: 2%;
+}
+
+#connect-title{
+    color:white;
+    text-align: center;
+    font-size: 23px;
+    font-weight: bold;
+    margin-top: 2%;
+    margin-left: 2%;
+    font-family: Arial;
 }
 
 .connect-input{
-    margin:10px 20px;
+    margin: 5px 18%;
     padding: 0;
     height: 30px;
     position: relative;
     left: 0;
     outline: none;
-    border: 1px solid #cdcdcd;
-    border-color: rgba(0,0,0,.15);
-    background-color: white;
+    border: 1px solid;
+    border-color: white;
+    color: white;
+    background-color: black;
+
     font-size: 16px;
+}
+
+.connect-button{
+    margin: 0% 40%;
+    background-color: black;
+    color: white;
+    border: 1px solid;
 }
 
 #user-overlay {
@@ -26,7 +60,6 @@
     position: fixed;
     z-index: 2;
     border: 1px solid #cdcdcd;
-
 }
 
 .user-input{

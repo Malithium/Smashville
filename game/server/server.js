@@ -120,7 +120,7 @@ function onNewPlayer (data) {
     // Send existing clients to the new player
     for (var i = 0; i < sessions.length; i++) {
         existingSession = sessions[i];
-        this.broadcast.emit('new session', {name: existingSession.name, playerCount: existingSession.players.length});
+        this.emit('new session', {name: existingSession.name, playerCount: existingSession.players.length});
     }
 
     // Add new player to the clients array

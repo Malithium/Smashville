@@ -51,6 +51,10 @@ function onSocketConnected () {
     }
     enemies = [];
 
+    for (var i = 0; i < sessions.length; i++) {
+        sessions[i].remove();
+    }
+    sessions = [];
     // Send local player data to the game server
     socket.emit('new player', {name: playerName});
 }
@@ -133,8 +137,11 @@ function onNewMessage(data){
 }
 
 function onNewSession(data){
-    //var session = "<div class=\"message\"> <p>" + data.name + ": " + data.message + "</p></div>";
-    //sessions.push(session);
+    console.log("am I being called?")
+
+    var sessionbody = "<div class=\"session\"> <div class=\"session-name\">" + data.name + "</div> " + "<div class=\"session-count\">" + data.playerCount + "</div></div>";
+    var sess = new session(data.name, data.playerCount, sessionbody)
+    sessions.push(sess);
 }
 
 // Find player by ID
