@@ -8,6 +8,8 @@ var localID;
 // Based off code in: https://github.com/xicombd/phaser-multiplayer-game
 function setEventHandlers () {
     local = false;
+
+    // SERVER CONNECTION METHODS
     // Socket connection successful
     socket.on('connect', onSocketConnected);
 
@@ -15,25 +17,37 @@ function setEventHandlers () {
     socket.on('disconnect', onSocketDisconnect);
 
     // Game details passed across
-    socket.on('game details', onGameUpdate);
+    socket.on('connect details', onConnection);
 
+    // MESSAGES AND SESSION METHODS
     // Process new chat box message
     socket.on('new message', onNewMessage);
 
     // Process new session
     socket.on('new session', onNewSession);
 
-    // New player message received
+    // Session has been updated
+    //socket.on('update session', onUpdateSession);
+
+    // Session has been closed
+    //socket.on('session closed', onClosedSession);
+
+    // LOBBY METHODS
+    // Player left session
+    //socket.on('player left lobby', onLeftLobby);
+
+    // IN-GAME METHODS
+    // New player message received - This may need changing...
     socket.on('new player', onNewPlayer);
 
     // Player move message received
     socket.on('move player', onMovePlayer);
 
-    // Player removed message received
-    socket.on('remove player', onRemovePlayer);
-
     // Player has been hit
     socket.on('hit player', onPlayerHit);
+
+    // Player removed message received
+    socket.on('remove player', onRemovePlayer);
 }
 
 function sendPacket(type, data) {
@@ -50,13 +64,10 @@ function onSocketConnected () {
         enemies[i].remove();
     }
     enemies = [];
-
-    for (var i = 0; i < sessions.length; i++) {
-        sessions[i].remove();
-    }
     sessions = [];
+
     // Send local player data to the game server
-    socket.emit('new player', {name: playerName});
+    sendPacket('new player', {name: playerName});
 }
 
 // Socket disconnected
@@ -64,8 +75,28 @@ function onSocketDisconnect () {
     console.log('Disconnected from socket server');
 }
 
-// New player
+// Get connection details
+function onConnection(data) {
+    console.log("id: " + data.id);
+    localID = data.id;
+}
+
+function onNewMessage(data){
+    var msg = "<div class=\"message\"> <p>" + data.name + ": " + data.message + "</p></div>";
+    messages.push(msg);
+}
+
+function onNewSession(data){
+    console.log("am I being called?")
+
+    var sessionbody = "<div class=\"session\"> <div class=\"session-name\">" + data.name + "</div> " + "<div class=\"session-count\">" + data.playerCount + "/4</div></div>";
+    var sess = new session(data.name, data.playerCount, sessionbody)
+    sessions.push(sess);
+}
+
+// New player added to Lobby
 function onNewPlayer (data) {
+    //if (session.id = data.name ) { } // Need to store local session somewhere!
     console.log('New player connected:', data.id);
 
     // Avoid possible duplicate players
@@ -82,6 +113,7 @@ function onNewPlayer (data) {
 
 // Move player
 function onMovePlayer (data) {
+    //if (session.id = data.name ) { } // Need to store local session somewhere!
     var movePlayer = playerById(data.id);
 
     // Player not found
@@ -96,8 +128,22 @@ function onMovePlayer (data) {
     movePlayer.percentage = data.percentage;
 }
 
+// Player has been hit
+function onPlayerHit(data) {
+    //if (session.id = data.name ) { } // Need to store local session somewhere!
+    if(localID === data.id ) {
+        player.percentage = data.percentage;
+        player.registerHit(data.knockback, data.dir, data.up);
+    }
+    else {
+        var hitPlayer = playerById(data.id);
+        hitPlayer.percentage = data.percentage;
+    }
+}
+
 // Remove player
 function onRemovePlayer (data) {
+    //if (session.id = data.name ) { } // Need to store local session somewhere!
     var removePlayer = playerById(data.id);
 
     // Player not found
@@ -110,38 +156,6 @@ function onRemovePlayer (data) {
 
     // Remove player from array
     enemies.splice(enemies.indexOf(removePlayer), 1);
-}
-
-// Get servers level details
-function onGameUpdate(data) {
-    console.log("id: " + data.id);
-    localID = data.id;
-    levelNum = data.level;
-}
-
-// Player has been hit
-function onPlayerHit(data) {
-    if(localID === data.id ) {
-        player.percentage = data.percentage;
-        player.registerHit(data.knockback, data.dir, data.up);
-    }
-    else {
-        var hitPlayer = playerById(data.id);
-        hitPlayer.percentage = data.percentage;
-    }
-}
-
-function onNewMessage(data){
-    var msg = "<div class=\"message\"> <p>" + data.name + ": " + data.message + "</p></div>";
-    messages.push(msg);
-}
-
-function onNewSession(data){
-    console.log("am I being called?")
-
-    var sessionbody = "<div class=\"session\"> <div class=\"session-name\">" + data.name + "</div> " + "<div class=\"session-count\">" + data.playerCount + "</div></div>";
-    var sess = new session(data.name, data.playerCount, sessionbody)
-    sessions.push(sess);
 }
 
 // Find player by ID

@@ -136,10 +136,10 @@ function Player(x, y) {
 
         this.handleInput();
 
-        this.lastX = this.x;
-        this.lastY = this.y;
-        this.x = this.playerSprite.x;
-        this.y = this.playerSprite.y;
+        this.lastX = Math.round(this.x);
+        this.lastY = Math.round(this.y);
+        this.x = Math.round(this.playerSprite.x);
+        this.y = Math.round(this.playerSprite.y);
     };
 
     this.registerHit = function(knockback, dir, up) {

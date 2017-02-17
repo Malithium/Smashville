@@ -57,11 +57,16 @@ function setEventHandlers() {
 function onSocketConnection (client) {
     util.log('New player has connected: ' + client.id);
 
+    // SERVER CONNECTING METHODS
+    // Listen for new player message
+    client.on('new player', onNewPlayer);
+
     // Listen for client disconnected
     client.on('disconnect', onClientDisconnect);
 
-    // Listen for new player message
-    client.on('new player', onNewPlayer);
+    // MESSAGES AND SESSION METHODS
+    // Listen for new lobby message
+    client.on('new message', onNewMessage);
 
     // New session created
     client.on('new session', onNewSession);
@@ -72,20 +77,39 @@ function onSocketConnection (client) {
     // Join new session
     client.on('join session', onJoinSession);
 
-    // Leave session
-    client.on('left session', onLeaveSession);
-
+    // LOBBY METHODS
     // Start session
     client.on('start session', onStartSession);
 
+    // Leave session
+    client.on('left session', onLeaveSession);
+
+    // IN-GAME METHODS
     // Listen for move player message
     client.on('move player', onMovePlayer);
 
     // Listen for hit player messages
     client.on('hit player', onPlayerHit);
+}
 
-    // Listen for new lobby message
-    client.on('new message', onNewMessage);
+// New player has joined
+function onNewPlayer (data) {
+    // Create a new player
+    var newPlayer = new Client(data.name);
+    newPlayer.id = this.id;
+    newPlayer.setPercentage(0);
+
+    // Send existing clients to the new player
+    for (var i = 0; i < sessions.length; i++) {
+        existingSession = sessions[i];
+        this.emit('new session', {name: existingSession.name, playerCount: existingSession.players.length});
+    }
+
+    // Send details
+    this.emit('connect details', {id: newPlayer.id});
+
+    // Add new player to the clients array
+    clients.push(newPlayer);
 }
 
 // Socket client has disconnected
@@ -100,31 +124,22 @@ function onClientDisconnect () {
         return
     }
 
+    for (var i = 0; i < sessions.length; i++) {
+        leaveSession = sessions[i];
+        // Remove player from current session
+        if (leaveSession.getPlayerById(removePlayer.id)) {
+            leaveSession.players.splice(leaveSession.players.indexOf(removePlayer), 1);
+            if(leaveSession.host.id === removePlayer.id) {
+                // this.broadcast.emit('session closed', leaveSession.name);
+            }
+        }
+    }
+
     // Remove player from clients array
     clients.splice(clients.indexOf(removePlayer), 1);
 
     // Broadcast removed player to connected socket clients
     this.broadcast.emit('remove player', {id: this.id});
-}
-
-// New player has joined
-function onNewPlayer (data) {
-    // Create a new player
-    var newPlayer = new Client(data.name);
-    newPlayer.id = this.id;
-    newPlayer.setPercentage(0);
-
-    // Broadcast new player to connected socket clients
-    //this.broadcast.emit('new player', {id: newPlayer.id, x: newPlayer.getX(), y: newPlayer.getY(), percentage: newPlayer.getPercentage()});
-
-    // Send existing clients to the new player
-    for (var i = 0; i < sessions.length; i++) {
-        existingSession = sessions[i];
-        this.emit('new session', {name: existingSession.name, playerCount: existingSession.players.length});
-    }
-
-    // Add new player to the clients array
-    clients.push(newPlayer);
 }
 
 function onNewMessage(data) {
@@ -164,7 +179,7 @@ function onJoinSession(data) {
     if (joinSession) {
         joinSession.players.push(playerById(this.id));
         this.emit('joined session', {level: joinSession.level});
-        this.broadcast.emit('Update session', {name: joinSession.name, playerCount: joinSession.players.length});
+        this.broadcast.emit('update session', {name: joinSession.name, playerCount: joinSession.players.length});
     }
 }
 
@@ -172,15 +187,12 @@ function onLeaveSession(data) {
     var leftPlayer = playerById(this.id);
     var leftSession = sessionByName(data.name);
     leftSession.players.splice(leftSession.players.indexOf(leftPlayer), 1);
-    if (leftSession.host.id === this.id && leftSession.players.length > 0) {
-        leftSession.host = leftSession.players[0];
-    }
-    else if (leftSession.players.length === 0) {
-        this.broadcast.emit('Remove session', {name: leftSession.name});
-        sessions.splice(sessions.indexOf(leftSession), 1);
+    if (leftSession.host.id === this.id) {
+        // this.broadcast.emit('session closed', leaveSession.name);
     }
     else {
-        this.broadcast.emit('Update session', {name: leftSession.name, playerCount: leftSession.players.length});
+        this.broadcast.emit('update session', {name: leftSession.name, playerCount: leftSession.players.length});
+        //this.broadcast.emit('player left lobby', {name: leftSession.name, id: leftPlayer.id});
     }
 }
 
@@ -219,12 +231,25 @@ function onMovePlayer (data) {
         return
     }
 
+    var moveSession = false;
+    for (var i = 0; i < sessions.length; i++) {
+        if (sessions[i].getPlayerById(this.id)) {
+            moveSession = sessions[i];
+        }
+    }
+
+    // Session not found
+    if (!moveSession) {
+        util.log('Session not found with player: ' + this.id);
+        return
+    }
+
     // Update player position
     movePlayer.setX(data.x);
     movePlayer.setY(data.y);
 
     // Broadcast updated position to connected socket clients
-    this.broadcast.emit('move player', {id: movePlayer.id, x: movePlayer.getX(),
+    this.broadcast.emit('move player', {name: moveSession.name, id: movePlayer.id, x: movePlayer.getX(),
         y: movePlayer.getY(), percentage: movePlayer.getPercentage()});
 }
 

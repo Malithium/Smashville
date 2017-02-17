@@ -18,9 +18,9 @@ function Session(host) {
     }
 
     this.getPlayerById = function(id) {
-        for (var i = 0; i < players.length; i++) {
-            if (players[i].id === id) {
-                return players[i];
+        for (var i = 0; i < this.players.length; i++) {
+            if (this.players[i].id === id) {
+                return this.players[i];
             }
         }
         return false;
