@@ -30,7 +30,7 @@ function setEventHandlers () {
     //socket.on('update session', onUpdateSession);
 
     // Session has been closed
-    //socket.on('session closed', onClosedSession);
+    socket.on('session closed', onClosedSession);
 
     // LOBBY METHODS
     // Player left session
@@ -87,11 +87,10 @@ function onNewMessage(data){
 }
 
 function onNewSession(data){
-    console.log("am I being called?")
-
     var sessionbody = "<div class=\"session\"> <div class=\"session-name\">" + data.name + "</div> " + "<div class=\"session-count\">" + data.playerCount + "/4</div></div>";
-    var sess = new session(data.name, data.playerCount, sessionbody)
+    var sess = new session(data.name, data.playerCount, sessionbody);
     sessions.push(sess);
+    console.log("currently there are: " + sessions.length + " sessions in " + sessions);
 }
 
 // New player added to Lobby
@@ -166,4 +165,32 @@ function playerById (id) {
         }
     }
     return false;
+}
+
+function onClosedSession(data){
+    console.log(data);
+    sessionCol = document.getElementsByClassName('session');
+    console.log("bonjour");
+    for(var i = 0; i < sessionCol.length; i++){
+        console.log("bonjour2");
+        name = sessionCol[i].getElementsByClassName("session-name")[0].innerText;
+        console.log(name);
+        console.log("from the server: " + data);
+        if (data == name) {
+            console.log("bonjour3");
+            overlay = document.getElementById("session-area");
+            overlay.removeChild(sessionCol[i]);
+            sessions.forEach(function (s) {
+                if (s.id == data) {
+                    console.log("bonjour4");
+                    var index = sessions.indexOf(s);
+                    if(index > -1)
+                    {
+                        sessions.splice(index, 1);
+                        console.log(sessions);
+                    }
+                }
+            });
+        }
+    }
 }

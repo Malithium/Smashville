@@ -130,7 +130,8 @@ function onClientDisconnect () {
         if (leaveSession.getPlayerById(removePlayer.id)) {
             leaveSession.players.splice(leaveSession.players.indexOf(removePlayer), 1);
             if(leaveSession.host.id === removePlayer.id) {
-                // this.broadcast.emit('session closed', leaveSession.name);
+                this.broadcast.emit('session closed', leaveSession.name);
+                sessions.splice(sessions.indexOf(leaveSession), 1);
             }
         }
     }
