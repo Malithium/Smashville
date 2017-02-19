@@ -62,7 +62,6 @@ var chatState = {
 
         if(numOfSessions > sessions.length){
             numOfSessions = sessions.length;
-            console.log("aeeeyyy")
         }
         else if(numOfSessions != sessions.length)
         {

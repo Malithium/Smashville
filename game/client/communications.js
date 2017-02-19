@@ -90,7 +90,6 @@ function onNewSession(data){
     var sessionbody = "<div class=\"session\"> <div class=\"session-name\">" + data.name + "</div> " + "<div class=\"session-count\">" + data.playerCount + "/4</div></div>";
     var sess = new session(data.name, data.playerCount, sessionbody);
     sessions.push(sess);
-    console.log("currently there are: " + sessions.length + " sessions in " + sessions);
 }
 
 // New player added to Lobby
@@ -167,22 +166,27 @@ function playerById (id) {
     return false;
 }
 
+//remove session from front-end and array
 function onClosedSession(data){
-    console.log(data);
+
+    //retreive the sessions from the HTML
     sessionCol = document.getElementsByClassName('session');
-    console.log("bonjour");
+
+    //iterate over the sessions
     for(var i = 0; i < sessionCol.length; i++){
-        console.log("bonjour2");
+
         name = sessionCol[i].getElementsByClassName("session-name")[0].innerText;
-        console.log(name);
-        console.log("from the server: " + data);
+
+        //if the name parsed down from the server matches a session in the HTML
         if (data == name) {
-            console.log("bonjour3");
+
+            //remove the session from the HTML
             overlay = document.getElementById("session-area");
             overlay.removeChild(sessionCol[i]);
+
+            //iterate through sessions array and remove the session from it
             sessions.forEach(function (s) {
                 if (s.id == data) {
-                    console.log("bonjour4");
                     var index = sessions.indexOf(s);
                     if(index > -1)
                     {
