@@ -148,7 +148,12 @@ function onNewMessage(data) {
     util.log('Message posted by: ' + data.name);
     var newMessage = new Message(data.name, data.message);
     messages.push(newMessage);
-    // Send messages out to users
+    // Remove messages if exceeds certain limit
+    if (messages.length > 255) {
+        // Remove first message, as won't be needed
+        messages[0].remove();
+    }
+    // Send new message out to users
     this.broadcast.emit('new message', {name: data.name, message: data.message});
     this.emit('new message', {name: data.name, message: data.message});
 }
