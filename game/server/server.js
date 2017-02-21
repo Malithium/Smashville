@@ -8,13 +8,14 @@ var ecstatic = require('ecstatic');
 // Game variables
 var level = 2;
 var clients = []; // Array of connected players
-//var sessions = []; // Array of Sessions
-//var messages = [];
+var sessions = []; // Array of Sessions
+var messages = []; // Array of Messages
 
+// Pull external classes
+var Logic = require('./logic');
+var Client = require('./client');
 var Message = require('./message');
 var Session = require('./session');
-var Player = require('./client');
-var Logic = require('./logic');
 
 // Create and start the http server
 var socket;	// Socket controller
@@ -56,20 +57,59 @@ function setEventHandlers() {
 function onSocketConnection (client) {
     util.log('New player has connected: ' + client.id);
 
-    // Listen for client disconnected
-    client.on('disconnect', onClientDisconnect);
-
+    // SERVER CONNECTING METHODS
     // Listen for new player message
     client.on('new player', onNewPlayer);
 
+    // Listen for client disconnected
+    client.on('disconnect', onClientDisconnect);
+
+    // MESSAGES AND SESSION METHODS
+    // Listen for new lobby message
+    client.on('new message', onNewMessage);
+
+    // New session created
+    client.on('new session', onNewSession);
+
+    // Session updated
+    client.on('update session', onUpdateSession);
+
+    // Join new session
+    client.on('join session', onJoinSession);
+
+    // LOBBY METHODS
+    // Start session
+    client.on('start session', onStartSession);
+
+    // Leave session
+    client.on('left session', onLeaveSession);
+
+    // IN-GAME METHODS
     // Listen for move player message
     client.on('move player', onMovePlayer);
 
     // Listen for hit player messages
     client.on('hit player', onPlayerHit);
+}
 
-    // Listen for new lobby message
-    //client.on('new message', onNewMessage);
+// New player has joined
+function onNewPlayer (data) {
+    // Create a new player
+    var newPlayer = new Client(data.name);
+    newPlayer.id = this.id;
+    newPlayer.setPercentage(0);
+
+    // Send existing clients to the new player
+    for (var i = 0; i < sessions.length; i++) {
+        existingSession = sessions[i];
+        this.emit('new session', {name: existingSession.name, playerCount: existingSession.players.length});
+    }
+
+    // Send details
+    this.emit('connect details', {id: newPlayer.id});
+
+    // Add new player to the clients array
+    clients.push(newPlayer);
 }
 
 // Socket client has disconnected
@@ -84,6 +124,18 @@ function onClientDisconnect () {
         return
     }
 
+    for (var i = 0; i < sessions.length; i++) {
+        leaveSession = sessions[i];
+        // Remove player from current session
+        if (leaveSession.getPlayerById(removePlayer.id)) {
+            leaveSession.players.splice(leaveSession.players.indexOf(removePlayer), 1);
+            if(leaveSession.host.id === removePlayer.id) {
+                this.broadcast.emit('session closed', leaveSession.name);
+                sessions.splice(sessions.indexOf(leaveSession), 1);
+            }
+        }
+    }
+
     // Remove player from clients array
     clients.splice(clients.indexOf(removePlayer), 1);
 
@@ -91,28 +143,87 @@ function onClientDisconnect () {
     this.broadcast.emit('remove player', {id: this.id});
 }
 
-// New player has joined
-function onNewPlayer (data) {
-    // Create a new player
-    var newPlayer = new Player(data.x, data.y);
-    newPlayer.id = this.id;
-    newPlayer.setPercentage(0);
-
-    // Broadcast new player to connected socket clients
-    this.broadcast.emit('new player', {id: newPlayer.id, x: newPlayer.getX(),
-        y: newPlayer.getY(), percentage: newPlayer.getPercentage()});
-
-    // Send existing clients to the new player
-    var i, existingPlayer;
-    for (i = 0; i < clients.length; i++) {
-        existingPlayer = clients[i];
-        this.emit('new player', {id: existingPlayer.id, x: existingPlayer.getX(),
-            y: existingPlayer.getY(), percentage: existingPlayer.getPercentage()});
+function onNewMessage(data) {
+    // Create and register new message
+    util.log('Message posted by: ' + data.name);
+    var newMessage = new Message(data.name, data.message);
+    messages.push(newMessage);
+    // Remove messages if exceeds certain limit
+    if (messages.length > 255) {
+        // Remove first message, as won't be needed
+        messages[0].remove();
     }
+    // Send new message out to users
+    this.broadcast.emit('new message', {name: data.name, message: data.message});
+    this.emit('new message', {name: data.name, message: data.message});
+}
 
-    this.emit('game details', {id: newPlayer.id, level: level});
-    // Add new player to the clients array
-    clients.push(newPlayer);
+function onNewSession(data) {
+    var player = playerById(this.id);
+    var newSession = new Session(player);
+    if (sessions.length > 1) {
+        var x = 0;
+        while (sessionByName(newSession.getName())) {
+            x++;
+            newSession.name = player.name + x + ' Session';
+        }
+    }
+    util.log('New session created: ' + newSession.getName());
+    this.broadcast.emit('new session', {name: newSession.getName(), playerCount: 1});
+    sessions.push(newSession);
+}
+
+function onUpdateSession(data) {
+    var updateSession = sessionByName(data.name);
+    if(data.level) {
+        updateSession.level = data.level;
+    }
+}
+
+function onJoinSession(data) {
+    var joinSession = sessionByName(data.name);
+    if (joinSession) {
+        joinSession.players.push(playerById(this.id));
+        this.emit('joined session', {level: joinSession.level});
+        this.broadcast.emit('update session', {name: joinSession.name, playerCount: joinSession.players.length});
+    }
+}
+
+function onLeaveSession(data) {
+    var leftPlayer = playerById(this.id);
+    var leftSession = sessionByName(data.name);
+    leftSession.players.splice(leftSession.players.indexOf(leftPlayer), 1);
+    if (leftSession.host.id === this.id) {
+        // this.broadcast.emit('session closed', leaveSession.name);
+    }
+    else {
+        this.broadcast.emit('update session', {name: leftSession.name, playerCount: leftSession.players.length});
+        //this.broadcast.emit('player left lobby', {name: leftSession.name, id: leftPlayer.id});
+    }
+}
+
+function onStartSession(data) {
+    var startingSession = sessionByName(data.name);
+    if(startingSession) {
+        var start = true;
+        // Check level has been selected
+        if(startingSession.level != 0) {
+            // Check each player has CharacterID
+            for (var i = 0; i < startingSession.players.length; i++) {
+                if (startingSession.players[i].characterID === 0) {
+                    start = false;
+                    // Send error message
+                }
+            }
+        }
+        else {
+            // Send error message
+        }
+        // All checks cleared
+        if (start) {
+            // Assign positions then update players that session has started
+        }
+    }
 }
 
 // Player has moved
@@ -126,12 +237,25 @@ function onMovePlayer (data) {
         return
     }
 
+    var moveSession = false;
+    for (var i = 0; i < sessions.length; i++) {
+        if (sessions[i].getPlayerById(this.id)) {
+            moveSession = sessions[i];
+        }
+    }
+
+    // Session not found
+    if (!moveSession) {
+        util.log('Session not found with player: ' + this.id);
+        return
+    }
+
     // Update player position
     movePlayer.setX(data.x);
     movePlayer.setY(data.y);
 
     // Broadcast updated position to connected socket clients
-    this.broadcast.emit('move player', {id: movePlayer.id, x: movePlayer.getX(),
+    this.broadcast.emit('move player', {name: moveSession.name, id: movePlayer.id, x: movePlayer.getX(),
         y: movePlayer.getY(), percentage: movePlayer.getPercentage()});
 }
 
@@ -174,6 +298,16 @@ function playerById (id) {
     for (var i = 0; i < clients.length; i++) {
         if (clients[i].id === id) {
             return clients[i];
+        }
+    }
+    return false;
+}
+
+// Find session by Name
+function sessionByName (name) {
+    for (var i = 0; i < sessions.length; i++) {
+        if (sessions[i].name === name) {
+            return sessions[i];
         }
     }
     return false;

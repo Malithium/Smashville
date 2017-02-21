@@ -4,6 +4,10 @@
   "description": "Multiplayer Beat-em-up Game",
   "main": "Server/server.js",
   "license": "MIT",
+  "authors": {
+    "author": "Joshua Petherick",
+    "author":  "Kyle Tuckey"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Malithium/Smashville.git"

@@ -12,20 +12,21 @@ var enemies = [];
 // Level values
 var map;
 var levelNum;
+var playerNum;
 var GroundLayer;
+
+var playerName;
 
 var playState = {
     preload: function() {
     // Load in Assets
         // Used for FPS counter
         game.time.advancedTiming = true;
-        // Stops game from pausing when clicking off
-        game.stage.disableVisibilityChange = true;
         // Server stuff
         //  Need to change IP and Port number depending on connection
-        // cmd -> ipconfig -> IPv4 address
-        socket = io.connect('127.0.0.1:44555');
-        setEventHandlers();
+        console.log(ip + ":" + port);
+
+        //setEventHandlers();
     }, //preload();
 
     create: function() {
@@ -52,7 +53,7 @@ var playState = {
         }
         else if (debugButton.isUp) {debugPressed = false;}
         if (player.lastX != player.x || player.lastY != player.y) {
-            socket.emit('move player', {x: player.x, y: player.y});
+            sendPacket('move player', {x: player.x, y: player.y});
         }
     }, // update()
 

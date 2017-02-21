@@ -1,17 +1,48 @@
 <html>
 <head>
+    <link rel="stylesheet" href="smashVille.css">
 	<meta charset="utf-8">
 	<title>Smashville</title>
     <script type="text/javascript" src="libs/phaser.min.js"></script>
     <script type="text/javascript" src="libs/socket.io.js"></script>
     <script src="client/load.js"></script>
+    <script src="client/user.js"></script>
+    <script src="client/chat.js"></script>
     <script src="client/menu.js"></script>
     <script src="client/play.js"></script>
+    <script src="client/session.js"></script>
     <script src="client/communications.js"></script>
     <script src="client/player.js"></script>
     <script src="client/enemy.js"></script>
     <script src="client/game.js"></script>
 </head>
 <body>
+
+<div id="user-overlay">
+    <input autocomplete="off" class="user-input" id="user-text" name="username" type="text"><br>
+    <input class="user-input" id="user-button" value="Begin" type="button" onclick="userState.evaluateName()">
+</div>
+<div id="ip-host" class="connect-overlay">
+    <div id="connect-title">Enter an ip and port</div>
+    <div id="connect-controls">
+       <input class="connect-input" name="ip" type="text" ><br>
+       <input class="connect-input" name="port" type="text" ><br>
+       <input class="connect-button" value="Connect" type="button" onclick="menuState.closeConnect()"><br>
+    </div>
+</div>
+<div id="chat-overlay">
+    <div id="chat-area">
+    </div>
+    <div id="chat-messaging">
+        <textarea autocomplete="off" class="chat-input" id="chat-text" name="message" type="text"></textarea>
+        <div class="chat-input" id="chat-button" value="post">post</div>
+    </div>
+</div>
+<div id="session-overlay">
+    <div id="session-area">
+    </div>
+    <input id="host-button" value="host" type="button" onclick="chatState.hostSession()">
+</div>
+
 </body>
 </html>

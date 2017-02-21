@@ -1,47 +1,38 @@
 
-function Player() {
-    var x = 0;
-    var y = 0;
-    var id;
-    var percentage = 0;
+function Client(name) {
+    this.id;
+    this.x = 0;
+    this.y = 0;
+    this.name = name;
+    this.percentage = 0;
+    this.characterID = 0;
 
     // Getters and setters
-    var getX = function () {
-        return x;
+    this.getX = function () {
+        return this.x;
     };
 
-    var getY = function () {
-        return y;
+    this.getY = function () {
+        return this.y;
     };
 
-    var getPercentage = function () {
-        return percentage;
+    this.getPercentage = function () {
+        return this.percentage;
     };
 
-    var setX = function (newX) {
-        x = newX;
+    this.setX = function (newX) {
+        this.x = newX;
     };
 
-    var setY = function (newY) {
-        y = newY;
+    this.setY = function (newY) {
+        this.y = newY;
     };
 
-    var setPercentage = function (newPercent) {
-        percentage = newPercent;
+    this.setPercentage = function (newPercent) {
+        this.percentage = newPercent;
     };
-
-    // Define which variables and methods can be accessed
-    return {
-        getX: getX,
-        getY: getY,
-        getPercentage: getPercentage,
-        setX: setX,
-        setY: setY,
-        setPercentage: setPercentage,
-        id: id
-    }
 };
 
 // Export the Player class so you can use it in
 // other files by using require("Player")
-module.exports = Player
+module.exports = Client;
