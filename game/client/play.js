@@ -22,8 +22,6 @@ var playState = {
     // Load in Assets
         // Used for FPS counter
         game.time.advancedTiming = true;
-        // Stops game from pausing when clicking off
-        game.stage.disableVisibilityChange = true;
         // Server stuff
         //  Need to change IP and Port number depending on connection
         console.log(ip + ":" + port);

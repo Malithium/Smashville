@@ -2,6 +2,9 @@
 
 var loadState = {
   preload: function() {
+      // Stops game from pausing when clicking off
+      game.stage.disableVisibilityChange = true;
+
       game.load.tilemap('map1', 'assets/levels/level1.json', null, Phaser.Tilemap.TILED_JSON);
       game.load.image('tiles1', 'assets/tiles1.png');
       game.load.tilemap('map2', 'assets/levels/level2.json', null, Phaser.Tilemap.TILED_JSON);
