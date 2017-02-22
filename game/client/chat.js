@@ -16,6 +16,7 @@ var chatState = {
     create: function () {
         numOfMessages = messages.length;
         numOfSessions = sessions.length;
+        netMode = true;
         nameLabel = game.add.text(10, 10, 'Chat', {font: '30px Arial', fill: '#ffffff'});
         d = document.getElementById('chat-overlay');
         d.style.left = GAMEWIDTH / 8 + 'px';
@@ -87,8 +88,10 @@ var chatState = {
                 };
 
                 sessionCol[i].onclick = function (){
-                    var innerName = this.getElementsByClassName('session-name')[0].innerText;
-                    console.log(innerName);
+                    d = document.getElementById('chat-overlay').style.display = 'none';
+                    s = document.getElementById('session-overlay').style.display = 'none';
+                    sendPacket('join session', {name: this.getElementsByClassName("session-name")[0].innerText});
+                    game.state.start('menu');
                     //sendPacket('join session', {name: innerName.toString()});
                 };
             }
@@ -97,10 +100,8 @@ var chatState = {
 
     hostSession: function(){
         sendPacket('new session', {id: localID, name: playerName});
-        levelNum = 1;
-        playerNum = 1;
         d = document.getElementById('chat-overlay').style.display = 'none';
         s = document.getElementById('session-overlay').style.display = 'none';
-        game.state.start('play');
+        game.state.start('menu');
     }
 }

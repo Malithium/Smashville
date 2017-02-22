@@ -4,7 +4,7 @@
 
 var ip = "127.0.0.1";
 var port = 44555;
-
+var netMode = false;
 /*
     Very early menu implementation, Im not sure how to have 1 method for multiple button's it appears that
     adding an parameter to the 'actionOnClick' method forces it to be used without clicking, so this will
@@ -22,7 +22,15 @@ var menuState = {
         var character1 = game.add.button(10, 280, 'player1', this.playerSelect1, this, 1, 2);
         var character2 = game.add.button(100, 280, 'player2', this.playerSelect2, this, 1, 2);
 
-        var connect = game.add.button(GAMEWIDTH-200, 10, 'connect_btn', this.showConUI, this, 1, 2);
+        if(netMode == false)
+        {
+            var connect = game.add.button(GAMEWIDTH-200, 10, 'connect_btn', this.showConUI, this, 1, 2);
+        }
+        else
+        {
+
+        }
+
         var start = game.add.button(GAMEWIDTH-200, GAMEHEIGHT-100, 'start_btn', this.startGame, this, 1, 2);
     },
 

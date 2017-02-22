@@ -27,11 +27,12 @@ function setEventHandlers () {
     socket.on('new session', onNewSession);
 
     // Session has been updated
-    //socket.on('update session', onUpdateSession);
+    socket.on('update session', onUpdateSession);
 
     // Session has been closed
     socket.on('session closed', onClosedSession);
 
+    socket.on('joined session', onJoinedSession);
     // LOBBY METHODS
     // Player left session
     //socket.on('player left lobby', onLeftLobby);
@@ -195,6 +196,33 @@ function onClosedSession(data){
                     }
                 }
             });
+        }
+    }
+}
+
+function onJoinedSession(data){
+    levelNum = data.level;
+}
+
+function onUpdateSession(data){
+    sessionCol = document.getElementsByClassName('session');
+    for(var p = 0; sessionCol.length; p++)
+    {
+        console.log("Session Objsdsa");
+        console.log(sessionCol[p]);
+        name = sessionCol[p].getElementsByClassName("session-name")[0].innerText;
+
+        //if the name parsed down from the server matches a session in the HTML
+        if (data == name) {
+            sessionCol[p].getElementsByClassName("session-count")[0].innerText = data.playerCount;
+        }
+    }
+
+    for(var i = 0; i < sessions.length; i++)
+    {
+        if(sessions[i].name === data.name)
+        {
+            sessions[i].count = data.playerCount
         }
     }
 }

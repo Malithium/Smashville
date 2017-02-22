@@ -10,6 +10,7 @@ game.state.add('load', loadState);
 game.state.add('user', userState);
 game.state.add('menu', menuState);
 game.state.add('chat', chatState);
+game.state.add('lobby', lobbyState);
 game.state.add('play', playState);
 
 game.state.start('load');
