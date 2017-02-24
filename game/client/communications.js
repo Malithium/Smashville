@@ -4,11 +4,10 @@
 var local = true;
 var socket;
 var localID;
+var localSession;
 
 // Based off code in: https://github.com/xicombd/phaser-multiplayer-game
 function setEventHandlers () {
-    local = false;
-
     // SERVER CONNECTION METHODS
     // Socket connection successful
     socket.on('connect', onSocketConnected);
@@ -32,23 +31,25 @@ function setEventHandlers () {
     // Session has been closed
     socket.on('session closed', onClosedSession);
 
-    socket.on('joined session', onJoinedSession);
     // LOBBY METHODS
-    // Player left session
-    //socket.on('player left lobby', onLeftLobby);
+    // Player has joined session
+    socket.on('joined session', onJoinedSession);
 
-    // IN-GAME METHODS
-    // New player message received - This may need changing...
+    // New player has joined session
     socket.on('new player', onNewPlayer);
 
+    // Player selected Character
+    // socket.on('character selected', onCharacterSelected);
+
+    // Player has left the lobby or game
+    socket.on('remove player', onRemovePlayer);
+
+    // IN-GAME METHODS
     // Player move message received
     socket.on('move player', onMovePlayer);
 
     // Player has been hit
     socket.on('hit player', onPlayerHit);
-
-    // Player removed message received
-    socket.on('remove player', onRemovePlayer);
 }
 
 function sendPacket(type, data) {
@@ -60,6 +61,7 @@ function sendPacket(type, data) {
 // Socket connected (Clear Enemies)
 function onSocketConnected () {
     console.log('Connected to socket server');
+    local = false;
 
     for (var i = 0; i < enemies.length; i++) {
         enemies[i].remove();
@@ -74,6 +76,7 @@ function onSocketConnected () {
 // Socket disconnected
 function onSocketDisconnect () {
     console.log('Disconnected from socket server');
+    local = true;
 }
 
 // Get connection details
@@ -82,132 +85,23 @@ function onConnection(data) {
     localID = data.id;
 }
 
-function onNewMessage(data){
+// New message recieved
+function onNewMessage(data) {
     var msg = "<div class=\"message\"> <p>" + data.name + ": " + data.message + "</p></div>";
     messages.push(msg);
 }
 
-function onNewSession(data){
+// New session recieved
+function onNewSession(data) {
     var sessionbody = "<div class=\"session\"> <div class=\"session-name\">" + data.name + "</div> " + "<div class=\"session-count\">" + data.playerCount + "/4</div></div>";
     var sess = new session(data.name, data.playerCount, sessionbody);
     sessions.push(sess);
 }
 
-// New player added to Lobby
-function onNewPlayer (data) {
-    //if (session.id = data.name ) { } // Need to store local session somewhere!
-    console.log('New player connected:', data.id);
-
-    // Avoid possible duplicate players
-    var duplicate = playerById(data.id);
-    if (duplicate) {
-        console.log('Duplicate player!');
-        return false;
-    }
-
-    // Add new player to the remote players array
-    enemies.push(new Enemy(data.x, data.y, data.percentage));
-    enemies[(enemies.length-1)].id = data.id;
-}
-
-// Move player
-function onMovePlayer (data) {
-    //if (session.id = data.name ) { } // Need to store local session somewhere!
-    var movePlayer = playerById(data.id);
-
-    // Player not found
-    if (!movePlayer) {
-        console.log('Player not found: ', data.id);
-        return false;
-    }
-
-    // Update player position
-    movePlayer.playerSprite.x = data.x;
-    movePlayer.playerSprite.y = data.y;
-    movePlayer.percentage = data.percentage;
-}
-
-// Player has been hit
-function onPlayerHit(data) {
-    //if (session.id = data.name ) { } // Need to store local session somewhere!
-    if(localID === data.id ) {
-        player.percentage = data.percentage;
-        player.registerHit(data.knockback, data.dir, data.up);
-    }
-    else {
-        var hitPlayer = playerById(data.id);
-        hitPlayer.percentage = data.percentage;
-    }
-}
-
-// Remove player
-function onRemovePlayer (data) {
-    //if (session.id = data.name ) { } // Need to store local session somewhere!
-    var removePlayer = playerById(data.id);
-
-    // Player not found
-    if (!removePlayer) {
-        console.log('Player not found: ', data.id);
-        return false;
-    }
-
-    removePlayer.remove();
-
-    // Remove player from array
-    enemies.splice(enemies.indexOf(removePlayer), 1);
-}
-
-// Find player by ID
-function playerById (id) {
-    for (var i = 0; i < enemies.length; i++) {
-        if (enemies[i].id === id) {
-            return enemies[i];
-        }
-    }
-    return false;
-}
-
-//remove session from front-end and array
-function onClosedSession(data){
-
-    //retreive the sessions from the HTML
+// Session has been updated
+function onUpdateSession(data) {
     sessionCol = document.getElementsByClassName('session');
-
-    //iterate over the sessions
-    for(var i = 0; i < sessionCol.length; i++){
-
-        name = sessionCol[i].getElementsByClassName("session-name")[0].innerText;
-
-        //if the name parsed down from the server matches a session in the HTML
-        if (data == name) {
-
-            //remove the session from the HTML
-            overlay = document.getElementById("session-area");
-            overlay.removeChild(sessionCol[i]);
-
-            //iterate through sessions array and remove the session from it
-            sessions.forEach(function (s) {
-                if (s.id == data) {
-                    var index = sessions.indexOf(s);
-                    if(index > -1)
-                    {
-                        sessions.splice(index, 1);
-                        console.log(sessions);
-                    }
-                }
-            });
-        }
-    }
-}
-
-function onJoinedSession(data){
-    levelNum = data.level;
-}
-
-function onUpdateSession(data){
-    sessionCol = document.getElementsByClassName('session');
-    for(var p = 0; sessionCol.length; p++)
-    {
+    for(var p = 0; sessionCol.length; p++) {
         console.log("Session Objsdsa");
         console.log(sessionCol[p]);
         name = sessionCol[p].getElementsByClassName("session-name")[0].innerText;
@@ -218,11 +112,131 @@ function onUpdateSession(data){
         }
     }
 
-    for(var i = 0; i < sessions.length; i++)
-    {
-        if(sessions[i].name === data.name)
-        {
+    for(var i = 0; i < sessions.length; i++) {
+        if(sessions[i].name === data.name) {
             sessions[i].count = data.playerCount
         }
     }
+}
+
+// Remove session from front-end and array
+function onClosedSession(data) {
+    // Retreive the sessions from the HTML
+    sessionCol = document.getElementsByClassName('session');
+
+    // Iterate over the sessions
+    for(var i = 0; i < sessionCol.length; i++) {
+        name = sessionCol[i].getElementsByClassName("session-name")[0].innerText;
+
+        // If the name parsed down from the server matches a session in the HTML
+        if (data == name) {
+            // Remove the session from the HTML
+            overlay = document.getElementById("session-area");
+            overlay.removeChild(sessionCol[i]);
+
+            // Iterate through sessions array and remove the session from it
+            sessions.forEach(function (s) {
+                if (s.id == data) {
+                    var index = sessions.indexOf(s);
+                    if(index > -1) {
+                        sessions.splice(index, 1);
+                        console.log(sessions);
+                    }
+                }
+            });
+        }
+    }
+}
+
+// This player has joined the lobby
+function onJoinedSession(data) {
+    localSession = new session(data.id, 0, "");
+    levelNum = data.level;
+}
+
+// A new player has joined the Lobby
+function onNewPlayer (data) {
+    if (session.id === data.name ) {
+        console.log('New player connected:', data.id);
+
+        // Avoid possible duplicate players
+        var duplicate = playerById(data.id);
+        if (duplicate) {
+            console.log('Duplicate player!');
+            return false;
+        }
+
+        // Add new player to the remote players array
+        enemies.push(new Enemy(data.x, data.y, data.percentage));
+        enemies[(enemies.length - 1)].id = data.id;
+    }
+}
+
+// Another player has selected a character
+function onCharacterSelected(data) {
+
+}
+
+// Move player
+function onMovePlayer (data) {
+    if (localSession.id === data.name ) {
+        var movePlayer = playerById(data.id);
+
+        // Player not found
+        if (!movePlayer) {
+            console.log('Player not found: ', data.id);
+            return false;
+        }
+
+        // Update player position
+        movePlayer.playerSprite.x = data.x;
+        movePlayer.playerSprite.y = data.y;
+        movePlayer.percentage = data.percentage;
+    }
+}
+
+// Player has been hit
+function onPlayerHit(data) {
+    if (localSession.id === data.name ) {
+        if (localID === data.id) {
+            player.percentage = data.percentage;
+            player.registerHit(data.knockback, data.dir, data.up);
+        }
+        else {
+            var hitPlayer = playerById(data.id);
+            // Player not found
+            if (!hitPlayer) {
+                console.log('Player not found: ', data.id);
+                return false;
+            }
+            hitPlayer.percentage = data.percentage;
+        }
+    }
+}
+
+// Remove player
+function onRemovePlayer (data) {
+    if (localSession.id === data.name ) {
+        var removePlayer = playerById(data.id);
+
+        // Player not found
+        if (!removePlayer) {
+            console.log('Player not found: ', data.id);
+            return false;
+        }
+        removePlayer.remove();
+
+        // Remove player from array
+        enemies.splice(enemies.indexOf(removePlayer), 1);
+    }
+}
+
+// Find player by ID
+function playerById (id) {
+    for (var i = 0; i < enemies.length; i++) {
+        if (enemies[i].id === id) {
+            return enemies[i];
+        }
+    }
+    return false;
 }

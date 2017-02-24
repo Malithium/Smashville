@@ -150,7 +150,7 @@ function onNewMessage(data) {
     messages.push(newMessage);
     // Remove messages if exceeds certain limit
     if (messages.length > 255) {
-        // Remove first message, as won't be needed
+        // Remove first message, as no longer needed
         messages[0].remove();
     }
     // Send new message out to users
@@ -195,6 +195,7 @@ function onLeaveSession(data) {
     leftSession.players.splice(leftSession.players.indexOf(leftPlayer), 1);
     if (leftSession.host.id === this.id) {
         // this.broadcast.emit('session closed', leaveSession.name);
+        // sessions.splice(sessions.indexOf(leftSession), 1);
     }
     else {
         this.broadcast.emit('update session', {name: leftSession.name, playerCount: leftSession.players.length});
