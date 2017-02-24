@@ -1,5 +1,9 @@
 // Last Updated: 20/01/2017
 
+// FUTURE IDEAS:
+//  Rotating Map
+//  Map Flips Upside down (Horizontal Flip)
+
 // Server-to-Client variables
 var local = true;
 var socket;
@@ -39,7 +43,7 @@ function setEventHandlers () {
     socket.on('new player', onNewPlayer);
 
     // Player selected Character
-    // socket.on('character selected', onCharacterSelected);
+    socket.on('character selected', onCharacterSelected);
 
     // Player has left the lobby or game
     socket.on('remove player', onRemovePlayer);
@@ -153,13 +157,14 @@ function onClosedSession(data) {
 
 // This player has joined the lobby
 function onJoinedSession(data) {
-    localSession = new session(data.id, 0, "");
+    console.log('Joined session: ' + data.name);
+    localSession = new session(data.name, 0, "");
     levelNum = data.level;
 }
 
 // A new player has joined the Lobby
 function onNewPlayer (data) {
-    if (session.id === data.name ) {
+    if (localSession.name === data.name ) {
         console.log('New player connected:', data.id);
 
         // Avoid possible duplicate players
@@ -177,14 +182,19 @@ function onNewPlayer (data) {
 
 // Another player has selected a character
 function onCharacterSelected(data) {
-    if (session.id === data.name ) {
-
+    if (session.name === data.name ) {
+        var charPlayer = playerById(data.id);
+        if (!charPlayer) {
+            console.log('Player not found: ', data.id);
+            return false;
+        }
+        charPlayer.characterID = data.charID;
     }
 }
 
 // Move player
 function onMovePlayer (data) {
-    if (localSession.id === data.name ) {
+    if (localSession.name === data.name ) {
         var movePlayer = playerById(data.id);
 
         // Player not found
@@ -202,7 +212,7 @@ function onMovePlayer (data) {
 
 // Player has been hit
 function onPlayerHit(data) {
-    if (localSession.id === data.name ) {
+    if (localSession.name === data.name ) {
         if (localID === data.id) {
             player.percentage = data.percentage;
             player.registerHit(data.knockback, data.dir, data.up);
@@ -221,7 +231,7 @@ function onPlayerHit(data) {
 
 // Remove player
 function onRemovePlayer (data) {
-    if (localSession.id === data.name ) {
+    if (localSession.name === data.name ) {
         var removePlayer = playerById(data.id);
 
         // Player not found

@@ -31,7 +31,7 @@ function Client(name) {
     this.setPercentage = function (newPercent) {
         this.percentage = newPercent;
     };
-};
+}
 
 // Export the Player class so you can use it in
 // other files by using require("Player")

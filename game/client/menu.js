@@ -47,11 +47,13 @@ var menuState = {
     playerSelect1: function()
     {
         playerNum = 1;
+        //sendPacket('character selected', {name: localSession.name, charID: 1});
     },
 
     playerSelect2: function()
     {
         playerNum = 2;
+        //sendPacket('character selected', {name: localSession.name, charID: 2});
     },
 
     /*

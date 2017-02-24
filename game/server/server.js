@@ -81,6 +81,9 @@ function onSocketConnection (client) {
     // Start session
     client.on('start session', onStartSession);
 
+    // Player has selected character
+    client.on('character selected', onCharSelection);
+
     // Leave session
     client.on('left session', onLeaveSession);
 
@@ -171,6 +174,7 @@ function onNewSession(data) {
         }
     }
     util.log('New session created: ' + newSession.getName());
+    this.emit('joined session', {name: newSession.name, level: 0});
     this.broadcast.emit('new session', {name: newSession.getName(), playerCount: 1});
     sessions.push(newSession);
 }
@@ -190,7 +194,8 @@ function onJoinSession(data) {
         }
         else {
             joinSession.players.push(playerById(this.id));
-            this.emit('joined session', {id: joinSession.name, level: joinSession.level});
+            console.log('Joined session: ' + joinSession.name);
+            this.emit('joined session', {name: joinSession.name, level: joinSession.level});
             for (var i = 0; i < joinSession.players.length; i++) {
                 this.emit('new player', {
                     name: joinSession.name, id: joinSession.players[i].id,
@@ -200,6 +205,20 @@ function onJoinSession(data) {
             this.broadcast.emit('update session', {name: joinSession.name, playerCount: joinSession.players.length});
         }
     }
+}
+
+function onCharSelection(data) {
+    var charPlayer = playerById(this.id);
+    if (!charPlayer) {
+        util.log('Player not found: ' + this.id);
+        return
+    }
+    var charSession = sessionByName(data.name);
+    if (!charSession) {
+        util.log('Session not found: ' + data.name);
+        return
+    }
+    this.broadcast.emit('character selected', {name: charSession.name, id: charPlayer.id, charID: data.charID});
 }
 
 function onLeaveSession(data) {
@@ -276,6 +295,13 @@ function onMovePlayer (data) {
 function onPlayerHit(data) {
     var hitPlayer = Logic.checkCollision(playerById(data.id), clients);
     if(hitPlayer) {
+        var hitSession = false;
+        for (var i = 0; i < sessions.length; i++) {
+            if (sessions[i].getPlayerById(this.id)) {
+                hitSession  = sessions[i];
+            }
+        }
+
         console.log(data.id + " vs " + hitPlayer.id);
         hitPlayer.setPercentage(Logic.registerDamage(hitPlayer.getPercentage(), data.dmg));
         var knockback = Logic.calculateKnockback(hitPlayer.getPercentage(), data.dmg);
@@ -299,10 +325,12 @@ function onPlayerHit(data) {
                 up = 2;
                 break;
         }
-        this.emit('hit player', {id: hitPlayer.id, percent: hitPlayer.getPercentage(),
+        this.emit('hit player', {name: hitSession.name, id: hitPlayer.id,
+            percent: hitPlayer.getPercentage(),
             knockback: knockback, dir: dir, up: up});
 
-        this.broadcast.emit('hit player', {id: hitPlayer.id, percent: hitPlayer.getPercentage(),
+        this.broadcast.emit('hit player', {name: hitSession.name, id: hitPlayer.id,
+            percent: hitPlayer.getPercentage(),
             knockback: knockback, dir: dir, up: up});
     }
 }

@@ -14,10 +14,7 @@ function testRegisterDamage() {
 
     var expected = 111;
     var results = player.getPercentage();
-    if (expected === results) {
-        console.log('  RegisterDamage test was successful');
-    }
-    else {
+    if (expected != results) {
         console.log('  RegisterDamage test was unsuccessful. Results are: ' + results );
     }
 }
@@ -28,10 +25,7 @@ function testCalculateKnockback() {
 
     var expected = 400;
     var results = Logic.calculateKnockback(player.getPercentage(), 4);
-    if (expected === results) {
-        console.log('  CalculateKnockback test was successful');
-    }
-    else {
+    if (expected != results) {
         console.log('  CalculateKnockback test was unsuccessful. Results are: ' + results);
     }
 }
