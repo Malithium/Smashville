@@ -108,3 +108,9 @@ var menuState = {
         game.state.start('chat');
     }
 };
+
+function disconnected() {
+    localSession = null;
+    enemies = [];
+    game.state.start('chat');
+}

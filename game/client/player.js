@@ -2,7 +2,6 @@
 
 function Player(x, y) {
     // Init
-    // NOTE(Kyle) : It appears 'Tiled' the map editor I am using, allows me to designate object positions, this may be a solution to X and Y positions
     this.playerSprite = game.add.sprite(x, y, 'player' + playerNum);
     this.playerSprite.width = 32;
     this.playerSprite.height = 32;
@@ -16,8 +15,6 @@ function Player(x, y) {
     //  Movement
     this.moveLeft = game.input.keyboard.addKey(Phaser.Keyboard.A);
     this.moveRight = game.input.keyboard.addKey(Phaser.Keyboard.D);
-    this.dummyLeft = game.input.keyboard.addKey(Phaser.Keyboard.J);
-    this.dummyRight = game.input.keyboard.addKey(Phaser.Keyboard.L);
     this.moveJump = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     this.jumpPressed = false;
     //  Actions

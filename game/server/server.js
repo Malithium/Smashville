@@ -124,13 +124,14 @@ function onClientDisconnect () {
         return
     }
 
+    // Closed session if host disconnects
     for (var i = 0; i < sessions.length; i++) {
         leaveSession = sessions[i];
         // Remove player from current session
         if (leaveSession.getPlayerById(removePlayer.id)) {
             leaveSession.players.splice(leaveSession.players.indexOf(removePlayer), 1);
             if(leaveSession.host.id === removePlayer.id) {
-                this.broadcast.emit('session closed', leaveSession.name);
+                this.broadcast.emit('session closed', {name: leaveSession.name});
                 sessions.splice(sessions.indexOf(leaveSession), 1);
             }
         }
@@ -161,6 +162,7 @@ function onNewMessage(data) {
 function onNewSession(data) {
     var player = playerById(this.id);
     var newSession = new Session(player);
+    // Creates Unique Session Name/ID
     if (sessions.length > 1) {
         var x = 0;
         while (sessionByName(newSession.getName())) {
@@ -183,9 +185,20 @@ function onUpdateSession(data) {
 function onJoinSession(data) {
     var joinSession = sessionByName(data.name);
     if (joinSession) {
-        joinSession.players.push(playerById(this.id));
-        this.emit('joined session', {level: joinSession.level});
-        this.broadcast.emit('update session', {name: joinSession.name, playerCount: joinSession.players.length});
+        if (joinSession.players.length >= 4) {
+            // Spectate mode
+        }
+        else {
+            joinSession.players.push(playerById(this.id));
+            this.emit('joined session', {id: joinSession.name, level: joinSession.level});
+            for (var i = 0; i < joinSession.players.length; i++) {
+                this.emit('new player', {
+                    name: joinSession.name, id: joinSession.players[i].id,
+                    x: joinSession.players[i].x, y: joinSession.players[i].y,
+                    enemyName: joinSession.players[i].name});
+            }
+            this.broadcast.emit('update session', {name: joinSession.name, playerCount: joinSession.players.length});
+        }
     }
 }
 
@@ -194,12 +207,12 @@ function onLeaveSession(data) {
     var leftSession = sessionByName(data.name);
     leftSession.players.splice(leftSession.players.indexOf(leftPlayer), 1);
     if (leftSession.host.id === this.id) {
-        // this.broadcast.emit('session closed', leaveSession.name);
-        // sessions.splice(sessions.indexOf(leftSession), 1);
+        this.broadcast.emit('session closed', leaveSession.name);
+        sessions.splice(sessions.indexOf(leftSession), 1);
     }
     else {
         this.broadcast.emit('update session', {name: leftSession.name, playerCount: leftSession.players.length});
-        //this.broadcast.emit('player left lobby', {name: leftSession.name, id: leftPlayer.id});
+        this.broadcast.emit('remove player', {name: leftSession.name, id: leftPlayer.id});
     }
 }
 

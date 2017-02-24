@@ -1,12 +1,13 @@
 // Last Updated: 20/01/2017
 
-function Enemy(x, y, percentage) {
+function Enemy(x, y, name) {
     // Init
-    // NOTE(Kyle) : It appears 'Tiled' the map editor I am using, allows me to designate object positions, this may be a solution to X and Y positions
-    this.playerSprite = game.add.sprite(x, y, 'player');
+    this.characterID = 1;
+    this.playerSprite = game.add.sprite(x, y, 'player' + this.characterID);
     this.playerSprite.width = 32;
     this.playerSprite.height = 32;
-    this.percentage = percentage;
+    this.percentage = 0;
+    this.name = name;
     this.x = x;
     this.y = y;
 

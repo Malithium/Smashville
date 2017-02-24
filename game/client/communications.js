@@ -76,6 +76,7 @@ function onSocketConnected () {
 // Socket disconnected
 function onSocketDisconnect () {
     console.log('Disconnected from socket server');
+    localSession = null;
     local = true;
 }
 
@@ -111,7 +112,6 @@ function onUpdateSession(data) {
             sessionCol[p].getElementsByClassName("session-count")[0].innerText = data.playerCount;
         }
     }
-
     for(var i = 0; i < sessions.length; i++) {
         if(sessions[i].name === data.name) {
             sessions[i].count = data.playerCount
@@ -146,6 +146,9 @@ function onClosedSession(data) {
             });
         }
     }
+    if (localSession.name === data.name) {
+        disconnected();
+    }
 }
 
 // This player has joined the lobby
@@ -167,14 +170,16 @@ function onNewPlayer (data) {
         }
 
         // Add new player to the remote players array
-        enemies.push(new Enemy(data.x, data.y, data.percentage));
+        enemies.push(new Enemy(data.x, data.y, data.enemyName));
         enemies[(enemies.length - 1)].id = data.id;
     }
 }
 
 // Another player has selected a character
 function onCharacterSelected(data) {
+    if (session.id === data.name ) {
 
+    }
 }
 
 // Move player
