@@ -17,91 +17,89 @@ var chatState = {
         numOfMessages = messages.length;
         numOfSessions = sessions.length;
         netMode = true;
-        nameLabel = game.add.text(10, 10, 'Chat', {font: '30px Arial', fill: '#ffffff'});
-        d = document.getElementById('chat-overlay');
-        d.style.left = GAMEWIDTH / 8 + 'px';
-        d.style.top = GAMEHEIGHT / 8 + 'px';
-        d.style.display = 'block';
+        nameLabel = game.add.text(10, 10, "Chat", {font: "30px Arial", fill: "#ffffff"});
+        d = document.getElementById("chat-overlay");
+        d.style.left = GAMEWIDTH / 8 + "px";
+        d.style.top = GAMEHEIGHT / 8 + "px";
+        d.style.display = "block";
 
-        a = document.getElementById('chat-button');
-        a.style.cursor = 'pointer';
+        a = document.getElementById("chat-button");
+        a.style.cursor = "pointer";
 
         a.onclick = function () {
 
-            txt = document.getElementById('chat-text').value;
+            txt = document.getElementById("chat-text").value;
             if (txt != "") {
-                sendPacket('new message', {name: playerName, message: txt.toString()});
-                document.getElementById('chat-text').value = "";
+                sendPacket("new message", {name: playerName, message: txt.toString()});
+                document.getElementById("chat-text").value = "";
             }
         };
 
         a.onmouseover = function () {
-            this.style.backgroundColor = 'white';
-            this.style.color = 'black';
+            this.style.backgroundColor = "white";
+            this.style.color = "black";
         };
 
         a.onmouseout = function () {
-            this.style.backgroundColor = 'transparent';
-            this.style.color = 'white';
+            this.style.backgroundColor = "transparent";
+            this.style.color = "white";
         };
 
-        s = document.getElementById('session-overlay');
-        s.style.left = GAMEWIDTH - (300 + (GAMEWIDTH / 8)) + 'px';
-        s.style.top = GAMEHEIGHT/ 8 + 'px';
-        s.style.display = 'block';
+        s = document.getElementById("session-overlay");
+        s.style.left = GAMEWIDTH - (300 + (GAMEWIDTH / 8)) + "px";
+        s.style.top = GAMEHEIGHT/ 8 + "px";
+        s.style.display = "block";
     },
 
     update: function () {
          if (numOfMessages != messages.length) {
              numOfMessages = messages.length;
-             m = document.getElementById('chat-area');
+             m = document.getElementById("chat-area");
              m.innerHTML = "";
              messages.forEach(function(msg) {
                  m.innerHTML += msg;
              });
          }
 
-        if(numOfSessions > sessions.length){
+        if(numOfSessions > sessions.length) {
             numOfSessions = sessions.length;
         }
-        else if(numOfSessions != sessions.length)
-        {
+        else if(numOfSessions != sessions.length) {
             numOfSessions = sessions.length;
-            innerSessions = document.getElementById('session-area');
+            innerSessions = document.getElementById("session-area");
             sessions.forEach(function (sess) {
                 innerSessions.innerHTML += sess.body;
             });
 
-            sessionCol = document.getElementsByClassName('session');
+            sessionCol = document.getElementsByClassName("session");
 
-            for(var i = 0; i < sessionCol.length; i++)
-            {
+            for(var i = 0; i < sessionCol.length; i++) {
                 console.log(sessionCol[i]);
-                sessionCol[i].onmouseover = function (){
-                    this.style.backgroundColor = 'white';
-                    this.style.color = 'black';
+                sessionCol[i].onmouseover = function () {
+                    this.style.backgroundColor = "white";
+                    this.style.color = "black";
                 };
 
-                sessionCol[i].onmouseout = function (){
-                    this.style.backgroundColor = 'transparent';
-                    this.style.color = 'white';
+                sessionCol[i].onmouseout = function () {
+                    this.style.backgroundColor = "transparent";
+                    this.style.color = "white";
                 };
 
-                sessionCol[i].onclick = function (){
-                    d = document.getElementById('chat-overlay').style.display = 'none';
-                    s = document.getElementById('session-overlay').style.display = 'none';
-                    sendPacket('join session', {name: this.getElementsByClassName("session-name")[0].innerText});
-                    game.state.start('menu');
-                    //sendPacket('join session', {name: innerName.toString()});
+                sessionCol[i].onclick = function () {
+                    d = document.getElementById("chat-overlay").style.display = "none";
+                    s = document.getElementById("session-overlay").style.display = "none";
+                    sendPacket("join session", {name: this.getElementsByClassName("session-name")[0].innerText});
+                    game.state.start("menu");
+                    //sendPacket("join session", {name: innerName.toString()});
                 };
             }
         }
     },
 
-    hostSession: function(){
-        sendPacket('new session', {id: localID, name: playerName});
-        d = document.getElementById('chat-overlay').style.display = 'none';
-        s = document.getElementById('session-overlay').style.display = 'none';
-        game.state.start('menu');
+    hostSession: function() {
+        sendPacket("new session", {id: localID, name: playerName});
+        d = document.getElementById("chat-overlay").style.display = "none";
+        s = document.getElementById("session-overlay").style.display = "none";
+        game.state.start("menu");
     }
 }

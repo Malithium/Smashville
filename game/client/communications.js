@@ -14,46 +14,46 @@ var localSession;
 function setEventHandlers () {
     // SERVER CONNECTION METHODS
     // Socket connection successful
-    socket.on('connect', onSocketConnected);
+    socket.on("connect", onSocketConnected);
 
     // Socket disconnection
-    socket.on('disconnect', onSocketDisconnect);
+    socket.on("disconnect", onSocketDisconnect);
 
     // Game details passed across
-    socket.on('connect details', onConnection);
+    socket.on("connect details", onConnection);
 
     // MESSAGES AND SESSION METHODS
     // Process new chat box message
-    socket.on('new message', onNewMessage);
+    socket.on("new message", onNewMessage);
 
     // Process new session
-    socket.on('new session', onNewSession);
+    socket.on("new session", onNewSession);
 
     // Session has been updated
-    socket.on('update session', onUpdateSession);
+    socket.on("update session", onUpdateSession);
 
     // Session has been closed
-    socket.on('session closed', onClosedSession);
+    socket.on("session closed", onClosedSession);
 
     // LOBBY METHODS
     // Player has joined session
-    socket.on('joined session', onJoinedSession);
+    socket.on("joined session", onJoinedSession);
 
     // New player has joined session
-    socket.on('new player', onNewPlayer);
+    socket.on("new player", onNewPlayer);
 
     // Player selected Character
-    socket.on('character selected', onCharacterSelected);
+    socket.on("character selected", onCharacterSelected);
 
     // Player has left the lobby or game
-    socket.on('remove player', onRemovePlayer);
+    socket.on("remove player", onRemovePlayer);
 
     // IN-GAME METHODS
     // Player move message received
-    socket.on('move player', onMovePlayer);
+    socket.on("move player", onMovePlayer);
 
     // Player has been hit
-    socket.on('hit player', onPlayerHit);
+    socket.on("hit player", onPlayerHit);
 }
 
 function sendPacket(type, data) {
@@ -64,7 +64,7 @@ function sendPacket(type, data) {
 
 // Socket connected (Clear Enemies)
 function onSocketConnected () {
-    console.log('Connected to socket server');
+    console.log("Connected to socket server");
     local = false;
 
     for (var i = 0; i < enemies.length; i++) {
@@ -74,12 +74,12 @@ function onSocketConnected () {
     sessions = [];
 
     // Send local player data to the game server
-    sendPacket('new player', {name: playerName});
+    sendPacket("new player", {name: playerName});
 }
 
 // Socket disconnected
 function onSocketDisconnect () {
-    console.log('Disconnected from socket server');
+    console.log("Disconnected from socket server");
     localSession = null;
     local = true;
 }
@@ -105,7 +105,7 @@ function onNewSession(data) {
 
 // Session has been updated
 function onUpdateSession(data) {
-    sessionCol = document.getElementsByClassName('session');
+    sessionCol = document.getElementsByClassName("session");
     for(var p = 0; sessionCol.length; p++) {
         console.log("Session Objsdsa");
         console.log(sessionCol[p]);
@@ -126,7 +126,7 @@ function onUpdateSession(data) {
 // Remove session from front-end and array
 function onClosedSession(data) {
     // Retreive the sessions from the HTML
-    sessionCol = document.getElementsByClassName('session');
+    sessionCol = document.getElementsByClassName("session");
 
     // Iterate over the sessions
     for(var i = 0; i < sessionCol.length; i++) {
@@ -157,7 +157,7 @@ function onClosedSession(data) {
 
 // This player has joined the lobby
 function onJoinedSession(data) {
-    console.log('Joined session: ' + data.name);
+    console.log("Joined session: " + data.name);
     localSession = new session(data.name, 0, "");
     levelNum = data.level;
 }
@@ -165,12 +165,12 @@ function onJoinedSession(data) {
 // A new player has joined the Lobby
 function onNewPlayer (data) {
     if (localSession.name === data.name ) {
-        console.log('New player connected:', data.id);
+        console.log("New player connected:", data.id);
 
         // Avoid possible duplicate players
         var duplicate = playerById(data.id);
         if (duplicate) {
-            console.log('Duplicate player!');
+            console.log("Duplicate player!");
             return false;
         }
 
@@ -185,7 +185,7 @@ function onCharacterSelected(data) {
     if (session.name === data.name ) {
         var charPlayer = playerById(data.id);
         if (!charPlayer) {
-            console.log('Player not found: ', data.id);
+            console.log("Player not found: ", data.id);
             return false;
         }
         charPlayer.characterID = data.charID;
@@ -199,7 +199,7 @@ function onMovePlayer (data) {
 
         // Player not found
         if (!movePlayer) {
-            console.log('Player not found: ', data.id);
+            console.log("Player not found: ", data.id);
             return false;
         }
 
@@ -221,7 +221,7 @@ function onPlayerHit(data) {
             var hitPlayer = playerById(data.id);
             // Player not found
             if (!hitPlayer) {
-                console.log('Player not found: ', data.id);
+                console.log("Player not found: ", data.id);
                 return false;
             }
             hitPlayer.percentage = data.percentage;
@@ -236,7 +236,7 @@ function onRemovePlayer (data) {
 
         // Player not found
         if (!removePlayer) {
-            console.log('Player not found: ', data.id);
+            console.log("Player not found: ", data.id);
             return false;
         }
         removePlayer.remove();

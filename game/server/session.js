@@ -9,7 +9,7 @@ function Session(host) {
         STARTING: 2
     };
     this.sessionState = this.sessionStates.LOBBY;
-    this.name = host.name + ' Session';
+    this.name = host.name + " Session";
 
     this.players.push(host);
 

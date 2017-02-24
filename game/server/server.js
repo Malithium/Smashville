@@ -1,9 +1,9 @@
 // Based off codee from: https://github.com/xicombd/phaser-multiplayer-game
 
-var util = require('util');
-var http = require('http');
-var path = require('path');
-var ecstatic = require('ecstatic');
+var util = require("util");
+var http = require("http");
+var path = require("path");
+var ecstatic = require("ecstatic");
 
 // Game variables
 var level = 2;
@@ -12,17 +12,17 @@ var sessions = []; // Array of Sessions
 var messages = []; // Array of Messages
 
 // Pull external classes
-var Logic = require('./logic');
-var Client = require('./client');
-var Message = require('./message');
-var Session = require('./session');
+var Logic = require("./logic");
+var Client = require("./client");
+var Message = require("./message");
+var Session = require("./session");
 
 // Create and start the http server
 var socket;	// Socket controller
-var io = require('socket.io');
+var io = require("socket.io");
 var port = process.env.PORT || 44555;
 var server = http.createServer(
-    ecstatic({ root: path.resolve(__dirname, '../client') })
+    ecstatic({ root: path.resolve(__dirname, "../client") })
 ).listen(port, function (err) {
     if (err) {
         throw err
@@ -36,63 +36,63 @@ function init () {
     socket = io.listen(server);
 
     // Log Port selected
-    console.log("#Listening on port: " + port);
+    util.log("#Listening on port: " + port);
 
     // Start listening for events
     setEventHandlers();
 
     // Running tests
-    console.log("#Running tests:");
-    var Debug = require('./debug');
+    util.log("#Running tests:");
+    var Debug = require("./debug");
     Debug.runAllTests();
-    console.log("#All tests run");
+    util.log("#All tests run");
 }
 
 function setEventHandlers() {
     // Socket.IO
-    socket.sockets.on('connection', onSocketConnection);
+    socket.sockets.on("connection", onSocketConnection);
 }
 
 // New socket connection
 function onSocketConnection (client) {
-    util.log('New player has connected: ' + client.id);
+    util.log("New player has connected: " + client.id);
 
     // SERVER CONNECTING METHODS
     // Listen for new player message
-    client.on('new player', onNewPlayer);
+    client.on("new player", onNewPlayer);
 
     // Listen for client disconnected
-    client.on('disconnect', onClientDisconnect);
+    client.on("disconnect", onClientDisconnect);
 
     // MESSAGES AND SESSION METHODS
     // Listen for new lobby message
-    client.on('new message', onNewMessage);
+    client.on("new message", onNewMessage);
 
     // New session created
-    client.on('new session', onNewSession);
+    client.on("new session", onNewSession);
 
     // Session updated
-    client.on('update session', onUpdateSession);
+    client.on("update session", onUpdateSession);
 
     // Join new session
-    client.on('join session', onJoinSession);
+    client.on("join session", onJoinSession);
 
     // LOBBY METHODS
     // Start session
-    client.on('start session', onStartSession);
+    client.on("start session", onStartSession);
 
     // Player has selected character
-    client.on('character selected', onCharSelection);
+    client.on("character selected", onCharSelection);
 
     // Leave session
-    client.on('left session', onLeaveSession);
+    client.on("left session", onLeaveSession);
 
     // IN-GAME METHODS
     // Listen for move player message
-    client.on('move player', onMovePlayer);
+    client.on("move player", onMovePlayer);
 
     // Listen for hit player messages
-    client.on('hit player', onPlayerHit);
+    client.on("hit player", onPlayerHit);
 }
 
 // New player has joined
@@ -105,11 +105,11 @@ function onNewPlayer (data) {
     // Send existing clients to the new player
     for (var i = 0; i < sessions.length; i++) {
         existingSession = sessions[i];
-        this.emit('new session', {name: existingSession.name, playerCount: existingSession.players.length});
+        this.emit("new session", {name: existingSession.name, playerCount: existingSession.players.length});
     }
 
     // Send details
-    this.emit('connect details', {id: newPlayer.id});
+    this.emit("connect details", {id: newPlayer.id});
 
     // Add new player to the clients array
     clients.push(newPlayer);
@@ -117,14 +117,14 @@ function onNewPlayer (data) {
 
 // Socket client has disconnected
 function onClientDisconnect () {
-    util.log('Player has disconnected: ' + this.id);
+    util.log("Player has disconnected: " + this.id);
 
     var removePlayer = playerById(this.id);
 
     // Player not found
     if (!removePlayer) {
-        util.log('Player not found: ' + this.id);
-        return
+        util.log("Player not found: " + this.id);
+        return false;
     }
 
     // Closed session if host disconnects
@@ -134,7 +134,7 @@ function onClientDisconnect () {
         if (leaveSession.getPlayerById(removePlayer.id)) {
             leaveSession.players.splice(leaveSession.players.indexOf(removePlayer), 1);
             if(leaveSession.host.id === removePlayer.id) {
-                this.broadcast.emit('session closed', {name: leaveSession.name});
+                this.broadcast.emit("session closed", {name: leaveSession.name});
                 sessions.splice(sessions.indexOf(leaveSession), 1);
             }
         }
@@ -144,12 +144,12 @@ function onClientDisconnect () {
     clients.splice(clients.indexOf(removePlayer), 1);
 
     // Broadcast removed player to connected socket clients
-    this.broadcast.emit('remove player', {id: this.id});
+    this.broadcast.emit("remove player", {id: this.id});
 }
 
 function onNewMessage(data) {
     // Create and register new message
-    util.log('Message posted by: ' + data.name);
+    util.log("Message posted by: " + data.name);
     var newMessage = new Message(data.name, data.message);
     messages.push(newMessage);
     // Remove messages if exceeds certain limit
@@ -158,8 +158,8 @@ function onNewMessage(data) {
         messages[0].remove();
     }
     // Send new message out to users
-    this.broadcast.emit('new message', {name: data.name, message: data.message});
-    this.emit('new message', {name: data.name, message: data.message});
+    this.broadcast.emit("new message", {name: data.name, message: data.message});
+    this.emit("new message", {name: data.name, message: data.message});
 }
 
 function onNewSession(data) {
@@ -170,12 +170,12 @@ function onNewSession(data) {
         var x = 0;
         while (sessionByName(newSession.getName())) {
             x++;
-            newSession.name = player.name + x + ' Session';
+            newSession.name = player.name + x + " Session";
         }
     }
-    util.log('New session created: ' + newSession.getName());
-    this.emit('joined session', {name: newSession.name, level: 0});
-    this.broadcast.emit('new session', {name: newSession.getName(), playerCount: 1});
+    util.log("New session created: " + newSession.getName());
+    this.emit("joined session", {name: newSession.name, level: 0});
+    this.broadcast.emit("new session", {name: newSession.getName(), playerCount: 1});
     sessions.push(newSession);
 }
 
@@ -194,15 +194,15 @@ function onJoinSession(data) {
         }
         else {
             joinSession.players.push(playerById(this.id));
-            console.log('Joined session: ' + joinSession.name);
-            this.emit('joined session', {name: joinSession.name, level: joinSession.level});
+            util.log("Joined session: " + joinSession.name);
+            this.emit("joined session", {name: joinSession.name, level: joinSession.level});
             for (var i = 0; i < joinSession.players.length; i++) {
-                this.emit('new player', {
+                this.emit("new player", {
                     name: joinSession.name, id: joinSession.players[i].id,
                     x: joinSession.players[i].x, y: joinSession.players[i].y,
                     enemyName: joinSession.players[i].name});
             }
-            this.broadcast.emit('update session', {name: joinSession.name, playerCount: joinSession.players.length});
+            this.broadcast.emit("update session", {name: joinSession.name, playerCount: joinSession.players.length});
         }
     }
 }
@@ -210,15 +210,15 @@ function onJoinSession(data) {
 function onCharSelection(data) {
     var charPlayer = playerById(this.id);
     if (!charPlayer) {
-        util.log('Player not found: ' + this.id);
-        return
+        util.log("Player not found: " + this.id);
+        return false;
     }
     var charSession = sessionByName(data.name);
     if (!charSession) {
-        util.log('Session not found: ' + data.name);
-        return
+        util.log("Session not found: " + data.name);
+        return false;
     }
-    this.broadcast.emit('character selected', {name: charSession.name, id: charPlayer.id, charID: data.charID});
+    this.broadcast.emit("character selected", {name: charSession.name, id: charPlayer.id, charID: data.charID});
 }
 
 function onLeaveSession(data) {
@@ -226,12 +226,12 @@ function onLeaveSession(data) {
     var leftSession = sessionByName(data.name);
     leftSession.players.splice(leftSession.players.indexOf(leftPlayer), 1);
     if (leftSession.host.id === this.id) {
-        this.broadcast.emit('session closed', leaveSession.name);
+        this.broadcast.emit("session closed", leaveSession.name);
         sessions.splice(sessions.indexOf(leftSession), 1);
     }
     else {
-        this.broadcast.emit('update session', {name: leftSession.name, playerCount: leftSession.players.length});
-        this.broadcast.emit('remove player', {name: leftSession.name, id: leftPlayer.id});
+        this.broadcast.emit("update session", {name: leftSession.name, playerCount: leftSession.players.length});
+        this.broadcast.emit("remove player", {name: leftSession.name, id: leftPlayer.id});
     }
 }
 
@@ -266,8 +266,8 @@ function onMovePlayer (data) {
 
     // Player not found
     if (!movePlayer) {
-        util.log('Player not found: ' + this.id);
-        return
+        util.log("Player not found: " + this.id);
+        return false;
     }
 
     var moveSession = false;
@@ -279,8 +279,8 @@ function onMovePlayer (data) {
 
     // Session not found
     if (!moveSession) {
-        util.log('Session not found with player: ' + this.id);
-        return
+        util.log("Session not found with player: " + this.id);
+        return false;
     }
 
     // Update player position
@@ -288,7 +288,7 @@ function onMovePlayer (data) {
     movePlayer.setY(data.y);
 
     // Broadcast updated position to connected socket clients
-    this.broadcast.emit('move player', {name: moveSession.name, id: movePlayer.id, x: movePlayer.getX(),
+    this.broadcast.emit("move player", {name: moveSession.name, id: movePlayer.id, x: movePlayer.getX(),
         y: movePlayer.getY(), percentage: movePlayer.getPercentage()});
 }
 
@@ -302,7 +302,7 @@ function onPlayerHit(data) {
             }
         }
 
-        console.log(data.id + " vs " + hitPlayer.id);
+        util.log(data.id + " vs " + hitPlayer.id);
         hitPlayer.setPercentage(Logic.registerDamage(hitPlayer.getPercentage(), data.dmg));
         var knockback = Logic.calculateKnockback(hitPlayer.getPercentage(), data.dmg);
         var dir, up;
@@ -325,11 +325,11 @@ function onPlayerHit(data) {
                 up = 2;
                 break;
         }
-        this.emit('hit player', {name: hitSession.name, id: hitPlayer.id,
+        this.emit("hit player", {name: hitSession.name, id: hitPlayer.id,
             percent: hitPlayer.getPercentage(),
             knockback: knockback, dir: dir, up: up});
 
-        this.broadcast.emit('hit player', {name: hitSession.name, id: hitPlayer.id,
+        this.broadcast.emit("hit player", {name: hitSession.name, id: hitPlayer.id,
             percent: hitPlayer.getPercentage(),
             knockback: knockback, dir: dir, up: up});
     }

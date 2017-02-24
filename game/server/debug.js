@@ -1,6 +1,6 @@
 // Last Updated: 16/01/2017
-var Player = require('./client');
-var Logic = require('./logic');
+var Player = require("./client");
+var Logic = require("./logic");
 
 // Functions which will test different functions in the game.
 var runAllTests = function() {
@@ -15,7 +15,7 @@ function testRegisterDamage() {
     var expected = 111;
     var results = player.getPercentage();
     if (expected != results) {
-        console.log('  RegisterDamage test was unsuccessful. Results are: ' + results );
+        util.log("  RegisterDamage test was unsuccessful. Results are: " + results );
     }
 }
 
@@ -26,7 +26,7 @@ function testCalculateKnockback() {
     var expected = 400;
     var results = Logic.calculateKnockback(player.getPercentage(), 4);
     if (expected != results) {
-        console.log('  CalculateKnockback test was unsuccessful. Results are: ' + results);
+        util.log("  CalculateKnockback test was unsuccessful. Results are: " + results);
     }
 }
 

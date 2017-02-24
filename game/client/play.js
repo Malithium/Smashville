@@ -53,7 +53,7 @@ var playState = {
         }
         else if (debugButton.isUp) {debugPressed = false;}
         if (player.lastX != player.x || player.lastY != player.y) {
-            sendPacket('move player', {x: player.x, y: player.y});
+            sendPacket("move player", {x: player.x, y: player.y});
         }
     }, // update()
 
@@ -61,12 +61,12 @@ var playState = {
         // Render text to screen
         game.debug.reset();
         if (debug) {
-            game.debug.text(game.time.fps || '--', 2, 14, '#00ff00'); // Prints FPS
+            game.debug.text(game.time.fps || "--", 2, 14, "#00ff00"); // Prints FPS
             game.debug.body(player.playerSprite);
         }
-        game.debug.text(player.percentage, 0, 540, '#00ff00'); // Prints FPS
+        game.debug.text(player.percentage, 0, 540, "#00ff00"); // Prints FPS
         for (var i = 0; i < enemies.length; i++) {
-            game.debug.text(enemies[i].percentage, 30*(i+1), 540, '#00ff00'); // Prints FPS
+            game.debug.text(enemies[i].percentage, 30*(i+1), 540, "#00ff00"); // Prints FPS
         }
     } // render()
 
@@ -74,9 +74,9 @@ var playState = {
 
 function loadLevel() {
     //very early map loader implementation, will have to look into moving this to a different class
-    map = game.add.tilemap('map' + levelNum);
-    map.addTilesetImage('tiles' + levelNum, 'tiles' + levelNum);
-    GroundLayer = map.createLayer('GroundLayer');
+    map = game.add.tilemap("map" + levelNum);
+    map.addTilesetImage("tiles" + levelNum, "tiles" + levelNum);
+    GroundLayer = map.createLayer("GroundLayer");
     GroundLayer.resizeWorld();
     map.setCollisionBetween(0, 100, true, GroundLayer);
 }

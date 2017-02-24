@@ -2,7 +2,7 @@
 
 function Player(x, y) {
     // Init
-    this.playerSprite = game.add.sprite(x, y, 'player' + playerNum);
+    this.playerSprite = game.add.sprite(x, y, "player" + playerNum);
     this.playerSprite.width = 32;
     this.playerSprite.height = 32;
     this.x = x;
@@ -60,12 +60,12 @@ function Player(x, y) {
         }
         if (this.moveJump.isDown && !this.jumpPressed) {
             if (this.jumpOnce && !this.resetJump) {
-                console.log('Jumped Twice');
+                console.log("Jumped Twice");
                 this.resetJump = true;
                 this.playerSprite.body.velocity.y = -this.jumpHeight
             }
             else if (!this.jumpOnce) {
-                console.log('Jumped Once');
+                console.log("Jumped Once");
                 this.jumpOnce = true;
                 this.playerSprite.body.velocity.y = -this.jumpHeight; // Jump
             }
@@ -77,8 +77,8 @@ function Player(x, y) {
 
         // Actions
         if(this.action1.isDown && !this.action1Pressed) {
-            console.log('Attack Left');
-            sendPacket('hit player', { action: 1, dmg: 6, id: this.id });
+            console.log("Attack Left");
+            sendPacket("hit player", { action: 1, dmg: 6, id: this.id });
             this.action1Pressed = true;
         }
         else if (this.action1.isUp) {
@@ -86,8 +86,8 @@ function Player(x, y) {
         }
 
         if(this.action2.isDown && !this.action2Pressed) {
-            console.log('Attack Right');
-            sendPacket('hit player', { action: 2, dmg: 6, id: this.id });
+            console.log("Attack Right");
+            sendPacket("hit player", { action: 2, dmg: 6, id: this.id });
             this.action2Pressed = true;
         }
         else if (this.action2.isUp) {
@@ -95,8 +95,8 @@ function Player(x, y) {
         }
 
         if(this.action3.isDown && !this.action3Pressed) {
-            console.log('Uppercut');
-            sendPacket('hit player', { action: 3, dmg: 8, id: this.id });
+            console.log("Uppercut");
+            sendPacket("hit player", { action: 3, dmg: 8, id: this.id });
             this.action3Pressed = true;
         }
         else if (this.action3.isUp) {
@@ -104,8 +104,8 @@ function Player(x, y) {
         }
 
         if(this.action4.isDown && !this.action4Pressed) {
-            console.log('Low Blow');
-            sendPacket('hit player', { action: 4, dmg: 3, id: this.id });
+            console.log("Low Blow");
+            sendPacket("hit player", { action: 4, dmg: 3, id: this.id });
             this.action4Pressed = true;
         }
         else if (this.action4.isUp) {

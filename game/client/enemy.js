@@ -3,7 +3,7 @@
 function Enemy(x, y, name) {
     // Init
     this.characterID = 1;
-    this.playerSprite = game.add.sprite(x, y, 'player' + this.characterID);
+    this.playerSprite = game.add.sprite(x, y, "player" + this.characterID);
     this.playerSprite.width = 32;
     this.playerSprite.height = 32;
     this.percentage = 0;
@@ -68,5 +68,5 @@ function Enemy(x, y, name) {
 
     this.remove = function() {
         this.playerSprite.kill();
-    }
+    };
 }
