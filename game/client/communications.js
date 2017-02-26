@@ -107,7 +107,7 @@ function onNewSession(data) {
 function onUpdateSession(data) {
     sessionCol = document.getElementsByClassName("session");
     for(var p = 0; sessionCol.length; p++) {
-        console.log("Session Objsdsa");
+
         console.log(sessionCol[p]);
         name = sessionCol[p].getElementsByClassName("session-name")[0].innerText;
 

@@ -86,9 +86,12 @@ var chatState = {
                 };
 
                 sessionCol[i].onclick = function () {
+
                     d = document.getElementById("chat-overlay").style.display = "none";
                     s = document.getElementById("session-overlay").style.display = "none";
-                    sendPacket("join session", {name: this.getElementsByClassName("session-name")[0].innerText});
+                    var sessionName = this.getElementsByClassName("session-name")[0].innerText
+                    sendPacket("join session", {name: sessionName});
+                    lobbyName = sessionName;
                     game.state.start("menu");
                     //sendPacket("join session", {name: innerName.toString()});
                 };
@@ -100,6 +103,7 @@ var chatState = {
         sendPacket("new session", {id: localID, name: playerName});
         d = document.getElementById("chat-overlay").style.display = "none";
         s = document.getElementById("session-overlay").style.display = "none";
+        isHost = true;
         game.state.start("menu");
     }
 }

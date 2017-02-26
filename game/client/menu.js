@@ -5,6 +5,8 @@
 var ip = "127.0.0.1";
 var port = 44555;
 var netMode = false;
+var isHost = false;
+var lobbyName;
 /*
     Very early menu implementation, Im not sure how to have 1 method for multiple buttons it appears that
     adding an parameter to the "actionOnClick" method forces it to be used without clicking, so this will
@@ -12,28 +14,57 @@ var netMode = false;
 */
 var menuState = {
     create: function() {
-        nameLabel = game.add.text(10,10,"Hello, " + playerName + " Welcome to SmashVille!", {font:"30px Arial", fill:"#ffffff"});
-        levelLabel = game.add.text(10, 60,"choose a level", {font: "25px Arial", fill: "#ffffff"});
+        var hostName = "";
+        if(isHost)
+            hostName = playerName;
+
         characterLabel = game.add.text(10, 240,"choose a character", {font: "25px Arial", fill: "#ffffff"});
 
-        var level1 = game.add.button(10, 100, "level1_btn", this.levelSelect1, this, 1, 2);
-        var level2 = game.add.button(230, 100, "level2_btn", this.levelSelect2, this, 1, 2);
+        if((netMode == false) || (netMode == true && isHost == true)) {
+            levelLabel = game.add.text(10, 60,"choose a level", {font: "25px Arial", fill: "#ffffff"});
+            var level1 = game.add.button(10, 100, "level1_btn", this.levelSelect1, this, 1, 2);
+            var level2 = game.add.button(230, 100, "level2_btn", this.levelSelect2, this, 1, 2);
+        }
 
         var character1 = game.add.button(10, 280, "player1", this.playerSelect1, this, 1, 2);
         var character2 = game.add.button(100, 280, "player2", this.playerSelect2, this, 1, 2);
 
         if(netMode == false) {
             var connect = game.add.button(GAMEWIDTH-200, 10, "connect_btn", this.showConUI, this, 1, 2);
+            nameLabel = game.add.text(10,10,"Hello, " + playerName + " Welcome to SmashVille!", {font:"30px Arial", fill:"#ffffff"});
         }
         else {
+            nameLabel = game.add.text(10,10, lobbyName, {font:"30px Arial", fill:"#ffffff"});
+            var graphics = game.add.graphics(10, 100);
 
+            graphics.lineStyle(3, 0xffffff, 1);
+            graphics.drawRect(0, 320, 100, 100);
+            var player1 = game.add.text(35, 525, hostName, {font:"16px Arial", fill:"#ffffff"});
+            graphics.drawRect(140, 320, 100, 100);
+            var player2 = game.add.text(175, 525, "player2", {font:"16px Arial", fill:"#ffffff"});
+            graphics.drawRect(280, 320, 100, 100);
+            var player3 = game.add.text(315, 525, "player3", {font:"16px Arial", fill:"#ffffff"});
+            graphics.drawRect(420, 320, 100, 100);
+            var player3 = game.add.text(455, 525, "player4", {font:"16px Arial", fill:"#ffffff"});
         }
 
         var start = game.add.button(GAMEWIDTH-200, GAMEHEIGHT-100, "start_btn", this.startGame, this, 1, 2);
     },
 
+    update: function() {
+        var t = 0;
+        if(netMode && t == 0)
+        {
+            var sess = clientSessionByName(lobbyName);
+            console.log(sess);
+            t++;
+        }
+    },
+
     levelSelect1: function() {
         levelNum = 1;
+        if(isHost)
+            sendPacket("update session", {level: levelNum})
     },
 
     levelSelect2: function() {
@@ -106,4 +137,10 @@ function disconnected() {
     localSession = null;
     enemies = [];
     game.state.start("chat");
+}
+
+function clientSessionBybody(body){
+    var htmlContent = document.createElement('span');
+    span.innerHTML = body;
+    return span.textContent || span.innerHTML;
 }
