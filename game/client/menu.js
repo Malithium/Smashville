@@ -7,6 +7,7 @@ var port = 44555;
 var netMode = false;
 var isHost = false;
 var lobbyName;
+var serverAuthority = false
 /*
     Very early menu implementation, Im not sure how to have 1 method for multiple buttons it appears that
     adding an parameter to the "actionOnClick" method forces it to be used without clicking, so this will
@@ -47,38 +48,34 @@ var menuState = {
             graphics.drawRect(420, 320, 100, 100);
             var player3 = game.add.text(455, 525, "player4", {font:"16px Arial", fill:"#ffffff"});
         }
-
-        var start = game.add.button(GAMEWIDTH-200, GAMEHEIGHT-100, "start_btn", this.startGame, this, 1, 2);
+        if((netMode == true && isHost == true) || netMode == false)
+            var start = game.add.button(GAMEWIDTH-200, GAMEHEIGHT-100, "start_btn", this.startGame, this, 1, 2);
     },
 
     update: function() {
-        var t = 0;
-        if(netMode && t == 0)
-        {
-            var sess = clientSessionByName(lobbyName);
-            console.log(sess);
-            t++;
-        }
+
     },
 
     levelSelect1: function() {
         levelNum = 1;
         if(isHost)
-            sendPacket("update session", {level: levelNum})
+            sendPacket("update session", {name: lobbyName,level: 1})
     },
 
     levelSelect2: function() {
         levelNum = 2;
+        if(isHost)
+            sendPacket("update session", {name: lobbyName,level: 2})
     },
 
     playerSelect1: function() {
         playerNum = 1;
-        //sendPacket("character selected", {name: localSession.name, charID: 1});
+        sendPacket("character selected", {name: lobbyName, charID: 1, charName: playerName});
     },
 
     playerSelect2: function() {
         playerNum = 2;
-        //sendPacket("character selected", {name: localSession.name, charID: 2});
+        sendPacket("character selected", {name: lobbyName, charID: 2, charName: playerName});
     },
 
     /*
@@ -111,7 +108,12 @@ var menuState = {
         }
 
         if(error == false)
-            game.state.start("play");
+        {
+            sendPacket("start session", {name: lobbyName});
+            if(serverAuthority == true)
+                game.state.start("play");
+        }
+
     },
 
     /*

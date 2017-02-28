@@ -104,6 +104,7 @@ var chatState = {
         d = document.getElementById("chat-overlay").style.display = "none";
         s = document.getElementById("session-overlay").style.display = "none";
         isHost = true;
+        lobbyName = playerName + " Session";
         game.state.start("menu");
     }
 }

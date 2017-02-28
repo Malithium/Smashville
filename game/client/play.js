@@ -74,6 +74,7 @@ var playState = {
 
 function loadLevel() {
     //very early map loader implementation, will have to look into moving this to a different class
+    console.log(levelNum);
     map = game.add.tilemap("map" + levelNum);
     map.addTilesetImage("tiles" + levelNum, "tiles" + levelNum);
     GroundLayer = map.createLayer("GroundLayer");

@@ -183,6 +183,7 @@ function onUpdateSession(data) {
     var updateSession = sessionByName(data.name);
     if(data.level) {
         updateSession.level = data.level;
+        this.broadcast.emit("update session", {name: updateSession.name, level: updateSession.level});
     }
 }
 
@@ -202,7 +203,7 @@ function onJoinSession(data) {
                     x: joinSession.players[i].x, y: joinSession.players[i].y,
                     enemyName: joinSession.players[i].name});
             }
-            this.broadcast.emit("update session", {name: joinSession.name, playerCount: joinSession.players.length});
+            this.broadcast.emit("update session list", {name: joinSession.name, playerCount: joinSession.players.length});
         }
     }
 }
@@ -213,11 +214,21 @@ function onCharSelection(data) {
         util.log("Player not found: " + this.id);
         return false;
     }
+
     var charSession = sessionByName(data.name);
     if (!charSession) {
         util.log("Session not found: " + data.name);
         return false;
     }
+    for(var i = 0; i < charSession.players.length; i++)
+    {
+        if(charSession.players[i].name === data.charName)
+        {
+            charSession.players[i].characterID = data.charID;
+        }
+    }
+    util.log(charSession.players);
+
     this.broadcast.emit("character selected", {name: charSession.name, id: charPlayer.id, charID: data.charID});
 }
 
@@ -244,6 +255,7 @@ function onStartSession(data) {
             // Check each player has CharacterID
             for (var i = 0; i < startingSession.players.length; i++) {
                 if (startingSession.players[i].characterID === 0) {
+                    util.log("No character selected");
                     start = false;
                     // Send error message
                 }
@@ -251,9 +263,11 @@ function onStartSession(data) {
         }
         else {
             // Send error message
+            util.log("No level selected")
         }
         // All checks cleared
         if (start) {
+            util.log("starting game");
             // Assign positions then update players that session has started
         }
     }

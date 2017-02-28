@@ -29,8 +29,11 @@ function setEventHandlers () {
     // Process new session
     socket.on("new session", onNewSession);
 
-    // Session has been updated
-    socket.on("update session", onUpdateSession);
+    // Session list has been updated
+    socket.on("update session list", onUpdateSessionList);
+
+    // Session level has been updated
+    socket.on("update session", onUpdateSessionLevel);
 
     // Session has been closed
     socket.on("session closed", onClosedSession);
@@ -104,7 +107,7 @@ function onNewSession(data) {
 }
 
 // Session has been updated
-function onUpdateSession(data) {
+function onUpdateSessionList(data) {
     sessionCol = document.getElementsByClassName("session");
     for(var p = 0; sessionCol.length; p++) {
 
@@ -244,6 +247,11 @@ function onRemovePlayer (data) {
         // Remove player from array
         enemies.splice(enemies.indexOf(removePlayer), 1);
     }
+}
+
+function onUpdateSessionLevel(data) {
+    if(data.name == lobbyName)
+        levelNum = data.level;
 }
 
 // Find player by ID
