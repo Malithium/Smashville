@@ -21,7 +21,7 @@ var menuState = {
 
         characterLabel = game.add.text(10, 240,"choose a character", {font: "25px Arial", fill: "#ffffff"});
 
-        if((netMode == false) || (netMode == true && isHost == true)) {
+        if((!netMode) || (netMode && isHost)) {
             levelLabel = game.add.text(10, 60,"choose a level", {font: "25px Arial", fill: "#ffffff"});
             var level1 = game.add.button(10, 100, "level1_btn", this.levelSelect1, this, 1, 2);
             var level2 = game.add.button(230, 100, "level2_btn", this.levelSelect2, this, 1, 2);
@@ -30,7 +30,7 @@ var menuState = {
         var character1 = game.add.button(10, 280, "player1", this.playerSelect1, this, 1, 2);
         var character2 = game.add.button(100, 280, "player2", this.playerSelect2, this, 1, 2);
 
-        if(netMode == false) {
+        if(!netMode) {
             var connect = game.add.button(GAMEWIDTH-200, 10, "connect_btn", this.showConUI, this, 1, 2);
             nameLabel = game.add.text(10,10,"Hello, " + playerName + " Welcome to SmashVille!", {font:"30px Arial", fill:"#ffffff"});
         }
@@ -48,7 +48,7 @@ var menuState = {
             graphics.drawRect(420, 320, 100, 100);
             var player3 = game.add.text(455, 525, "player4", {font:"16px Arial", fill:"#ffffff"});
         }
-        if((netMode == true && isHost == true) || netMode == false)
+        if((netMode && isHost) || !netMode )
             var start = game.add.button(GAMEWIDTH-200, GAMEHEIGHT-100, "start_btn", this.startGame, this, 1, 2);
     },
 
@@ -107,7 +107,7 @@ var menuState = {
             error = true;
         }
 
-        if(error == false)
+        if(!error)
         {
             sendPacket("start session", {name: lobbyName});
             if(serverAuthority == true)

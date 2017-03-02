@@ -4,6 +4,7 @@ function Client(name) {
     this.x = 0;
     this.y = 0;
     this.name = name;
+    this.lobbyID = 0;
     this.percentage = 0;
     this.characterID = 0;
 

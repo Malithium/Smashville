@@ -42,7 +42,7 @@ function init () {
     setEventHandlers();
 
     // Running tests
-    util.log("#Running tests:");
+    util.log("#Running tests");
     var Debug = require("./debug");
     Debug.runAllTests();
     util.log("#All tests run");
@@ -119,6 +119,7 @@ function onNewPlayer (data) {
 function onClientDisconnect () {
     util.log("Player has disconnected: " + this.id);
 
+    var leaveSession;
     var removePlayer = playerById(this.id);
 
     // Player not found
@@ -137,14 +138,15 @@ function onClientDisconnect () {
                 this.broadcast.emit("session closed", {name: leaveSession.name});
                 sessions.splice(sessions.indexOf(leaveSession), 1);
             }
+            else {
+                // Broadcast removed player to connected socket clients
+                this.broadcast.emit("remove player", {name: leaveSession.name, id: this.id});
+            }
         }
     }
 
     // Remove player from clients array
     clients.splice(clients.indexOf(removePlayer), 1);
-
-    // Broadcast removed player to connected socket clients
-    this.broadcast.emit("remove player", {id: this.id});
 }
 
 function onNewMessage(data) {
@@ -194,14 +196,16 @@ function onJoinSession(data) {
             // Spectate mode
         }
         else {
-            joinSession.players.push(playerById(this.id));
+            joinSession.addPlayer(playerById(this.id));
             util.log("Joined session: " + joinSession.name);
-            this.emit("joined session", {name: joinSession.name, level: joinSession.level});
+
+            this.emit("joined session", {name: joinSession.name, level: joinSession.level,
+                lobbyID: (joinSession.nxtLobbyID-1)});
             for (var i = 0; i < joinSession.players.length; i++) {
                 this.emit("new player", {
                     name: joinSession.name, id: joinSession.players[i].id,
                     x: joinSession.players[i].x, y: joinSession.players[i].y,
-                    enemyName: joinSession.players[i].name});
+                    enemyName: joinSession.players[i].name, lobbyID: joinSession.players[i].lobbyID});
             }
             this.broadcast.emit("update session list", {name: joinSession.name, playerCount: joinSession.players.length});
         }

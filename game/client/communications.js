@@ -8,6 +8,7 @@
 var local = true;
 var socket;
 var localID;
+var lobbyID;
 var localSession;
 
 // Based off code in: https://github.com/xicombd/phaser-multiplayer-game
@@ -163,6 +164,7 @@ function onJoinedSession(data) {
     console.log("Joined session: " + data.name);
     localSession = new session(data.name, 0, "");
     levelNum = data.level;
+    lobbyID = data.lobbyID;
 }
 
 // A new player has joined the Lobby
@@ -179,6 +181,7 @@ function onNewPlayer (data) {
 
         // Add new player to the remote players array
         enemies.push(new Enemy(data.x, data.y, data.enemyName));
+        enemies[(enemies.length - 1)].lobbyID = data.lobbyID;
         enemies[(enemies.length - 1)].id = data.id;
     }
 }
