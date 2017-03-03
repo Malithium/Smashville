@@ -22,11 +22,6 @@ var playState = {
     // Load in Assets
         // Used for FPS counter
         game.time.advancedTiming = true;
-        // Server stuff
-        //  Need to change IP and Port number depending on connection
-        console.log(ip + ":" + port);
-
-        //setEventHandlers();
     }, //preload();
 
     create: function() {
@@ -63,6 +58,7 @@ var playState = {
         if (debug) {
             game.debug.text(game.time.fps || "--", 2, 14, "#00ff00"); // Prints FPS
             game.debug.body(player.playerSprite);
+            game.debug.cameraInfo(game.camera, 32, 32);
         }
         game.debug.text(player.percentage, 0, 540, "#00ff00"); // Prints FPS
         for (var i = 0; i < enemies.length; i++) {
@@ -74,7 +70,6 @@ var playState = {
 
 function loadLevel() {
     //very early map loader implementation, will have to look into moving this to a different class
-    console.log(levelNum);
     map = game.add.tilemap("map" + levelNum);
     map.addTilesetImage("tiles" + levelNum, "tiles" + levelNum);
     GroundLayer = map.createLayer("GroundLayer");

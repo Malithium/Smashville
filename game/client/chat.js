@@ -9,6 +9,7 @@ var numOfSessions = 0;
 
 var chatState = {
     preload: function(){
+        console.log(ip + ":" + port);
         socket = io.connect(ip + ":" + port);
         setEventHandlers();
     },
@@ -93,7 +94,6 @@ var chatState = {
                     sendPacket("join session", {name: sessionName});
                     lobbyName = sessionName;
                     game.state.start("menu");
-                    //sendPacket("join session", {name: innerName.toString()});
                 };
             }
         }

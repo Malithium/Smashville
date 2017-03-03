@@ -7,7 +7,7 @@ var port = 44555;
 var netMode = false;
 var isHost = false;
 var lobbyName;
-var serverAuthority = false
+var serverAuthority = false;
 /*
     Very early menu implementation, Im not sure how to have 1 method for multiple buttons it appears that
     adding an parameter to the "actionOnClick" method forces it to be used without clicking, so this will
@@ -16,8 +16,9 @@ var serverAuthority = false
 var menuState = {
     create: function() {
         var hostName = "";
-        if(isHost)
+        if(isHost) {
             hostName = playerName;
+        }
 
         characterLabel = game.add.text(10, 240,"choose a character", {font: "25px Arial", fill: "#ffffff"});
 
@@ -110,8 +111,9 @@ var menuState = {
         if(!error)
         {
             sendPacket("start session", {name: lobbyName});
-            if(serverAuthority == true)
+            if(serverAuthority || local) {
                 game.state.start("play");
+            }
         }
 
     },
