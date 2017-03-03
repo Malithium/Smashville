@@ -47,7 +47,7 @@ var menuState = {
             graphics.drawRect(280, 320, 100, 100);
             var player3 = game.add.text(315, 525, "player3", {font:"16px Arial", fill:"#ffffff"});
             graphics.drawRect(420, 320, 100, 100);
-            var player3 = game.add.text(455, 525, "player4", {font:"16px Arial", fill:"#ffffff"});
+            var player4 = game.add.text(455, 525, "player4", {font:"16px Arial", fill:"#ffffff"});
         }
         if((netMode && isHost) || !netMode )
             var start = game.add.button(GAMEWIDTH-200, GAMEHEIGHT-100, "start_btn", this.startGame, this, 1, 2);

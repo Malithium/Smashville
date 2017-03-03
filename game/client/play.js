@@ -37,6 +37,7 @@ var playState = {
     update: function() {
         // Update Object states
         player.playerUpdate();
+        mapEffects();
         for (var i = 0; i < enemies.length; i++) {
             enemies[i].playerUpdate();
         }
@@ -71,8 +72,24 @@ var playState = {
 function loadLevel() {
     //very early map loader implementation, will have to look into moving this to a different class
     map = game.add.tilemap("map" + levelNum);
-    map.addTilesetImage("tiles" + levelNum, "tiles" + levelNum);
+    if(levelNum === 3) {
+        map.addTilesetImage("tiles2", "tiles2");
+    }
+    else {
+        map.addTilesetImage("tiles" + levelNum, "tiles" + levelNum);
+    }
     GroundLayer = map.createLayer("GroundLayer");
     GroundLayer.resizeWorld();
+    //GroundLayer.fixedToCamera = false;
+    //GroundLayer.anchor.setTo(0.1, 0.1);
     map.setCollisionBetween(0, 100, true, GroundLayer);
+}
+
+function mapEffects() {
+    // Issue with anchors and such, needs looking into
+    switch(levelNum) {
+        case 3:
+            //GroundLayer.angle += 1;
+            break;
+    }
 }
