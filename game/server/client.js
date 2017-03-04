@@ -17,6 +17,10 @@ function Client(name) {
         return this.y;
     };
 
+    this.getName = function () {
+        return this.name;
+    };
+
     this.getPercentage = function () {
         return this.percentage;
     };
@@ -27,6 +31,10 @@ function Client(name) {
 
     this.setY = function (newY) {
         this.y = newY;
+    };
+
+    this.setLobbyID = function(newID) {
+        this.lobbyID = newID;
     };
 
     this.setPercentage = function (newPercent) {

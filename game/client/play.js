@@ -14,7 +14,6 @@ var map;
 var levelNum;
 var playerNum;
 var GroundLayer;
-
 var playerName;
 
 var playState = {

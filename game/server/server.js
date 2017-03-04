@@ -165,14 +165,15 @@ function onNewMessage(data) {
 }
 
 function onNewSession(data) {
-    var player = playerById(this.id);
-    var newSession = new Session(player);
+    var newPlayer = playerById(this.id);
+    newPlayer.setLobbyID(1);
+    var newSession = new Session(newPlayer);
     // Creates Unique Session Name/ID
     if (sessions.length > 1) {
         var x = 0;
         while (sessionByName(newSession.getName())) {
             x++;
-            newSession.name = player.name + x + " Session";
+            newSession.name = newPlayer.name + x + " Session";
         }
     }
     util.log("New session created: " + newSession.getName());
@@ -191,28 +192,33 @@ function onUpdateSession(data) {
 
 function onJoinSession(data) {
     var joinSession = sessionByName(data.name);
-    util.log("I made it here");
     if (joinSession) {
         if (joinSession.players.length >= 4) {
             // Spectate mode
         }
         else {
-            joinSession.addPlayer(playerById(this.id));
-            util.log("Joined session: " + joinSession.name);
-            util.log(joinSession);
+            // Send new player connection details
             this.emit("joined session", {name: joinSession.name, level: joinSession.level,
-                lobbyID: (joinSession.nxtLobbyID-1)});
+                lobbyID: joinSession.nxtLobbyID});
             for (var i = 0; i < joinSession.players.length; i++) {
-                util.log("what is happening mannn?");
+                // Send new players other connected players details
                 this.emit("new player", {
                     name: joinSession.name, id: joinSession.players[i].id,
                     x: joinSession.players[i].x, y: joinSession.players[i].y,
-                    enemyName: joinSession.players[i].name, lobbyID: joinSession.players[i].lobbyID});
-                this.broadcast.emit("new player", {
-                    name: joinSession.name, id: joinSession.players[i].id,
-                    x: joinSession.players[i].x, y: joinSession.players[i].y,
-                    enemyName: joinSession.players[i].name, lobbyID: joinSession.players[i].lobbyID});
+                    enemyName: joinSession.players[i].getName(), lobbyID: joinSession.players[i].lobbyID});
             }
+            // Get new player to add to Array
+            var joinPlayer = playerById(this.id);
+            joinPlayer.setLobbyID(joinSession.nxtLobbyID);
+            joinSession.addPlayer(joinPlayer);
+            util.log("Joined session: " + joinSession.name);
+
+            // Tell other players new player has connected
+            this.broadcast.emit("new player", {
+                name: joinSession.name, id: joinPlayer.id,
+                x: joinPlayer.x, y: joinPlayer.y,
+                enemyName: joinPlayer.getName(), lobbyID: joinPlayer.lobbyID});
+            // Update player count list
             this.broadcast.emit("update session list", {name: joinSession.name, playerCount: joinSession.players.length});
         }
     }
@@ -232,7 +238,7 @@ function onCharSelection(data) {
     }
     for(var i = 0; i < charSession.players.length; i++)
     {
-        if(charSession.players[i].name === data.charName)
+        if(charSession.players[i].getName() === data.charName)
         {
             charSession.players[i].characterID = data.charID;
         }

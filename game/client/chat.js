@@ -100,11 +100,11 @@ var chatState = {
     },
 
     hostSession: function() {
-        sendPacket("new session", {id: localID, name: playerName});
         d = document.getElementById("chat-overlay").style.display = "none";
         s = document.getElementById("session-overlay").style.display = "none";
         isHost = true;
         lobbyName = playerName + " Session";
+        sendPacket("new session", {id: localID, name: playerName});
         game.state.start("menu");
     }
 }

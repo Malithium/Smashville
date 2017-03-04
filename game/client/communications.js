@@ -48,6 +48,9 @@ function setEventHandlers () {
     // Player selected Character
     socket.on("character selected", onCharacterSelected);
 
+    // Session has started
+    socket.on("start session", onStartSession);
+
     // Player has left the lobby or game
     socket.on("remove player", onRemovePlayer);
 
@@ -110,7 +113,6 @@ function onNewSession(data) {
 function onUpdateSessionList(data) {
     sessionCol = document.getElementsByClassName("session");
     for(var p = 0;p < sessionCol.length; p++) {
-        console.log(sessionCol.length);
         if (typeof sessionCol[p] != 'undefined') {
             name = sessionCol[p].getElementsByClassName("session-name")[0].innerText;
 
@@ -169,10 +171,8 @@ function onJoinedSession(data) {
 
 // A new player has joined the Lobby
 function onNewPlayer (data) {
-    console.log(" ?!?!?!?!?");
     if (localSession.id === data.name ) {
-        console.log("hello again?");
-        console.log("New player connected:", data.id);
+        console.log("New player connected (" + data.lobbyID + "):", data.id);
 
         // Avoid possible duplicate players
         var duplicate = playerById(data.id);
@@ -182,9 +182,10 @@ function onNewPlayer (data) {
         }
 
         // Add new player to the remote players array
-        enemies.push(new Enemy(data.x, data.y, data.enemyName));
-        enemies[(enemies.length - 1)].lobbyID = data.lobbyID;
-        enemies[(enemies.length - 1)].id = data.id;
+        var enemy = new Enemy(data.x, data.y, data.enemyName);
+        enemy.lobbyID = data.lobbyID;
+        enemy.id = data.id;
+        enemies.push(enemy);
     }
 }
 
@@ -197,6 +198,16 @@ function onCharacterSelected(data) {
             return false;
         }
         charPlayer.characterID = data.charID;
+        // Update Rectangle
+    }
+}
+
+// Let the games begin!!!
+function onStartSession(data) {
+    if (session.name === data.name ) {
+        for (var i = 0; i < enemies.length; i++) {
+            enemies[i].startGame();
+        }
     }
 }
 

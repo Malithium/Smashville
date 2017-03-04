@@ -17,13 +17,12 @@ function Session(host) {
 
     this.getName = function() {
         return this.name;
-    }
+    };
 
     this.addPlayer = function(player) {
         this.players.push(player);
-        this.players[(this.players.length - 1)].lobbyId = this.nxtLobbyID;
         this.nxtLobbyID++;
-    }
+    };
 
     this.getPlayerById = function(id) {
         var result = this.players.forEach(function(player) {
@@ -31,12 +30,11 @@ function Session(host) {
                 return player;
             }
         });
-        util.log(result);
         if(result) {
             return result;
         }
         return false;
-    }
+    };
 }
 
 module.exports = Session;
