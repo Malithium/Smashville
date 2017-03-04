@@ -8,7 +8,6 @@
 var local = true;
 var socket;
 var localID;
-var lobbyID;
 var localSession;
 
 // Based off code in: https://github.com/xicombd/phaser-multiplayer-game
@@ -110,14 +109,15 @@ function onNewSession(data) {
 // Session has been updated
 function onUpdateSessionList(data) {
     sessionCol = document.getElementsByClassName("session");
-    for(var p = 0; sessionCol.length; p++) {
+    for(var p = 0;p < sessionCol.length; p++) {
+        console.log(sessionCol.length);
+        if (typeof sessionCol[p] != 'undefined') {
+            name = sessionCol[p].getElementsByClassName("session-name")[0].innerText;
 
-        console.log(sessionCol[p]);
-        name = sessionCol[p].getElementsByClassName("session-name")[0].innerText;
-
-        //if the name parsed down from the server matches a session in the HTML
-        if (data == name) {
-            sessionCol[p].getElementsByClassName("session-count")[0].innerText = data.playerCount;
+            //if the name parsed down from the server matches a session in the HTML
+            if (data == name) {
+                sessionCol[p].getElementsByClassName("session-count")[0].innerText = data.playerCount;
+            }
         }
     }
     for(var i = 0; i < sessions.length; i++) {
@@ -169,7 +169,9 @@ function onJoinedSession(data) {
 
 // A new player has joined the Lobby
 function onNewPlayer (data) {
-    if (localSession.name === data.name ) {
+    console.log(" ?!?!?!?!?");
+    if (localSession.id === data.name ) {
+        console.log("hello again?");
         console.log("New player connected:", data.id);
 
         // Avoid possible duplicate players

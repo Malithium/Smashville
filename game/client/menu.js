@@ -7,7 +7,19 @@ var port = 44555;
 var netMode = false;
 var isHost = false;
 var lobbyName;
+var lobbyID;
 var serverAuthority = false;
+
+//Players
+var player1;
+var player2;
+var player3;
+var player4;
+
+var player1Name = "";
+var player2Name = "";
+var player3Name = "";
+var player4Name = "";
 /*
     Very early menu implementation, Im not sure how to have 1 method for multiple buttons it appears that
     adding an parameter to the "actionOnClick" method forces it to be used without clicking, so this will
@@ -15,13 +27,13 @@ var serverAuthority = false;
 */
 var menuState = {
     create: function() {
+        enemyNum = enemies.length;
         var hostName = "";
         if(isHost) {
             hostName = playerName;
         }
-
         characterLabel = game.add.text(10, 240,"choose a character", {font: "25px Arial", fill: "#ffffff"});
-
+        console.log(lobbyID);
         if((!netMode) || (netMode && isHost)) {
             levelLabel = game.add.text(10, 60,"choose a level", {font: "25px Arial", fill: "#ffffff"});
             var level1 = game.add.button(10, 100, "level1_btn", this.levelSelect1, this, 1, 2);
@@ -41,20 +53,71 @@ var menuState = {
 
             graphics.lineStyle(3, 0xffffff, 1);
             graphics.drawRect(0, 320, 100, 100);
-            var player1 = game.add.text(35, 525, hostName, {font:"16px Arial", fill:"#ffffff"});
+
+            if(lobbyID === 1)
+                player1Name = playerName;
+            else if(lobbyID === 2)
+                player2Name = playerName;
+            else if(lobbyID === 3)
+                player3Name = playerName;
+            else if(lobbyID === 4)
+                player4Name = playerName;
+            console.log(enemies);
+            for(var i = 0; i < enemies.length; i++){
+                console.log("What is happening nigga?");
+                if(player1Name != playerName && i === 0) {
+                    player1Name = enemies[i].name;
+                    console.log("What is happening nigga 1");
+                }
+                else if(player2Name != playerName && i === 1) {
+                    player2Name = enemies[i].name;
+                    console.log("What is happening nigga 2");
+                }
+                else if(player3Name != playerName && i === 2) {
+                    player3Name = enemies[i].name;
+                    console.log("What is happening nigga 3");
+                }
+                else if(player4Name != playerName && i === 3) {
+                    player4Name = enemies[i].name;
+                    console.log("What is happening nigga 4");
+                }
+            }
+
+            player1 = game.add.text(35, 525, player1Name, {font:"16px Arial", fill:"#ffffff"});
             graphics.drawRect(140, 320, 100, 100);
-            var player2 = game.add.text(175, 525, "player2", {font:"16px Arial", fill:"#ffffff"});
+            player2 = game.add.text(175, 525, player2Name, {font:"16px Arial", fill:"#ffffff"});
             graphics.drawRect(280, 320, 100, 100);
-            var player3 = game.add.text(315, 525, "player3", {font:"16px Arial", fill:"#ffffff"});
+            player3 = game.add.text(315, 525, player3Name, {font:"16px Arial", fill:"#ffffff"});
             graphics.drawRect(420, 320, 100, 100);
-            var player4 = game.add.text(455, 525, "player4", {font:"16px Arial", fill:"#ffffff"});
+            player4 = game.add.text(455, 525,  player4Name, {font:"16px Arial", fill:"#ffffff"});
         }
         if((netMode && isHost) || !netMode )
             var start = game.add.button(GAMEWIDTH-200, GAMEHEIGHT-100, "start_btn", this.startGame, this, 1, 2);
     },
 
     update: function() {
+        if(netMode) {
+            for(var i = 0; i < enemies.length; i++){
+                if(player1Name != playerName && i === 0) {
+                    player1.setText(enemies[i].name);
+                }
+                else if(player2Name != playerName && i === 1) {
+                    player2.setText(enemies[i].name);
+                }
+                else if(player3Name != playerName && i === 2) {
+                    player3.setText(enemies[i].name);
+                }
+                else if(player4Name != playerName && i === 3) {
+                    player4.setText(enemies[i].name);
+                }
+            }
+        }
+        if(enemies.length > enemyNum)
+        {
+            console.log(enemies);
+            enemyNum = enemies.length;
 
+        }
     },
 
     levelSelect1: function() {

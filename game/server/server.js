@@ -176,7 +176,7 @@ function onNewSession(data) {
         }
     }
     util.log("New session created: " + newSession.getName());
-    this.emit("joined session", {name: newSession.name, level: 0});
+    this.emit("joined session", {name: newSession.name, level: 0, lobbyID: 1});
     this.broadcast.emit("new session", {name: newSession.getName(), playerCount: 1});
     sessions.push(newSession);
 }
@@ -191,6 +191,7 @@ function onUpdateSession(data) {
 
 function onJoinSession(data) {
     var joinSession = sessionByName(data.name);
+    util.log("I made it here");
     if (joinSession) {
         if (joinSession.players.length >= 4) {
             // Spectate mode
@@ -198,11 +199,16 @@ function onJoinSession(data) {
         else {
             joinSession.addPlayer(playerById(this.id));
             util.log("Joined session: " + joinSession.name);
-
+            util.log(joinSession);
             this.emit("joined session", {name: joinSession.name, level: joinSession.level,
                 lobbyID: (joinSession.nxtLobbyID-1)});
             for (var i = 0; i < joinSession.players.length; i++) {
+                util.log("what is happening mannn?");
                 this.emit("new player", {
+                    name: joinSession.name, id: joinSession.players[i].id,
+                    x: joinSession.players[i].x, y: joinSession.players[i].y,
+                    enemyName: joinSession.players[i].name, lobbyID: joinSession.players[i].lobbyID});
+                this.broadcast.emit("new player", {
                     name: joinSession.name, id: joinSession.players[i].id,
                     x: joinSession.players[i].x, y: joinSession.players[i].y,
                     enemyName: joinSession.players[i].name, lobbyID: joinSession.players[i].lobbyID});
