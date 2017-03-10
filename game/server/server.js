@@ -284,8 +284,8 @@ function onStartSession(data) {
         // All checks cleared
         if (start) {
             util.log("starting game");
-            this.emit("start session", {name: startingSession.id});
-            this.broadcast.emit("start session", {name: startingSession.id});
+            this.emit("start session", {name: startingSession.name});
+            this.broadcast.emit("start session", {name: startingSession.name});
             // Assign positions then update players that session has started
         }
     }

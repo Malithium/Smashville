@@ -191,7 +191,7 @@ function onNewPlayer (data) {
 
 // Another player has selected a character
 function onCharacterSelected(data) {
-    if (session.name === data.name ) {
+    if (localSession.name === data.name ) {
         var charPlayer = playerById(data.id);
         if (!charPlayer) {
             console.log("Player not found: ", data.id);
@@ -204,7 +204,9 @@ function onCharacterSelected(data) {
 
 // Let the games begin!!!
 function onStartSession(data) {
-    if (session.name === data.name ) {
+    console.log(data.name + " is starting!");
+    console.log(localSession.name + " is starting!");
+    if (localSession.name === data.name ) {
         for (var i = 0; i < enemies.length; i++) {
             enemies[i].startGame();
         }
