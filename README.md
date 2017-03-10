@@ -1,3 +1,5 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/d2e482cf66b74dc9b70244ccba7638b5)](https://www.codacy.com/app/JoshuaPetherick/Smashville?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Malithium/Smashville&amp;utm_campaign=Badge_Grade)
+
 # Smashville
 ##Description
 Smashville is a tribute game to the Nintendo game Super Smash Bros with inspirations from other classic games, such as Street Fighter 2. Players
