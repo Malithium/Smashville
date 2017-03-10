@@ -9,7 +9,7 @@
  */
 var registerDamage = function(value, dmg) {
     return value + dmg;
-}
+};
 
 /*
  Takes a players percentage and damage value to
@@ -18,7 +18,7 @@ var registerDamage = function(value, dmg) {
  */
 var calculateKnockback = function(val, dmg) {
     return (val * 4) + dmg;
-}
+};
 
 /*
  Cycle through players array, checking if/which
@@ -35,7 +35,7 @@ var checkCollision = function (player, players) {
         }
     }
     return false;
-}
+};
 
 var Logic = {
     registerDamage: registerDamage,

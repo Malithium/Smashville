@@ -5,11 +5,11 @@
 var GAMEHEIGHT = 600;
 var GAMEWIDTH = 900;
 
-var game = new Phaser.Game(GAMEWIDTH, GAMEHEIGHT, Phaser.AUTO, 'Smashville');
-game.state.add('load', loadState);
-game.state.add('user', userState);
-game.state.add('menu', menuState);
-game.state.add('chat', chatState);
-game.state.add('play', playState);
+var game = new Phaser.Game(GAMEWIDTH, GAMEHEIGHT, Phaser.AUTO, "Smashville");
+game.state.add("load", loadState);
+game.state.add("user", userState);
+game.state.add("menu", menuState);
+game.state.add("chat", chatState);
+game.state.add("play", playState);
 
-game.state.start('load');
+game.state.start("load");

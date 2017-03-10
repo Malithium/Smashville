@@ -5,8 +5,8 @@
   "main": "Server/server.js",
   "license": "MIT",
   "authors": {
-    "author": "Joshua Petherick",
-    "author":  "Kyle Tuckey"
+    "author1": "Joshua Petherick",
+    "author2":  "Kyle Tuckey"
   },
   "repository": {
     "type": "git",
