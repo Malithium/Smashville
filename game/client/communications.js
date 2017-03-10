@@ -232,7 +232,7 @@ function onMovePlayer (data) {
 function onPlayerHit(data) {
     if (localSession.id === data.name ) {
         if (localID === data.id) {
-            player.percentage = data.percentage;
+            player.percentage = data.percent;
             player.registerHit(data.knockback, data.dir, data.up);
         }
         else {
@@ -242,7 +242,7 @@ function onPlayerHit(data) {
                 console.log("Player not found: ", data.id);
                 return false;
             }
-            hitPlayer.percentage = data.percentage;
+            hitPlayer.percentage = data.percent;
         }
     }
 }

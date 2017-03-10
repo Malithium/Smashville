@@ -243,7 +243,7 @@ function onCharSelection(data) {
             charSession.players[i].characterID = data.charID;
         }
     }
-    util.log(charSession.players);
+    //util.log(charSession.players);
 
     this.broadcast.emit("character selected", {name: charSession.name, id: charPlayer.id, charID: data.charID});
 }
@@ -304,6 +304,7 @@ function onMovePlayer (data) {
 
     var moveSession = false;
     for (var i = 0; i < sessions.length; i++) {
+        //console.log(sessions[i].getPlayerById(this.id));
         if (sessions[i].getPlayerById(this.id)) {
             moveSession = sessions[i];
         }
@@ -325,17 +326,16 @@ function onMovePlayer (data) {
 }
 
 function onPlayerHit(data) {
-    var hitPlayer = playerById(data.id);
-    var result = Logic.checkCollision(hitPlayer, clients);
-    if(result) {
+    var hitPlayer = Logic.checkCollision(playerById(this.id), clients);
+    if(hitPlayer) {
         var hitSession = false;
         for (var i = 0; i < sessions.length; i++) {
             if (sessions[i].getPlayerById(this.id)) {
-                hitSession  = sessions[i];
+                hitSession = sessions[i];
             }
         }
 
-        util.log(data.id + " vs " + hitPlayer.id);
+        util.log(this.id + " vs " + hitPlayer.id);
         hitPlayer.setPercentage(Logic.registerDamage(hitPlayer.getPercentage(), data.dmg));
         var knockback = Logic.calculateKnockback(hitPlayer.getPercentage(), data.dmg);
         var dir, up;
