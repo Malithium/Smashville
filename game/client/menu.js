@@ -118,7 +118,7 @@ var menuState = {
 
         if(!error) {
             sendPacket("start session", {name: lobbyName});
-            if(serverAuthority || local) {
+            if(local) {
                 game.state.start("play");
             }
         }

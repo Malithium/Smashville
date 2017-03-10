@@ -208,6 +208,7 @@ function onStartSession(data) {
         for (var i = 0; i < enemies.length; i++) {
             enemies[i].startGame();
         }
+        game.state.start("play");
     }
 }
 
