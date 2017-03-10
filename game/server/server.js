@@ -104,7 +104,7 @@ function onNewPlayer (data) {
 
     // Send existing clients to the new player
     for (var i = 0; i < sessions.length; i++) {
-        existingSession = sessions[i];
+        var existingSession = sessions[i];
         this.emit("new session", {name: existingSession.name, playerCount: existingSession.players.length});
     }
 
@@ -220,6 +220,9 @@ function onJoinSession(data) {
                 enemyName: joinPlayer.getName(), lobbyID: joinPlayer.lobbyID});
             // Update player count list
             this.broadcast.emit("update session list", {name: joinSession.name, playerCount: joinSession.players.length});
+            if (joinSession.sessionState = joinSession.sessionStates.STARTING) {
+                // Enter as Spectator
+            }
         }
     }
 }
@@ -236,10 +239,8 @@ function onCharSelection(data) {
         util.log("Session not found: " + data.name);
         return false;
     }
-    for(var i = 0; i < charSession.players.length; i++)
-    {
-        if(charSession.players[i].getName() === data.charName)
-        {
+    for(var i = 0; i < charSession.players.length; i++) {
+        if(charSession.players[i].getName() === data.charName) {
             charSession.players[i].characterID = data.charID;
         }
     }
@@ -284,6 +285,7 @@ function onStartSession(data) {
         // All checks cleared
         if (start) {
             util.log("starting game");
+            startingSession.sessionState = startingSession.sessionStates.STARTING;
             this.emit("start session", {name: startingSession.name});
             this.broadcast.emit("start session", {name: startingSession.name});
             // Assign positions then update players that session has started
@@ -326,15 +328,14 @@ function onMovePlayer (data) {
 }
 
 function onPlayerHit(data) {
-    var hitPlayer = Logic.checkCollision(playerById(this.id), clients);
-    if(hitPlayer) {
-        var hitSession = false;
-        for (var i = 0; i < sessions.length; i++) {
-            if (sessions[i].getPlayerById(this.id)) {
-                hitSession = sessions[i];
-            }
+    var hitSession = false;
+    for (var i = 0; i < sessions.length; i++) {
+        if (sessions[i].getPlayerById(this.id)) {
+            hitSession = sessions[i];
         }
-
+    }
+    var hitPlayer = Logic.checkCollision(playerById(this.id), hitSession.players);
+    if(hitPlayer) {
         util.log(this.id + " vs " + hitPlayer.id);
         hitPlayer.setPercentage(Logic.registerDamage(hitPlayer.getPercentage(), data.dmg));
         var knockback = Logic.calculateKnockback(hitPlayer.getPercentage(), data.dmg);

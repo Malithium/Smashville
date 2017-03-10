@@ -7,7 +7,7 @@
 // Server-to-Client variables
 var local = true;
 var socket;
-var localID;
+var localID = null;
 var localSession;
 
 // Based off code in: https://github.com/xicombd/phaser-multiplayer-game
@@ -60,6 +60,8 @@ function setEventHandlers () {
 
     // Player has been hit
     socket.on("hit player", onPlayerHit);
+
+    localID = 0;
 }
 
 function sendPacket(type, data) {
@@ -94,6 +96,7 @@ function onSocketDisconnect () {
 function onConnection(data) {
     console.log("id: " + data.id);
     localID = data.id;
+    game.state.start("chat");
 }
 
 // New message recieved

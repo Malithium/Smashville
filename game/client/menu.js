@@ -139,7 +139,11 @@ var menuState = {
         }
         port = document.getElementsByName("port")[0].value;
 
-        game.state.start("chat");
+        console.log(ip + ":" + port);
+        socket = io.connect(ip + ":" + port);
+        if (localID === null) {
+            setEventHandlers();
+        }
     }
 };
 

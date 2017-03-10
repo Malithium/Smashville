@@ -9,9 +9,7 @@ var numOfSessions = 0;
 
 var chatState = {
     preload: function(){
-        console.log(ip + ":" + port);
-        socket = io.connect(ip + ":" + port);
-        setEventHandlers();
+    // Something(?)
     },
 
     create: function () {
