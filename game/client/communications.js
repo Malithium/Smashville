@@ -191,7 +191,7 @@ function onNewPlayer (data) {
 
 // Another player has selected a character
 function onCharacterSelected(data) {
-    if (localSession.name === data.name ) {
+    if (localSession.id === data.name ) {
         var charPlayer = playerById(data.id);
         if (!charPlayer) {
             console.log("Player not found: ", data.id);
@@ -205,8 +205,8 @@ function onCharacterSelected(data) {
 // Let the games begin!!!
 function onStartSession(data) {
     console.log(data.name + " is starting!");
-    console.log(localSession.name + " is starting!");
-    if (localSession.name === data.name ) {
+    console.log(localSession.id + " is starting!");
+    if (localSession.id === data.name ) {
         for (var i = 0; i < enemies.length; i++) {
             enemies[i].startGame();
         }
@@ -216,7 +216,7 @@ function onStartSession(data) {
 
 // Move player
 function onMovePlayer (data) {
-    if (localSession.name === data.name ) {
+    if (localSession.id === data.name ) {
         var movePlayer = playerById(data.id);
 
         // Player not found
@@ -234,7 +234,7 @@ function onMovePlayer (data) {
 
 // Player has been hit
 function onPlayerHit(data) {
-    if (localSession.name === data.name ) {
+    if (localSession.id === data.name ) {
         if (localID === data.id) {
             player.percentage = data.percentage;
             player.registerHit(data.knockback, data.dir, data.up);
@@ -253,7 +253,7 @@ function onPlayerHit(data) {
 
 // Remove player
 function onRemovePlayer (data) {
-    if (localSession.name === data.name ) {
+    if (localSession.id === data.name ) {
         var removePlayer = playerById(data.id);
 
         // Player not found
