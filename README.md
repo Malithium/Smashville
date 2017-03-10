@@ -17,7 +17,7 @@ Uppercut        -   Up Arrow Key
 Low Blow        -   Down Arrow Key
 
 ## How to Install
-To run the game itself just head to our hosted link (Provided by Github) at: https://malithium.github.io/Smashville/
+To run the game itself just head to our hosted link (Provided by Github) at: https://malithium.github.io/Smashville/game/
 
 To host a server then you'll need to install Node.js and npm. These can both be obtained at: https://nodejs.org/en/download/
 Once these are installed just follow the instructions below:
