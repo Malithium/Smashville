@@ -284,7 +284,7 @@ function onStartSession(data) {
         }
         // All checks cleared
         if (start) {
-            util.log("starting game");
+            util.log("Starting session: " + startingSession.name);
             startingSession.sessionState = startingSession.sessionStates.STARTING;
             this.emit("start session", {name: startingSession.name});
             this.broadcast.emit("start session", {name: startingSession.name});

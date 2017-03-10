@@ -141,7 +141,7 @@ var menuState = {
 
         console.log(ip + ":" + port);
         socket = io.connect(ip + ":" + port);
-        if (localID === null) {
+        if (localID === -1) {
             setEventHandlers();
         }
     }

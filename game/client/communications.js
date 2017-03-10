@@ -7,7 +7,7 @@
 // Server-to-Client variables
 var local = true;
 var socket;
-var localID = null;
+var localID = -1;
 var localSession;
 
 // Based off code in: https://github.com/xicombd/phaser-multiplayer-game
@@ -60,7 +60,6 @@ function setEventHandlers () {
 
     // Player has been hit
     socket.on("hit player", onPlayerHit);
-
     localID = 0;
 }
 
@@ -88,7 +87,12 @@ function onSocketConnected () {
 // Socket disconnected
 function onSocketDisconnect () {
     console.log("Disconnected from socket server");
+    for (var i = 0; i < enemies.length; i++) {
+        enemies[i].remove();
+    }
     localSession = null;
+    sessions = [];
+    enemies = [];
     local = true;
 }
 
