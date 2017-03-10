@@ -25,13 +25,15 @@ function Session(host) {
     };
 
     this.getPlayerById = function(id) {
-        var result = this.players.forEach(function(player) {
-            if (player.id === id) {
-                return player;
+        // var result = this.players.forEach(function(player) {
+        //    if (player.id === id) {
+        //        return player;
+        //    }
+        //});
+        for (var i = 0; i < this.players.length; i++) {
+            if (this.players[i].id == id) {
+                return this.players[i];
             }
-        });
-        if(result) {
-            return result;
         }
         return false;
     };

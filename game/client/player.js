@@ -78,7 +78,7 @@ function Player(x, y) {
         // Actions
         if(this.action1.isDown && !this.action1Pressed) {
             console.log("Attack Left");
-            sendPacket("hit player", { action: 1, dmg: 6, id: this.id });
+            sendPacket("hit player", { action: 1, dmg: 6, id: localID });
             this.action1Pressed = true;
         }
         else if (this.action1.isUp) {
@@ -87,7 +87,7 @@ function Player(x, y) {
 
         if(this.action2.isDown && !this.action2Pressed) {
             console.log("Attack Right");
-            sendPacket("hit player", { action: 2, dmg: 6, id: this.id });
+            sendPacket("hit player", { action: 2, dmg: 6, id: localID });
             this.action2Pressed = true;
         }
         else if (this.action2.isUp) {
@@ -96,7 +96,7 @@ function Player(x, y) {
 
         if(this.action3.isDown && !this.action3Pressed) {
             console.log("Uppercut");
-            sendPacket("hit player", { action: 3, dmg: 8, id: this.id });
+            sendPacket("hit player", { action: 3, dmg: 8, id: localID });
             this.action3Pressed = true;
         }
         else if (this.action3.isUp) {
@@ -105,7 +105,7 @@ function Player(x, y) {
 
         if(this.action4.isDown && !this.action4Pressed) {
             console.log("Low Blow");
-            sendPacket("hit player", { action: 4, dmg: 3, id: this.id });
+            sendPacket("hit player", { action: 4, dmg: 3, id: localID });
             this.action4Pressed = true;
         }
         else if (this.action4.isUp) {

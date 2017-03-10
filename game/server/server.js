@@ -325,8 +325,9 @@ function onMovePlayer (data) {
 }
 
 function onPlayerHit(data) {
-    var hitPlayer = Logic.checkCollision(playerById(data.id), clients);
-    if(hitPlayer) {
+    var hitPlayer = playerById(data.id);
+    var result = Logic.checkCollision(hitPlayer, clients);
+    if(result) {
         var hitSession = false;
         for (var i = 0; i < sessions.length; i++) {
             if (sessions[i].getPlayerById(this.id)) {
