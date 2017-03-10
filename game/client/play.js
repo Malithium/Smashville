@@ -25,11 +25,10 @@ var playState = {
 
     create: function() {
         loadLevel();
-        game.physics.startSystem(Phaser.Physics.ARCADE);
-        game.physics.arcade.gravity.y = 350;
-
         player = new Player(GAMEWIDTH/2, GAMEHEIGHT/2, false);
-
+        for (var i = 0; i < enemies.length; i++) {
+            enemies[i].startGame();
+        }
         debugButton = game.input.keyboard.addKey(Phaser.Keyboard.TAB);
     }, // create()
 

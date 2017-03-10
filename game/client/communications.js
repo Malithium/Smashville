@@ -205,11 +205,7 @@ function onCharacterSelected(data) {
 // Let the games begin!!!
 function onStartSession(data) {
     console.log(data.name + " is starting!");
-    console.log(localSession.id + " is starting!");
     if (localSession.id === data.name ) {
-        for (var i = 0; i < enemies.length; i++) {
-            enemies[i].startGame();
-        }
         game.state.start("play");
     }
 }

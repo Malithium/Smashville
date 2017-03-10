@@ -24,6 +24,8 @@ var loadState = {
       d.style.top = overlayY+"px";
       d.style.display = "none";
 
+      game.physics.startSystem(Phaser.Physics.ARCADE);
+      game.physics.arcade.gravity.y = 350;
   },
 
   create: function() {
