@@ -94,13 +94,14 @@ function onSocketDisconnect () {
     sessions = [];
     enemies = [];
     local = true;
+    game.state.start("menu"); // Reset to local screen as have disconnected
 }
 
 // Get connection details
 function onConnection(data) {
     console.log("id: " + data.id);
     localID = data.id;
-    game.state.start("chat");
+    game.state.start("chat"); // Connected so proceed
 }
 
 // New message recieved
