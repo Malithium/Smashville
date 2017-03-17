@@ -44,7 +44,7 @@ var specState = {
             game.debug.cameraInfo(game.camera, 32, 32);
         }
         for (var i = 0; i < enemies.length; i++) {
-            game.debug.text(enemies[i].percentage, 30*(i), 540, "#00ff00"); // Prints FPS
+            game.debug.text(enemies[i].percentage, (30*enemies[i].lobbyID), 540, "#00ff00"); // Prints FPS
         }
     } // render()
 

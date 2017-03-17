@@ -59,9 +59,9 @@ var playState = {
             game.debug.body(player.playerSprite);
             game.debug.cameraInfo(game.camera, 32, 32);
         }
-        game.debug.text(player.percentage, 0, 540, "#00ff00"); // Prints FPS
+        game.debug.text(player.percentage, (30*lobbyID), 540, "#00ff00"); // Prints FPS
         for (var i = 0; i < enemies.length; i++) {
-            game.debug.text(enemies[i].percentage, 30*(i+1), 540, "#00ff00"); // Prints FPS
+            game.debug.text(enemies[i].percentage, (30*enemies[i].lobbyID), 540, "#00ff00"); // Prints FPS
         }
     } // render()
 
