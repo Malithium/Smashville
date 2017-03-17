@@ -11,5 +11,6 @@ game.state.add("user", userState);
 game.state.add("menu", menuState);
 game.state.add("chat", chatState);
 game.state.add("play", playState);
+game.state.add("spectate", specState);
 
 game.state.start("load");

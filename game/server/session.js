@@ -19,6 +19,18 @@ function Session(host) {
         return this.name;
     };
 
+    this.getState = function() {
+        switch(this.sessionState) {
+            case this.sessionStates.LOBBY:
+                return 1;
+                break;
+            case this.sessionStates.STARTING:
+                return 2;
+                break;
+        }
+        return 1; // Default return LOBBY
+    }
+
     this.addPlayer = function(player) {
         this.players.push(player);
         this.nxtLobbyID++;

@@ -54,6 +54,8 @@ function setEventHandlers () {
     // Player has left the lobby or game
     socket.on("remove player", onRemovePlayer);
 
+    socket.on("spectate session", onSpectateSession);
+
     // IN-GAME METHODS
     // Player move message received
     socket.on("move player", onMovePlayer);
@@ -72,6 +74,7 @@ function sendPacket(type, data) {
 // Socket connected (Clear Enemies)
 function onSocketConnected () {
     console.log("Connected to socket server");
+    localSession = new session("0", 0, "", 1);
     local = false;
 
     for (var i = 0; i < enemies.length; i++) {
@@ -113,7 +116,7 @@ function onNewMessage(data) {
 // New session recieved
 function onNewSession(data) {
     var sessionbody = "<div class=\"session\"> <div class=\"session-name\">" + data.name + "</div> " + "<div class=\"session-count\">" + data.playerCount + "/4</div></div>";
-    var sess = new session(data.name, data.playerCount, sessionbody);
+    var sess = new session(data.name, data.playerCount, sessionbody, data.state);
     sessions.push(sess);
 }
 
@@ -172,9 +175,10 @@ function onClosedSession(data) {
 // This player has joined the lobby
 function onJoinedSession(data) {
     console.log("Joined session: " + data.name);
-    localSession = new session(data.name, 0, "");
+    localSession = new session(data.name, 0, "", 1);
     levelNum = data.level;
     lobbyID = data.lobbyID;
+    game.state.start("menu");
 }
 
 // A new player has joined the Lobby
@@ -216,6 +220,14 @@ function onStartSession(data) {
     if (localSession.id === data.name ) {
         game.state.start("play");
     }
+}
+
+// Handle spectating
+function onSpectateSession(data) {
+    localSession.id = data.name;
+    levelNum = data.level;
+    lobbyID = 0;
+    game.state.start("spectate");
 }
 
 // Move player

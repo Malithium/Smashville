@@ -13,8 +13,6 @@ var chatState = {
     },
 
     create: function () {
-        numOfMessages = messages.length;
-        numOfSessions = sessions.length;
         netMode = true;
         nameLabel = game.add.text(10, 10, "Chat", {font: "30px Arial", fill: "#ffffff"});
         d = document.getElementById("chat-overlay");
@@ -52,19 +50,15 @@ var chatState = {
 
     update: function () {
          if (numOfMessages != messages.length) {
-             numOfMessages = messages.length;
              m = document.getElementById("chat-area");
              m.innerHTML = "";
              messages.forEach(function(msg) {
                  m.innerHTML += msg;
              });
+             numOfMessages = messages.length;
          }
 
-        if(numOfSessions > sessions.length) {
-            numOfSessions = sessions.length;
-        }
-        else if(numOfSessions != sessions.length) {
-            numOfSessions = sessions.length;
+        if(numOfSessions != sessions.length) {
             innerSessions = document.getElementById("session-area");
             sessions.forEach(function (sess) {
                 innerSessions.innerHTML += sess.body;
@@ -85,15 +79,14 @@ var chatState = {
                 };
 
                 sessionCol[i].onclick = function () {
-
                     d = document.getElementById("chat-overlay").style.display = "none";
                     s = document.getElementById("session-overlay").style.display = "none";
-                    var sessionName = this.getElementsByClassName("session-name")[0].innerText
+                    var sessionName = this.getElementsByClassName("session-name")[0].innerText;
                     sendPacket("join session", {name: sessionName});
                     lobbyName = sessionName;
-                    game.state.start("menu");
                 };
             }
+            numOfSessions = sessions.length;
         }
     },
 

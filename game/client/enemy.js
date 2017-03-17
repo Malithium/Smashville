@@ -16,6 +16,7 @@ function Enemy(x, y, name) {
         this.playerSprite.height = 32;
         // Physics
         game.physics.arcade.enable(this.playerSprite);
+        this.playerSprite.body.gravity.y = 0; // Should help prevent Jitter
         // Properties
         //  Body
         this.playerSprite.body.setSize(64, 64, 0, 0); // 64x64 is default sprite size

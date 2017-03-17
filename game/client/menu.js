@@ -140,7 +140,7 @@ var menuState = {
         port = document.getElementsByName("port")[0].value;
 
         console.log(ip + ":" + port);
-        socket = io.connect(ip + ":" + port);
+        socket = io.connect("http://"+ ip + ":" + port);
         if (localID === -1) {
             setEventHandlers();
         }

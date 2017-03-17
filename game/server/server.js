@@ -25,6 +25,7 @@ var server = http.createServer(
     ecstatic({ root: path.resolve(__dirname, "../client") })
 ).listen(port, function (err) {
     if (err) {
+        util.log(err);
         throw err
     }
 
@@ -36,7 +37,7 @@ function init () {
     socket = io.listen(server);
 
     // Log Port selected
-    util.log("#Listening on port: " + port);
+    util.log("#Listening on: " + port);
 
     // Start listening for events
     setEventHandlers();
@@ -105,7 +106,7 @@ function onNewPlayer (data) {
     // Send existing clients to the new player
     for (var i = 0; i < sessions.length; i++) {
         var existingSession = sessions[i];
-        this.emit("new session", {name: existingSession.name, playerCount: existingSession.players.length});
+        this.emit("new session", {name: existingSession.name, playerCount: existingSession.players.length, state: existingSession.getState()});
     }
 
     // Send details
@@ -178,7 +179,7 @@ function onNewSession(data) {
     }
     util.log("New session created: " + newSession.getName());
     this.emit("joined session", {name: newSession.name, level: 0, lobbyID: 1});
-    this.broadcast.emit("new session", {name: newSession.getName(), playerCount: 1});
+    this.broadcast.emit("new session", {name: newSession.getName(), playerCount: 1, state: newSession.getState()});
     sessions.push(newSession);
 }
 
@@ -193,8 +194,16 @@ function onUpdateSession(data) {
 function onJoinSession(data) {
     var joinSession = sessionByName(data.name);
     if (joinSession) {
-        if (joinSession.players.length >= 4) {
-            // Spectate mode
+        if (joinSession.getState() === 2) {
+            // Spectate mode as game in progress
+            this.emit("spectate session", {name: joinSession.name, level: joinSession.level});
+            for (var i = 0; i < joinSession.players.length; i++) {
+                // Send new players other connected players details
+                this.emit("new player", {
+                    name: joinSession.name, id: joinSession.players[i].id,
+                    x: joinSession.players[i].x, y: joinSession.players[i].y,
+                    enemyName: joinSession.players[i].getName(), lobbyID: joinSession.players[i].lobbyID});
+            }
         }
         else {
             // Send new player connection details
@@ -220,9 +229,6 @@ function onJoinSession(data) {
                 enemyName: joinPlayer.getName(), lobbyID: joinPlayer.lobbyID});
             // Update player count list
             this.broadcast.emit("update session list", {name: joinSession.name, playerCount: joinSession.players.length});
-            if (joinSession.sessionState = joinSession.sessionStates.STARTING) {
-                // Enter as Spectator
-            }
         }
     }
 }
@@ -336,7 +342,7 @@ function onPlayerHit(data) {
     }
     var hitPlayer = Logic.checkCollision(playerById(this.id), hitSession.players);
     if(hitPlayer) {
-        util.log(this.id + " vs " + hitPlayer.id);
+        //util.log(this.id + " vs " + hitPlayer.id);
         hitPlayer.setPercentage(Logic.registerDamage(hitPlayer.getPercentage(), data.dmg));
         var knockback = Logic.calculateKnockback(hitPlayer.getPercentage(), data.dmg);
         var dir, up;
