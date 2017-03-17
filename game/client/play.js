@@ -18,51 +18,23 @@ var playerName;
 
 var playState = {
     preload: function() {
-    // Load in Assets
-        // Used for FPS counter
-        game.time.advancedTiming = true;
+        // ...
     }, //preload();
 
     create: function() {
-        loadLevel();
         player = new Player(GAMEWIDTH/2, GAMEHEIGHT/2, false);
-        for (var i = 0; i < enemies.length; i++) {
-            enemies[i].startGame();
-        }
-        debugButton = game.input.keyboard.addKey(Phaser.Keyboard.TAB);
+        createGame();
     }, // create()
 
     update: function() {
         // Update Object states
         player.playerUpdate();
-        mapEffects();
-        for (var i = 0; i < enemies.length; i++) {
-            enemies[i].playerUpdate();
-        }
-
-        if(debugButton.isDown && !debugPressed) {
-            if (debug) {debug = false; }
-            else {debug = true; }
-            debugPressed = true;
-        }
-        else if (debugButton.isUp) {debugPressed = false;}
-        if (player.lastX != player.x || player.lastY != player.y) {
-            sendPacket("move player", {x: player.x, y: player.y});
-        }
+        updateGame();
     }, // update()
 
     render: function() {
-        // Render text to screen
-        game.debug.reset();
-        if (debug) {
-            game.debug.text(game.time.fps || "--", 2, 14, "#00ff00"); // Prints FPS
-            game.debug.body(player.playerSprite);
-            game.debug.cameraInfo(game.camera, 32, 32);
-        }
+        renderGame();
         game.debug.text(player.percentage, (30*lobbyID), 540, "#00ff00"); // Prints FPS
-        for (var i = 0; i < enemies.length; i++) {
-            game.debug.text(enemies[i].percentage, (30*enemies[i].lobbyID), 540, "#00ff00"); // Prints FPS
-        }
     } // render()
 
 };
@@ -83,11 +55,51 @@ function loadLevel() {
     map.setCollisionBetween(0, 100, true, GroundLayer);
 }
 
+function createGame() {
+    loadLevel();
+    for (var i = 0; i < enemies.length; i++) {
+        enemies[i].startGame();
+    }
+    debugButton = game.input.keyboard.addKey(Phaser.Keyboard.TAB);
+}
+
 function mapEffects() {
     // Issue with anchors and such, needs looking into
     switch(levelNum) {
         case 3:
             //GroundLayer.angle += 1;
             break;
+    }
+}
+
+function updateGame() {
+    mapEffects();
+    for (var i = 0; i < enemies.length; i++) {
+        enemies[i].playerUpdate();
+    }
+
+    if(debugButton.isDown && !debugPressed) {
+        if (debug) {debug = false; }
+        else {debug = true; }
+        debugPressed = true;
+    }
+    else if (debugButton.isUp) {debugPressed = false;}
+    if (player.lastX != player.x || player.lastY != player.y) {
+        sendPacket("move player", {x: player.x, y: player.y});
+    }
+}
+
+function renderGame() {
+    // Render text to screen
+    game.debug.reset();
+    if (debug) {
+        if (player) {
+            game.debug.body(player.playerSprite);
+        }
+        game.debug.text(game.time.fps || "--", 2, 14, "#00ff00"); // Prints FPS
+        game.debug.cameraInfo(game.camera, 32, 32);
+    }
+    for (var i = 0; i < enemies.length; i++) {
+        game.debug.text(enemies[i].percentage, (30*enemies[i].lobbyID), 540, "#00ff00"); // Prints FPS
     }
 }
