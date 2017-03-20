@@ -18,12 +18,10 @@ var specState = {
             // Exit spectate mode
             game.state.start("chat");
         }
-
     }, // update()
 
     render: function() {
         // Render text to screen
         renderGame();
     } // render()
-
 };

@@ -338,6 +338,7 @@ function onPlayerHit(data) {
     for (var i = 0; i < sessions.length; i++) {
         if (sessions[i].getPlayerById(this.id)) {
             hitSession = sessions[i];
+            break;
         }
     }
     var hitPlayer = Logic.checkCollision(playerById(this.id), hitSession.players);

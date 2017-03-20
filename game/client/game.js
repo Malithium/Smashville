@@ -13,6 +13,4 @@ game.state.add("chat", chatState);
 game.state.add("play", playState);
 game.state.add("spectate", specState);
 
-// Used for FPS counter
-game.time.advancedTiming = true;
 game.state.start("load");

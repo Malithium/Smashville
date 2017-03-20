@@ -36,7 +36,6 @@ var playState = {
         renderGame();
         game.debug.text(player.percentage, (30*lobbyID), 540, "#00ff00"); // Prints FPS
     } // render()
-
 };
 
 function loadLevel() {
@@ -77,15 +76,16 @@ function updateGame() {
     for (var i = 0; i < enemies.length; i++) {
         enemies[i].playerUpdate();
     }
-
     if(debugButton.isDown && !debugPressed) {
         if (debug) {debug = false; }
         else {debug = true; }
         debugPressed = true;
     }
     else if (debugButton.isUp) {debugPressed = false;}
-    if (player.lastX != player.x || player.lastY != player.y) {
-        sendPacket("move player", {x: player.x, y: player.y});
+    if (player) {
+        if (player.lastX != player.x || player.lastY != player.y) {
+            sendPacket("move player", {x: player.x, y: player.y});
+        }
     }
 }
 
