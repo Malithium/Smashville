@@ -54,6 +54,7 @@ function setEventHandlers () {
     // Player has left the lobby or game
     socket.on("remove player", onRemovePlayer);
 
+    // Player has started spectating session
     socket.on("spectate session", onSpectateSession);
 
     // IN-GAME METHODS
@@ -62,6 +63,9 @@ function setEventHandlers () {
 
     // Player has been hit
     socket.on("hit player", onPlayerHit);
+
+    // Session has finished
+    socket.on("sessions over", onSessionOver);
     localID = 0;
 }
 
@@ -138,6 +142,12 @@ function onUpdateSessionList(data) {
             sessions[i].count = data.playerCount
         }
     }
+}
+
+// Sessions level has been updated
+function onUpdateSessionLevel(data) {
+    if(data.name == lobbyName)
+        levelNum = data.level;
 }
 
 // Remove session from front-end and array
@@ -284,9 +294,12 @@ function onRemovePlayer (data) {
     }
 }
 
-function onUpdateSessionLevel(data) {
-    if(data.name == lobbyName)
-        levelNum = data.level;
+// Session is over, return to Lobby state
+function onSessionOver(data) {
+    if (localSession.id === data.name ) {
+        localSession.state = 1;
+        game.state.start("menu");
+    }
 }
 
 // Find player by ID
