@@ -70,8 +70,10 @@ function setEventHandlers () {
 }
 
 function sendPacket(type, data) {
+    console.log('Test packet!');
     if(!local) {
         socket.emit(type, data);
+        console.log('Sent packet!');
     }
 }
 

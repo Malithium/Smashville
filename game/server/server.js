@@ -63,7 +63,7 @@ function onSocketConnection (client) {
     client.on("new player", onNewPlayer);
 
     // Listen for client disconnected
-    client.on("disconnect", onClientDisconnect);
+    client.on("disconnected", onClientDisconnect);
 
     // MESSAGES AND SESSION METHODS
     // Listen for new lobby message
