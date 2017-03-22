@@ -18,6 +18,7 @@ var loadState = {
       game.load.image("player2", "assets/images/playerTest2.png");
       game.load.image("tiles1", "assets/images/tiles1.png");
       game.load.image("tiles2", "assets/images/tiles2.png");
+      game.load.image("back", "assets/images/back_button.png");
 
       var overlayX = (GAMEWIDTH/2 - 300/2);
       var overlayY = (GAMEHEIGHT/2 - 300/2);

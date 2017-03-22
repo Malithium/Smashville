@@ -23,6 +23,7 @@ var chatState = {
         a = document.getElementById("chat-button");
         a.style.cursor = "pointer";
 
+        backButton = game.add.button(10, GAMEHEIGHT-40, "back", this.back, this, 1, 2);
         a.onclick = function () {
 
             txt = document.getElementById("chat-text").value;
@@ -97,5 +98,21 @@ var chatState = {
         lobbyName = playerName + " Session";
         sendPacket("new session", {id: localID, name: playerName});
         game.state.start("menu");
+    },
+
+    back: function(){
+        var elements = document.getElementsByClassName("session");
+        while(elements.length > 0){
+            elements[0].parentNode.removeChild(elements[0]);
+        }
+        netMode = false;
+        d = document.getElementById("chat-overlay").style.display = "none";
+        s = document.getElementById("session-overlay").style.display = "none";
+        ip = "";
+        host = "";
+        sendPacket("disconnect",{});
+        localID = -1;
+        game.state.start("menu");
+
     }
 }

@@ -25,6 +25,7 @@ var player4;
 var menuState = {
     create: function() {
         characterLabel = game.add.text(10, 240,"choose a character", {font: "25px Arial", fill: "#ffffff"});
+        backButton = game.add.button(10, GAMEHEIGHT-40, "back", this.back, this, 1, 2);
         if((!netMode) || (netMode && isHost)) {
             levelLabel = game.add.text(10, 60,"choose a level", {font: "25px Arial", fill: "#ffffff"});
             var level1 = game.add.button(10, 100, "level1_btn", this.levelSelect1, this, 1, 2);
@@ -144,6 +145,25 @@ var menuState = {
         if (localID === -1) {
             setEventHandlers();
         }
+    },
+
+    back: function() {
+        if(netMode) {
+            if(isHost) {
+                isHost = false;
+                lobbyName = "";
+            }
+            disconnected();
+        }
+        else{
+            playerNum = 0;
+            levelNum = 0;
+            playerName = "";
+            var u = document.getElementById("user-overlay").style.display = "block";
+            var d = document.getElementById("ip-host").style.display = "none";
+            game.state.start("user")
+        }
+
     }
 };
 
