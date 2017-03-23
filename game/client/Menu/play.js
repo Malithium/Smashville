@@ -60,6 +60,7 @@ function createGame() {
         enemies[i].startGame();
     }
     debugButton = game.input.keyboard.addKey(Phaser.Keyboard.TAB);
+    music.queueSong('battleMusic'); // Change to "in-game" song
 }
 
 function mapEffects() {
@@ -73,6 +74,7 @@ function mapEffects() {
 
 function updateGame() {
     mapEffects();
+    music.musicUpdate();
     for (var i = 0; i < enemies.length; i++) {
         enemies[i].playerUpdate();
     }

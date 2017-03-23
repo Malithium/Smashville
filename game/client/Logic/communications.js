@@ -70,10 +70,8 @@ function setEventHandlers () {
 }
 
 function sendPacket(type, data) {
-    console.log('Test packet!');
     if(!local) {
         socket.emit(type, data);
-        console.log('Sent packet!');
     }
 }
 
@@ -300,6 +298,7 @@ function onRemovePlayer (data) {
 function onSessionOver(data) {
     if (localSession.id === data.name ) {
         localSession.state = 1;
+        music.queueSong('menuMusic'); // Change to "in-game" song
         game.state.start("menu");
     }
 }

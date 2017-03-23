@@ -64,6 +64,7 @@ var menuState = {
         if(lobbyID != 0) {
             updateBoxes(lobbyID, playerName);
         }
+        music.musicUpdate();
     },
 
     levelSelect1: function() {
