@@ -28,7 +28,7 @@ Once these are installed just follow the instructions below:
 -   Type "nodemon Server/server.js". This will start hosting your server on port 44555.
 -   You're good to go!
 
-#Project Logs
+# Project Logs
 ## Kyle Note 20/01/2017
 Added in a very basic level and menu system, this needs to be redesigned a bit, the current implementation is very 'crude' but it is a starting 
 point to work with. I am also currently unsure how to test it, will look into potential test cases. 
