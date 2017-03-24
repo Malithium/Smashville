@@ -16,6 +16,12 @@
     "ecstatic": "^1.0.1",
     "express": "^4.10.2",
     "nodemon": "^1.11.0",
-    "socket.io": "^1.7.2"
+    "socket.io": "^1.7.2",
+    "esdoc": "^0.1.2"
+  },
+  "scripts": {
+    "doc": "esdoc -c esdoc.json",
+    "server": "nodemon game/server/server.js",
+    "postinstall": "npm run doc"
   }
 }

@@ -66,6 +66,9 @@ function setEventHandlers () {
 
     // Session has finished
     socket.on("sessions over", onSessionOver);
+
+    // Player has died, stop rendering them
+    socket.on("player death", onPlayerDeath);
     localID = 0;
 }
 
@@ -144,13 +147,20 @@ function onUpdateSessionList(data) {
     }
 }
 
-// Sessions level has been updated
+/**
+ * Sessions level has been updated
+ * @param data - Packet data from server
+ * @param data.name - Session name
+ * @param data.level - Sessions new levelID
+ */
 function onUpdateSessionLevel(data) {
     if(data.name == lobbyName)
         levelNum = data.level;
 }
 
-// Remove session from front-end and array
+/**
+ * Remove session from front-end and array
+ */
 function onClosedSession(data) {
     // Retreive the sessions from the HTML
     sessionCol = document.getElementsByClassName("session");
@@ -244,7 +254,10 @@ function onSpectateSession(data) {
 function onMovePlayer (data) {
     if (localSession.id === data.name ) {
         var movePlayer = playerById(data.id);
-
+        if (data.id === localID) {
+            movePlayer = player;
+            movePlayer.resetPosition();
+        }
         // Player not found
         if (!movePlayer) {
             console.log("Player not found: ", data.id);
@@ -255,6 +268,7 @@ function onMovePlayer (data) {
         movePlayer.playerSprite.x = data.x;
         movePlayer.playerSprite.y = data.y;
         movePlayer.percentage = data.percentage;
+
     }
 }
 
@@ -311,4 +325,8 @@ function playerById (id) {
         }
     }
     return false;
+}
+
+function onPlayerDeath(data){
+    console.log(data.id + " is dead");
 }

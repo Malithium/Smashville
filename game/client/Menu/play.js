@@ -15,14 +15,14 @@ var levelNum;
 var playerNum;
 var GroundLayer;
 var playerName;
-
+var playerStock;
 var playState = {
     preload: function() {
         // ...
     }, //preload();
 
     create: function() {
-        player = new Player(GAMEWIDTH/2, GAMEHEIGHT/2, false);
+        player = new Player(GAMEWIDTH/2, GAMEHEIGHT/2, 3);
         createGame();
     }, // create()
 
@@ -75,9 +75,6 @@ function mapEffects() {
 function updateGame() {
     mapEffects();
     music.musicUpdate();
-    for (var i = 0; i < enemies.length; i++) {
-        enemies[i].playerUpdate();
-    }
     if(debugButton.isDown && !debugPressed) {
         if (debug) {debug = false; }
         else {debug = true; }
@@ -85,6 +82,9 @@ function updateGame() {
     }
     else if (debugButton.isUp) {debugPressed = false;}
     if (player) {
+        if (!netMode) {
+            player.checkRingOut();
+        }
         if (player.lastX != player.x || player.lastY != player.y) {
             sendPacket("move player", {x: player.x, y: player.y});
         }

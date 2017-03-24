@@ -1,12 +1,13 @@
 // Last Updated: 20/01/2017
 
-function Player(x, y) {
+function Player(x, y, stock) {
     // Init
     this.playerSprite = game.add.sprite(x, y, "player" + playerNum);
     this.playerSprite.width = 32;
     this.playerSprite.height = 32;
     this.x = x;
     this.y = y;
+    this.stock = stock;
 
     // Physics
     game.physics.arcade.enable(this.playerSprite);
@@ -38,6 +39,13 @@ function Player(x, y) {
     this.hit = false;
     this.speed = 100; // Set base speed here!
     this.percentage = 0;
+
+    this.resetPosition = function(){
+        this.playerSprite.x = GAMEWIDTH/2;
+        this.playerSprite.y = GAMEHEIGHT/2;
+        this.playerSprite.body.velocity.x = 0;
+        this.playerSprite.body.velocity.y = 0;
+    };
 
     // Functions
     this.handleInput = function() {
@@ -166,4 +174,25 @@ function Player(x, y) {
                 break;
         }
     };
+
+    this.checkRingOut = function(){
+        if((this.x > GAMEWIDTH+40 || this.x < 0-40) || (this.y > GAMEHEIGHT+40 || this.y < 0-40)) {
+            this.stock = player.stock - 1;
+            sendPacket("update stock", {id: playerName, stock: this.stock});
+
+            if(this.stock > 0) {
+                this.resetPosition();
+            }
+            else {
+                console.log(stock)
+                this.death()
+            }
+        }
+    };
+
+    this.death = function(){
+        player.x = 0;
+        player.y = 0;
+        this.playerSprite.kill();
+    }
 }

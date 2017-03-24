@@ -49,6 +49,22 @@ function Session(host) {
         }
         return false;
     };
+
+    this.checkGameOver = function(){
+        var theLiving = 0;
+        for(i in this.players){
+            if(this.players[i].getStock() > 0)
+                theLiving++;
+        }
+
+        if(theLiving > 1)
+            return false;
+
+        return true;
+    }
+
 }
+
+
 
 module.exports = Session;

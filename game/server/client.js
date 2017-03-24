@@ -7,6 +7,7 @@ function Client(name) {
     this.lobbyID = 0;
     this.percentage = 0;
     this.characterID = 0;
+    this.stock = 3;
 
     // Getters and setters
     this.getX = function () {
@@ -40,6 +41,21 @@ function Client(name) {
     this.setPercentage = function (newPercent) {
         this.percentage = newPercent;
     };
+
+    this.getStock = function () {
+        return this.stock;
+    };
+
+    this.setStock = function(stock) {
+        this.stock = stock;
+    };
+
+    this.resetPosition = function() {
+        this.x = 800/2;
+        this.y = 600/2;
+    };
+
+
 }
 
 // Export the Player class so you can use it in
