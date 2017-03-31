@@ -21,7 +21,7 @@
   },
   "scripts": {
     "doc": "esdoc -c esdoc.json",
-    "server": "nodemon game/server/server.js",
+    "server": "nodemon server/server.js",
     "postinstall": "npm run doc"
   }
 }

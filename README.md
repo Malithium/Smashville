@@ -25,7 +25,7 @@ Once these are installed just follow the instructions below:
 -   Open your terminal.
 -   CD to the cloned/downloaded game folder.
 -   Type "npm install". Wait until download has finished.
--   Type "nodemon Server/server.js". This will start hosting your server on port 44555.
+-   Type "npm run server". This will start hosting your server on port 44555.
 -   You're good to go!
 
 # Project Logs

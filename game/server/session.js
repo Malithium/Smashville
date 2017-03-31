@@ -19,6 +19,10 @@ function Session(host) {
         return this.name;
     };
 
+    this.getLevel = function () {
+        return this.level;
+    };
+
     this.getState = function() {
         switch(this.sessionState) {
             case this.sessionStates.LOBBY:
@@ -29,7 +33,7 @@ function Session(host) {
                 break;
         }
         return 1; // Default return LOBBY
-    }
+    };
 
     this.addPlayer = function(player) {
         this.players.push(player);
@@ -57,14 +61,13 @@ function Session(host) {
                 theLiving++;
         }
 
-        if(theLiving > 1)
+        if (theLiving > 1) {
             return false;
+        }
 
         return true;
     }
 
 }
-
-
 
 module.exports = Session;
