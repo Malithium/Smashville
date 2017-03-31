@@ -57,6 +57,10 @@ function loadLevel() {
 function createGame() {
     loadLevel();
     for (var i = 0; i < enemies.length; i++) {
+        enemies[i].stock = 3;
+        enemies[i].percentage = 0;
+        player.stock = 3;
+        player.percentage = 0;
         enemies[i].startGame();
     }
     debugButton = game.input.keyboard.addKey(Phaser.Keyboard.TAB);

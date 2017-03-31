@@ -67,6 +67,7 @@ function updateStock (player, socket) {
     if(deadSession) {
         if (player.stock > 0) {
             player.resetPosition();
+            player.percentage = 0;
             socket.emit("move player", {id: player.id, name: deadSession.name, x: player.getX(), y: player.getY()});
         }
         else {

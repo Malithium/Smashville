@@ -45,6 +45,7 @@ function Player(x, y, stock) {
         this.playerSprite.y = GAMEHEIGHT/2;
         this.playerSprite.body.velocity.x = 0;
         this.playerSprite.body.velocity.y = 0;
+        this.percentage = 0;
     };
 
     // Functions
