@@ -130,13 +130,11 @@ function onClientDisconnect () {
         leaveSession.players.splice(leaveSession.players.indexOf(removePlayer), 1);
         if(leaveSession.host.id === removePlayer.id) {
             this.broadcast.emit("session closed", {name: leaveSession.name});
-            sessions.splice(sessions.indexOf(leaveSession), 1);
+            SearchServices.removeSession(leaveSession);
         } else {
             // Broadcast removed player to connected socket clients
             this.broadcast.emit("remove player", {name: leaveSession.name, id: this.id});
         }
     }
-
-    // Remove player from clients array
-    clients.splice(clients.indexOf(removePlayer), 1);
+    SearchServices.removeClient(removePlayer);
 }

@@ -22,6 +22,10 @@ function onStartSession(data) {
         }
         // All checks cleared
         if (start) {
+            for (var j = 0; j < startingSession.players.length; j++) {
+                startingSession.players[j].stock = 3;
+                startingSession.players[j].percentage = 0;
+            }
             console.log("Starting session: " + startingSession.name);
             startingSession.sessionState = startingSession.sessionStates.STARTING;
             this.emit("start session", {name: startingSession.name});
@@ -65,7 +69,7 @@ function onLeaveSession(data) {
     leftSession.players.splice(leftSession.players.indexOf(leftPlayer), 1);
     if (leftSession.host.id === this.id) {
         this.broadcast.emit("session closed", leaveSession.name);
-        sessions.splice(sessions.indexOf(leftSession), 1);
+        SearchServices.removeSession(leftSession);
     }
     else {
         this.broadcast.emit("update session", {name: leftSession.name, playerCount: leftSession.players.length});

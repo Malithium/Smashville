@@ -38,7 +38,7 @@ function onNewSession(data) {
 }
 
 function onJoinSession(data) {
-    var joinSession = sessionByName(data.name);
+    var joinSession = SearchServices.sessionByName(data.name);
     if (joinSession) {
         if (joinSession.getState() === 2) {
             // Spectate mode as game in progress
@@ -62,7 +62,7 @@ function onJoinSession(data) {
                     enemyName: joinSession.players[j].getName(), lobbyID: joinSession.players[j].lobbyID});
             }
             // Get new player to add to Array
-            var joinPlayer = playerById(this.id);
+            var joinPlayer = SearchServices.playerById(this.id);
             joinPlayer.setLobbyID(joinSession.nxtLobbyID);
             joinSession.addPlayer(joinPlayer);
             console.log("Joined session: " + joinSession.name);

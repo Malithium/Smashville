@@ -12,6 +12,16 @@ function addSession(newSession) {
     sessions.push(newSession);
 }
 
+function removeClient(removeClient) {
+    // Remove client from clients array
+    clients.splice(clients.indexOf(removeClient), 1);
+}
+
+function removeSession(removeSession) {
+    // Remove session from sessions array
+    sessions.splice(sessions.indexOf(removeSession), 1);
+}
+
 function getClients() {
     return clients;
 }
@@ -53,6 +63,8 @@ function sessionByID (id) {
 var SearchServices = {
     addClient: addClient,
     addSession: addSession,
+    removeClient: removeClient,
+    removeSession: removeSession,
     getClients: getClients,
     getSessions: getSessions,
     playerById: playerById,
