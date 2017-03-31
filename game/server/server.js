@@ -29,13 +29,10 @@ var server = http.createServer(
 function init () {
     // Attach Socket.IO to server
     socket = io.listen(server);
-
     // Log Port selected
     util.log("#Listening on: " + port);
-
     // Start listening for events
     setEventHandlers();
-
     // Running tests
     util.log("#Running tests");
     var Debug = require("./debug");
@@ -104,26 +101,24 @@ function onNewPlayer (data) {
     for (var i = 0; i < sessions.length; i++) {
         this.emit("new session", {name: sessions[i].name, playerCount: sessions[i].players.length, state: sessions[i].getState()});
     }
-
     // Send details
     this.emit("connect details", {id: newPlayer.id});
-
     // Add new player to the clients array
     SearchServices.addClient(newPlayer);
+    // Broadcast to session
+    this.emit("new message", {name: "Server", message: data.name + " has connected"});
+    this.broadcast.emit("new message", {name: "Server", message: data.name + " has connected"});
 }
 
 // Socket client has disconnected
 function onClientDisconnect () {
     util.log("Player has disconnected: " + this.id);
-
     var removePlayer = SearchServices.playerById(this.id);
-
     // Player not found
     if (!removePlayer) {
         util.log("Player not found: " + this.id);
         return false;
     }
-
     // Closed session if host disconnects
     var leaveSession = SearchServices.sessionByID(removePlayer.id);
     if (leaveSession) {

@@ -25,3 +25,11 @@ var specState = {
         renderGame();
     } // render()
 };
+
+// Handle spectating
+function onSpectateSession(data) {
+    localSession.id = data.name;
+    levelNum = data.level;
+    lobbyID = 0;
+    game.state.start("spectate");
+}

@@ -210,3 +210,81 @@ function updateBoxes(lbID, name) {
             break;
     }
 }
+
+/**
+ * Sessions level has been updated
+ * @param data - Packet data from server
+ * @param data.name - Session name
+ * @param data.level - Sessions new levelID
+ */
+function onUpdateSessionLevel(data) {
+    if(data.name == lobbyName)
+        levelNum = data.level;
+}
+
+// This player has joined the lobby
+function onJoinedSession(data) {
+    console.log("Joined session: " + data.name);
+    localSession = new session(data.name, 0, "", 1);
+    levelNum = data.level;
+    lobbyID = data.lobbyID;
+    game.state.start("menu");
+}
+
+// A new player has joined the Lobby
+function onNewPlayer (data) {
+    if (localSession.id === data.name ) {
+        console.log("New player connected (" + data.lobbyID + "):", data.id);
+
+        // Avoid possible duplicate players
+        var duplicate = playerById(data.id);
+        if (duplicate) {
+            console.log("Duplicate player!");
+            return false;
+        }
+
+        // Add new player to the remote players array
+        var enemy = new Enemy(data.x, data.y, data.enemyName);
+        enemy.lobbyID = data.lobbyID;
+        enemy.id = data.id;
+        enemies.push(enemy);
+    }
+}
+
+// Another player has selected a character
+function onCharacterSelected(data) {
+    if (localSession.id === data.name ) {
+        var charPlayer = playerById(data.id);
+        if (!charPlayer) {
+            console.log("Player not found: ", data.id);
+            return false;
+        }
+        charPlayer.characterID = data.charID;
+        // Update Rectangle
+    }
+}
+
+// Let the games begin!!!
+function onStartSession(data) {
+    console.log(data.name + " is starting!");
+    if (localSession.id === data.name ) {
+        game.state.start("play");
+    }
+}
+
+// Remove player
+function onRemovePlayer (data) {
+    if (localSession.id === data.name ) {
+        var removePlayer = playerById(data.id);
+
+        // Player not found
+        if (!removePlayer) {
+            console.log("Player not found: ", data.id);
+            return false;
+        }
+        removePlayer.remove();
+
+        // Remove player from array
+        enemies.splice(enemies.indexOf(removePlayer), 1);
+    }
+}

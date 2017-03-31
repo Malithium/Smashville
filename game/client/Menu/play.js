@@ -15,7 +15,7 @@ var levelNum;
 var playerNum;
 var GroundLayer;
 var playerName;
-var playerStock;
+
 var playState = {
     preload: function() {
         // ...
@@ -23,6 +23,8 @@ var playState = {
 
     create: function() {
         player = new Player(GAMEWIDTH/2, GAMEHEIGHT/2, 3);
+        player.stock = 3;
+        player.percentage = 0;
         createGame();
     }, // create()
 
@@ -43,8 +45,7 @@ function loadLevel() {
     map = game.add.tilemap("map" + levelNum);
     if(levelNum === 3) {
         map.addTilesetImage("tiles2", "tiles2");
-    }
-    else {
+    } else {
         map.addTilesetImage("tiles" + levelNum, "tiles" + levelNum);
     }
     GroundLayer = map.createLayer("GroundLayer");
@@ -59,8 +60,6 @@ function createGame() {
     for (var i = 0; i < enemies.length; i++) {
         enemies[i].stock = 3;
         enemies[i].percentage = 0;
-        player.stock = 3;
-        player.percentage = 0;
         enemies[i].startGame();
     }
     debugButton = game.input.keyboard.addKey(Phaser.Keyboard.TAB);
@@ -107,5 +106,60 @@ function renderGame() {
     }
     for (var i = 0; i < enemies.length; i++) {
         game.debug.text(enemies[i].percentage, (30*enemies[i].lobbyID), 540, "#00ff00"); // Prints FPS
+    }
+}
+
+// Move player
+function onMovePlayer (data) {
+    if (localSession.id === data.name ) {
+        var movePlayer = playerById(data.id);
+        if (data.id === localID) {
+            movePlayer = player;
+            movePlayer.resetPosition();
+        }
+        // Player not found
+        if (!movePlayer) {
+            console.log("Player not found: ", data.id);
+            return false;
+        }
+
+        // Update player position
+        movePlayer.playerSprite.x = data.x;
+        movePlayer.playerSprite.y = data.y;
+        movePlayer.percentage = data.percentage;
+    }
+}
+
+// Player has been hit
+function onPlayerHit(data) {
+    if (localSession.id === data.name ) {
+        if (localID === data.id) {
+            player.percentage = data.percent;
+            player.registerHit(data.knockback, data.dir, data.up);
+        }
+        else {
+            var hitPlayer = playerById(data.id);
+            // Player not found
+            if (!hitPlayer) {
+                console.log("Player not found: ", data.id);
+                return false;
+            }
+            hitPlayer.percentage = data.percent;
+        }
+    }
+}
+
+function onPlayerDeath(data){
+    if (localSession.id === data.name ) {
+        console.log(data.id + " is dead");
+    }
+}
+
+// Session is over, return to Lobby state
+function onSessionOver(data) {
+    if (localSession.id === data.name ) {
+        localSession.state = 1;
+        music.queueSong('menuMusic'); // Change to "in-game" song
+        game.state.start("menu");
     }
 }
