@@ -40,7 +40,7 @@ function Player(x, y, stock) {
     this.speed = 100; // Set base speed here!
     this.percentage = 0;
 
-    this.resetPosition = function(){
+    this.resetPosition = function() {
         this.playerSprite.x = GAMEWIDTH/2;
         this.playerSprite.y = GAMEHEIGHT/2;
         this.playerSprite.body.velocity.x = 0;

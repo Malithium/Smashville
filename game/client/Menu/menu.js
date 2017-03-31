@@ -9,7 +9,6 @@ var isHost = false;
 var lobbyName;
 var lobbyID = 0;
 var enemyNum = 0;
-var serverAuthority = false;
 
 //Players
 var player1;
@@ -24,6 +23,10 @@ var player4;
 */
 var menuState = {
     create: function() {
+        console.log(music.currSong);
+        if (music.currSong !== 'menuMusic') {
+            music.queueSong('menuMusic'); // Change to "in-game" song
+        }
         characterLabel = game.add.text(10, 240,"choose a character", {font: "25px Arial", fill: "#ffffff"});
         backButton = game.add.button(10, GAMEHEIGHT-40, "back", this.back, this, 1, 2);
         if((!netMode) || (netMode && isHost)) {
@@ -162,7 +165,7 @@ var menuState = {
             playerName = "";
             var u = document.getElementById("user-overlay").style.display = "block";
             var d = document.getElementById("ip-host").style.display = "none";
-            game.state.start("user")
+            game.state.start("user");
         }
 
     }
@@ -218,17 +221,8 @@ function updateBoxes(lbID, name) {
  * @param data.level - Sessions new levelID
  */
 function onUpdateSessionLevel(data) {
-    if(data.name == lobbyName)
+    if(data.name === lobbyName)
         levelNum = data.level;
-}
-
-// This player has joined the lobby
-function onJoinedSession(data) {
-    console.log("Joined session: " + data.name);
-    localSession = new session(data.name, 0, "", 1);
-    levelNum = data.level;
-    lobbyID = data.lobbyID;
-    game.state.start("menu");
 }
 
 // A new player has joined the Lobby

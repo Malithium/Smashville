@@ -184,3 +184,12 @@ function onClosedSession(data) {
         disconnected();
     }
 }
+
+// This player has joined the lobby
+function onJoinedSession(data) {
+    console.log("Joined session: " + data.name);
+    localSession = new session(data.name, 0, "", 1);
+    levelNum = data.level;
+    lobbyID = data.lobbyID;
+    game.state.start("menu");
+}

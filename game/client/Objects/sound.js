@@ -1,21 +1,22 @@
 // Sound object to manage sound files
 
-function sound(song) {
+function Sound(song) {
     // Init
     this.music = game.add.audio(song);
+    this.currSong = song;
+    this.nextSong = false;
 
     this.musicUpdate = function() {
         if(!this.music.loop && !this.music.isPlaying) {
-            this.music = game.add.audio(this.nextSong);
-            this.musicLoop();
-            this.setVolume(this.vol); // Re-apply sound config
+            this.musicStop();
+            nextSong(this.nextSong);
         }
     };
 
     this.queueSong = function(song) {
         this.nextSong = song;
         this.music.loop = false;
-        this.music.fadeOut(6000);
+        this.music.fadeOut(3000);
     };
 
     this.musicPlay = function() {
@@ -35,4 +36,10 @@ function sound(song) {
         this.vol = vol;
         this.music.volume = vol;
     };
+}
+
+function nextSong(song) {
+    music = new Sound(song);
+    music.setVolume(0.2); // Reduce sound to background level
+    music.musicLoop();
 }

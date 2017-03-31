@@ -159,7 +159,6 @@ function onPlayerDeath(data){
 function onSessionOver(data) {
     if (localSession.id === data.name ) {
         localSession.state = 1;
-        music.queueSong('menuMusic'); // Change to "in-game" song
         game.state.start("menu");
     }
 }

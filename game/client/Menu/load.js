@@ -39,9 +39,7 @@ var loadState = {
   },
 
   create: function() {
-      music = new sound('menuMusic');
-      music.setVolume(0.2); // Reduce sound to background level
-      music.musicLoop();
+      nextSong('menuMusic');
       game.state.start("user");
   }
 
