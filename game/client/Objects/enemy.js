@@ -1,5 +1,12 @@
 // Last Updated: 20/01/2017
 
+/**
+ * Basic Enemy object. Doesn't load as sprite until sessions started.
+ * @param x
+ * @param y
+ * @param name
+ * @constructor
+ */
 function Enemy(x, y, name) {
     // Init
     this.characterID = 1;

@@ -1,6 +1,10 @@
-var Session = require("./session");
+var Session = require("../objects/session");
 var SearchServices = require("./searchServices");
 
+/**
+ * Host has started session. Make sure all players have character and level selected.
+ * @param data - Session name
+ */
 function onStartSession(data) {
     var startingSession = SearchServices.sessionByName(data.name);
     if(startingSession) {
@@ -35,6 +39,10 @@ function onStartSession(data) {
     }
 }
 
+/**
+ * Primarily session level
+ * @param data - Holds session name and new levelID
+ */
 function onUpdateSession(data) {
     var updateSession = SearchServices.sessionByName(data.name);
     if(data.level) {
@@ -43,6 +51,10 @@ function onUpdateSession(data) {
     }
 }
 
+/**
+ * Player has selected a character. Broadcast to others.
+ * @param data - Holds session name and playerID
+ */
 function onCharSelection(data) {
     var charPlayer = SearchServices.playerById(this.id);
     if (!charPlayer) {
@@ -63,6 +75,10 @@ function onCharSelection(data) {
     this.broadcast.emit("character selected", {name: charSession.name, id: charPlayer.id, charID: data.charID});
 }
 
+/**
+ * Player has left session. Close session if host has left.
+ * @param data - Session name and player ID
+ */
 function onLeaveSession(data) {
     var leftPlayer = SearchServices.playerById(this.id);
     var leftSession = SearchServices.sessionByName(data.name);

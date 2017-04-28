@@ -4,6 +4,10 @@
 
 var errorLabel;
 
+/**
+ * Asks user for name. Then progresses to local Menu state
+ * @type {{create: userState.create, evaluateName: userState.evaluateName}}
+ */
 var userState = {
     create: function() {
         titleLabel = game.add.text(10, 10, "Welcome to SmashVille!", {font:"30px Arial", fill:"#ffffff"});
@@ -22,10 +26,9 @@ var userState = {
         b.style.marginTop = 10+"px";
     },
 
-    /*
-    this method takes the value of the textbox in the HTML, and validates it, before storing it in our application
-    it hides the display after it has been used.
-     */
+    /**
+    * This method takes the value of the textbox in the HTML, and validates it, before storing it in our application it hides the display after it has been used.
+    */
     evaluateName: function () {
         var error = false;
         var errorMsg = "";

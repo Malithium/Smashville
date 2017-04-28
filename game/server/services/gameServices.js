@@ -1,10 +1,13 @@
 var GAMEWIDTH = 900;
 var GAMEHEIGHT = 600;
 
-var Logic = require("./logic");
+var Logic = require("../logic");
 var SearchServices = require("./searchServices");
 
-// Player has moved
+/**
+ * Player has moved
+ * @param data - Pass across playerID
+ */
 function onMovePlayer (data) {
     // Find player in array
     var movePlayer = SearchServices.playerById(this.id);
@@ -37,6 +40,10 @@ function onMovePlayer (data) {
         y: movePlayer.getY(), percentage: movePlayer.getPercentage()});
 }
 
+/**
+ * Check if player has been hit. Return hit players ID if true
+ * @param data - Pass across playerID
+ */
 function onPlayerHit(data) {
     var hitSession = SearchServices.sessionByID(this.id);
     var hitPlayer = Logic.checkCollision(SearchServices.playerById(this.id), hitSession.players);
@@ -62,6 +69,11 @@ function onPlayerHit(data) {
     }
 }
 
+/**
+ * Update stock if player has been hit off map. Broadcast end of game is lives === 0
+ * @param player - player object
+ * @param socket - Socket Server used to broadcast
+ */
 function updateStock (player, socket) {
     var deadSession = SearchServices.sessionByID(player.id);
     if(deadSession) {

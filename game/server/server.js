@@ -6,11 +6,11 @@ var path = require("path");
 var ecstatic = require("ecstatic");
 
 // Pull external classes
-var Client = require("./client");
-var SearchServices = require("./searchServices");
-var SessionServices = require("./sessionServices");
-var LobbyServices = require("./lobbyServices");
-var GameServices = require("./gameServices");
+var Client = require("./objects/client");
+var SearchServices = require("./services/searchServices");
+var SessionServices = require("./services/sessionServices");
+var LobbyServices = require("./services/lobbyServices");
+var GameServices = require("./services/gameServices");
 
 // Create and start the http server
 var socket;	// Socket controller
@@ -26,6 +26,9 @@ var server = http.createServer(
     init()
 });
 
+/**
+ * Run initalise (And tests)
+ */
 function init () {
     // Attach Socket.IO to server
     socket = io.listen(server);
@@ -43,6 +46,9 @@ function init () {
     util.log("#All tests run");
 }
 
+/**
+ * Setup event threads and empty arrays
+ */
 function setEventHandlers() {
     // Socket.IO
     socket.sockets.on("connection", onSocketConnection);
@@ -51,7 +57,10 @@ function setEventHandlers() {
     sessions = [];
 }
 
-// New socket connection
+/**
+ * Actual method to create event threads. Client is new player connected.
+ * @param client
+ */
 function onSocketConnection (client) {
     util.log("New player has connected: " + client.id);
 
@@ -93,7 +102,10 @@ function onSocketConnection (client) {
     client.on("hit player", GameServices.onPlayerHit);
 }
 
-// New player has joined
+/**
+ * New player has joined
+ * @param data - Contains Player Name
+ */
 function onNewPlayer (data) {
     // Create a new player
     var newPlayer = new Client(data.name);
@@ -112,7 +124,10 @@ function onNewPlayer (data) {
     SearchServices.addClient(newPlayer);
 }
 
-// Socket client has disconnected
+/**
+ * Client has disconnected. Return false if player not found
+ * @returns {boolean}
+ */
 function onClientDisconnect () {
     util.log("Player has disconnected: " + this.id);
 

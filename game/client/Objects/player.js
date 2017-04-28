@@ -1,5 +1,12 @@
 // Last Updated: 20/01/2017
 
+/**
+ * Handles everything Player related (e.g. Input, Physics, etc).
+ * @param x
+ * @param y
+ * @param stock
+ * @constructor
+ */
 function Player(x, y, stock) {
     // Init
     this.playerSprite = game.add.sprite(x, y, "player" + playerNum);

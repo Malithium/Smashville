@@ -17,11 +17,11 @@
     "express": "^4.10.2",
     "nodemon": "^1.11.0",
     "socket.io": "^1.7.2",
-    "esdoc": "^0.1.2"
+    "jsdoc": "^3.4.3"
   },
   "scripts": {
     "doc": "esdoc -c esdoc.json",
     "server": "nodemon server/server.js",
-    "postinstall": "npm run doc"
+    "postinstall": "npm run server"
   }
 }

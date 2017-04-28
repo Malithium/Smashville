@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Menu/play.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Menu/play.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// Last Updated: 20/01/2017
+
+// Core-game variables
+var debug = false;
+var debugButton;
+var debugPressed;
+
+// Sprite Variables
+var player;
+var enemies = [];
+
+// Level values
+var map;
+var levelNum;
+var playerNum;
+var GroundLayer;
+var playerName;
+var playerStock;
+
+/**
+ * Handles play state. Loads then Updates player object and Enemy array (Objects)
+ * @type {{preload: playState.preload, create: playState.create, update: playState.update, render: playState.render}}
+ */
+var playState = {
+    preload: function() {
+        // ...
+    }, //preload();
+
+    create: function() {
+        player = new Player(GAMEWIDTH/2, GAMEHEIGHT/2, 3);
+        createGame();
+    }, // create()
+
+    update: function() {
+        // Update Object states
+        player.playerUpdate();
+        updateGame();
+    }, // update()
+
+    render: function() {
+        renderGame();
+        game.debug.text(player.percentage, (30*lobbyID), 540, "#00ff00"); // Prints FPS
+    } // render()
+};
+
+/**
+ * Loads in from tilemap .jsons
+ */
+function loadLevel() {
+    //very early map loader implementation, will have to look into moving this to a different class
+    map = game.add.tilemap("map" + levelNum);
+    if(levelNum === 3) {
+        map.addTilesetImage("tiles2", "tiles2");
+    }
+    else {
+        map.addTilesetImage("tiles" + levelNum, "tiles" + levelNum);
+    }
+    GroundLayer = map.createLayer("GroundLayer");
+    GroundLayer.resizeWorld();
+    map.setCollisionBetween(0, 100, true, GroundLayer);
+}
+
+/**
+ * Actually creates the game (Loads all relevent objects)
+ */
+function createGame() {
+    loadLevel();
+    for (var i = 0; i &lt; enemies.length; i++) {
+        enemies[i].stock = 3;
+        enemies[i].percentage = 0;
+        player.stock = 3;
+        player.percentage = 0;
+        enemies[i].startGame();
+    }
+    debugButton = game.input.keyboard.addKey(Phaser.Keyboard.TAB);
+    music.queueSong('battleMusic'); // Change to "in-game" song
+}
+
+/**
+ * Updates game reguarly and accordingly
+ */
+function updateGame() {
+    music.musicUpdate();
+    if(debugButton.isDown &amp;&amp; !debugPressed) {
+        if (debug) {debug = false; }
+        else {debug = true; }
+        debugPressed = true;
+    }
+    else if (debugButton.isUp) {debugPressed = false;}
+    if (player) {
+        if (!netMode) {
+            player.checkRingOut();
+        }
+        if (player.lastX != player.x || player.lastY != player.y) {
+            sendPacket("move player", {x: player.x, y: player.y});
+        }
+    }
+}
+
+/**
+ * Misnamed as only renders text and potentially players hitbox
+ */
+function renderGame() {
+    // Render text to screen
+    game.debug.reset();
+    if (debug) {
+        if (player) {
+            game.debug.body(player.playerSprite);
+        }
+        game.debug.text(game.time.fps || "--", 2, 14, "#00ff00"); // Prints FPS
+        game.debug.cameraInfo(game.camera, 32, 32);
+    }
+    for (var i = 0; i &lt; enemies.length; i++) {
+        game.debug.text(enemies[i].percentage, (30*enemies[i].lobbyID), 540, "#00ff00"); // Prints FPS
+    }
+}
+
+/**
+ * If in current session. Player has moved, update X &amp; Y.
+ * @param data - Contains session name (ID), playerID and new position.
+ */
+function onMovePlayer (data) {
+    if (localSession.id === data.name ) {
+        var movePlayer = playerById(data.id);
+        if (data.id === localID) {
+            movePlayer = player;
+            movePlayer.resetPosition();
+        }
+        // Player not found
+        if (!movePlayer) {
+            console.log("Player not found: ", data.id);
+            return false;
+        }
+
+        // Update player position
+        movePlayer.playerSprite.x = data.x;
+        movePlayer.playerSprite.y = data.y;
+        movePlayer.percentage = data.percentage;
+
+    }
+}
+
+/**
+ * If in current session. Player has been hit, update percentage, or run hit method (registerHit).
+ * @param data - Contains session name (ID) and playerID.
+ */
+function onPlayerHit(data) {
+    if (localSession.id === data.name ) {
+        if (localID === data.id) {
+            player.percentage = data.percent;
+            player.registerHit(data.knockback, data.dir, data.up);
+        }
+        else {
+            var hitPlayer = playerById(data.id);
+            // Player not found
+            if (!hitPlayer) {
+                console.log("Player not found: ", data.id);
+                return false;
+            }
+            hitPlayer.percentage = data.percent;
+        }
+    }
+}
+
+/**
+ * If in current session. Player has left, remove from session.
+ * @param data - Contains session name (ID) and playerID.
+ */
+function onRemovePlayer (data) {
+    if (localSession.id === data.name ) {
+        var removePlayer = playerById(data.id);
+
+        // Player not found
+        if (!removePlayer) {
+            console.log("Player not found: ", data.id);
+            return false;
+        }
+        removePlayer.remove();
+
+        // Remove player from array
+        enemies.splice(enemies.indexOf(removePlayer), 1);
+    }
+}
+
+/**
+ * If in current session. Session has ended, change music and return to menu state.
+ * @param data - Contains session name (ID).
+ */
+function onSessionOver(data) {
+    if (localSession.id === data.name ) {
+        localSession.state = 1;
+        music.queueSong('menuMusic'); // Change to "in-game" song
+        game.state.start("menu");
+    }
+}
+
+/**
+ * Player has died.
+ * @param data - Contains session name (ID) and playerID.
+ */
+function onPlayerDeath(data){
+    if (localSession.id === data.name ) {
+        console.log(data.id + " is dead");
+    }
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Enemy.html">Enemy</a></li><li><a href="Player.html">Player</a></li></ul><h3>Global</h3><ul><li><a href="global.html#back">back</a></li><li><a href="global.html#chatState">chatState</a></li><li><a href="global.html#createGame">createGame</a></li><li><a href="global.html#disconnected">disconnected</a></li><li><a href="global.html#errorLabel">errorLabel</a></li><li><a href="global.html#game">game</a></li><li><a href="global.html#ip">ip</a></li><li><a href="global.html#loadLevel">loadLevel</a></li><li><a href="global.html#loadState">loadState</a></li><li><a href="global.html#menuState">menuState</a></li><li><a href="global.html#messages">messages</a></li><li><a href="global.html#onCharacterSelected">onCharacterSelected</a></li><li><a href="global.html#onClosedSession">onClosedSession</a></li><li><a href="global.html#onConnection">onConnection</a></li><li><a href="global.html#onJoinedSession">onJoinedSession</a></li><li><a href="global.html#onMovePlayer">onMovePlayer</a></li><li><a href="global.html#onNewMessage">onNewMessage</a></li><li><a href="global.html#onNewPlayer">onNewPlayer</a></li><li><a href="global.html#onNewSession">onNewSession</a></li><li><a href="global.html#onPlayerDeath">onPlayerDeath</a></li><li><a href="global.html#onPlayerHit">onPlayerHit</a></li><li><a href="global.html#onRemovePlayer">onRemovePlayer</a></li><li><a href="global.html#onSessionOver">onSessionOver</a></li><li><a href="global.html#onSocketConnected">onSocketConnected</a></li><li><a href="global.html#onSocketDisconnect">onSocketDisconnect</a></li><li><a href="global.html#onSpectateSession">onSpectateSession</a></li><li><a href="global.html#onStartSession">onStartSession</a></li><li><a href="global.html#onUpdateSessionLevel">onUpdateSessionLevel</a></li><li><a href="global.html#onUpdateSessionList">onUpdateSessionList</a></li><li><a href="global.html#playerById">playerById</a></li><li><a href="global.html#playState">playState</a></li><li><a href="global.html#renderGame">renderGame</a></li><li><a href="global.html#sendPacket">sendPacket</a></li><li><a href="global.html#session">session</a></li><li><a href="global.html#setEventHandlers">setEventHandlers</a></li><li><a href="global.html#sound">sound</a></li><li><a href="global.html#specState">specState</a></li><li><a href="global.html#updateBoxes">updateBoxes</a></li><li><a href="global.html#updateGame">updateGame</a></li><li><a href="global.html#userState">userState</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Apr 28 2017 14:32:41 GMT+0100 (GMT Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

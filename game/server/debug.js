@@ -1,13 +1,18 @@
 // Last Updated: 16/01/2017
-var Player = require("./client");
+var Player = require("./objects/client");
 var Logic = require("./logic");
 
-// Functions which will test different functions in the game.
+/**
+ * Functions which will test different functions in the game.
+ */
 var runAllTests = function() {
     testRegisterDamage();
     testCalculateKnockback();
-}
+};
 
+/**
+* Tests if results match expected output
+*/
 function testRegisterDamage() {
     var player = new Player(0, 0);
     player.setPercentage(Logic.registerDamage(99, 12));
@@ -19,6 +24,9 @@ function testRegisterDamage() {
     }
 }
 
+/**
+ * Tests if results match expected output
+ */
 function testCalculateKnockback() {
     var player = new Player(0, 0);
     player.setPercentage(99)

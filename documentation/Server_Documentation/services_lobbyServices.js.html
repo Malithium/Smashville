@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: services/lobbyServices.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: services/lobbyServices.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var Session = require("../objects/session");
+var SearchServices = require("./searchServices");
+
+/**
+ * Host has started session. Make sure all players have character and level selected.
+ * @param data - Session name
+ */
+function onStartSession(data) {
+    var startingSession = SearchServices.sessionByName(data.name);
+    if(startingSession) {
+        var start = true;
+        // Check level has been selected
+        if(startingSession.getLevel() > 0) {
+            // Check each player has CharacterID
+            for (var i = 0; i &lt; startingSession.players.length; i++) {
+                if (startingSession.players[i].characterID === 0) {
+                    console.log("No character selected");
+                    start = false;
+                    // Send error message
+                }
+            }
+        }
+        else {
+            // Send error message
+            console.log("No level selected")
+        }
+        // All checks cleared
+        if (start) {
+            for (var j = 0; j &lt; startingSession.players.length; j++) {
+                startingSession.players[j].stock = 3;
+                startingSession.players[j].percentage = 0;
+            }
+            console.log("Starting session: " + startingSession.name);
+            startingSession.sessionState = startingSession.sessionStates.STARTING;
+            this.emit("start session", {name: startingSession.name});
+            this.broadcast.emit("start session", {name: startingSession.name});
+            // Assign positions then update players that session has started
+        }
+    }
+}
+
+/**
+ * Primarily session level
+ * @param data - Holds session name and new levelID
+ */
+function onUpdateSession(data) {
+    var updateSession = SearchServices.sessionByName(data.name);
+    if(data.level) {
+        updateSession.level = data.level;
+        this.broadcast.emit("update session", {name: updateSession.name, level: updateSession.level});
+    }
+}
+
+/**
+ * Player has selected a character. Broadcast to others.
+ * @param data - Holds session name and playerID
+ */
+function onCharSelection(data) {
+    var charPlayer = SearchServices.playerById(this.id);
+    if (!charPlayer) {
+        console.log("Player not found: " + this.id);
+        return false;
+    }
+
+    var charSession = SearchServices.sessionByName(data.name);
+    if (!charSession) {
+        console.log("Session not found: " + data.name);
+        return false;
+    }
+    for(var i = 0; i &lt; charSession.players.length; i++) {
+        if(charSession.players[i].getName() === data.charName) {
+            charSession.players[i].characterID = data.charID;
+        }
+    }
+    this.broadcast.emit("character selected", {name: charSession.name, id: charPlayer.id, charID: data.charID});
+}
+
+/**
+ * Player has left session. Close session if host has left.
+ * @param data - Session name and player ID
+ */
+function onLeaveSession(data) {
+    var leftPlayer = SearchServices.playerById(this.id);
+    var leftSession = SearchServices.sessionByName(data.name);
+    leftSession.players.splice(leftSession.players.indexOf(leftPlayer), 1);
+    if (leftSession.host.id === this.id) {
+        this.broadcast.emit("session closed", leaveSession.name);
+        SearchServices.removeSession(leftSession);
+    }
+    else {
+        this.broadcast.emit("update session", {name: leftSession.name, playerCount: leftSession.players.length});
+        this.broadcast.emit("remove player", {name: leftSession.name, id: leftPlayer.id});
+    }
+}
+
+var LobbyServices = {
+    onStartSession: onStartSession,
+    onUpdateSession: onUpdateSession,
+    onCharSelection: onCharSelection,
+    onLeaveSession: onLeaveSession
+};
+
+module.exports = LobbyServices;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Client.html">Client</a></li><li><a href="Message.html">Message</a></li><li><a href="Session.html">Session</a></li></ul><h3>Global</h3><ul><li><a href="global.html#calculateKnockback">calculateKnockback</a></li><li><a href="global.html#checkCollision">checkCollision</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#onCharSelection">onCharSelection</a></li><li><a href="global.html#onClientDisconnect">onClientDisconnect</a></li><li><a href="global.html#onJoinSession">onJoinSession</a></li><li><a href="global.html#onLeaveSession">onLeaveSession</a></li><li><a href="global.html#onMovePlayer">onMovePlayer</a></li><li><a href="global.html#onNewMessage">onNewMessage</a></li><li><a href="global.html#onNewPlayer">onNewPlayer</a></li><li><a href="global.html#onNewSession">onNewSession</a></li><li><a href="global.html#onPlayerHit">onPlayerHit</a></li><li><a href="global.html#onSocketConnection">onSocketConnection</a></li><li><a href="global.html#onStartSession">onStartSession</a></li><li><a href="global.html#onUpdateSession">onUpdateSession</a></li><li><a href="global.html#registerDamage">registerDamage</a></li><li><a href="global.html#runAllTests">runAllTests</a></li><li><a href="global.html#setEventHandlers">setEventHandlers</a></li><li><a href="global.html#testCalculateKnockback">testCalculateKnockback</a></li><li><a href="global.html#testRegisterDamage">testRegisterDamage</a></li><li><a href="global.html#updateStock">updateStock</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Apr 28 2017 14:52:41 GMT+0100 (GMT Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

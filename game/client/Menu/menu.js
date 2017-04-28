@@ -9,7 +9,6 @@ var isHost = false;
 var lobbyName;
 var lobbyID = 0;
 var enemyNum = 0;
-var serverAuthority = false;
 
 //Players
 var player1;
@@ -17,11 +16,11 @@ var player2;
 var player3;
 var player4;
 
-/*
-    Very early menu implementation, Im not sure how to have 1 method for multiple buttons it appears that
-    adding an parameter to the "actionOnClick" method forces it to be used without clicking, so this will
-    have to do until I find a solution
-*/
+/**
+ * Very early menu implementation, Im not sure how to have 1 method for multiple buttons it appears that adding an parameter to the
+ * "actionOnClick" method forces it to be used without clicking, so this will have to do until I find a solution
+ * @type {{create: menuState.create, update: menuState.update, levelSelect1: menuState.levelSelect1, levelSelect2: menuState.levelSelect2, playerSelect1: menuState.playerSelect1, playerSelect2: menuState.playerSelect2, showConUI: menuState.showConUI, startGame: menuState.startGame, closeConnect: menuState.closeConnect, back: menuState.back}}
+ */
 var menuState = {
     create: function() {
         characterLabel = game.add.text(10, 240,"choose a character", {font: "25px Arial", fill: "#ffffff"});
@@ -89,17 +88,17 @@ var menuState = {
         sendPacket("character selected", {name: lobbyName, charID: 2, charName: playerName});
     },
 
-    /*
-    shows the connection UI to the user
-     */
+    /**
+    * shows the connection UI to the user
+    */
     showConUI: function() {
         var d = document.getElementById("ip-host");
         d.style.display = "block";
     },
 
-    /*
-    start"s up the game locally, check"s to see if any levels or characters have been selected first
-     */
+    /**
+    * Start"s up the game locally, check"s to see if any levels or characters have been selected first
+    */
     startGame: function()
     {
         var error = false;
@@ -126,11 +125,11 @@ var menuState = {
         }
     },
 
-    /*
-    This get called by a the button in the HTML, it takes the input values and pass"s them back to the JS
-    it then hide"s the overlay, so that it does not interfere with the canvas
-    TODO: there is no data validation at the moment for the IP address and host, will have to implement this
-     */
+    /**
+    * This get called by a the button in the HTML, it takes the input values and pass"s them back to the JS
+    * it then hide"s the overlay, so that it does not interfere with the canvas
+    * TODO: there is no data validation at the moment for the IP address and host, will have to implement this
+    */
     closeConnect: function() {
         var d = document.getElementById("ip-host");
         d.style.display = "none";
@@ -168,20 +167,17 @@ var menuState = {
     }
 };
 
+/**
+ * Disconnect from session. Return to chat state.
+ */
 function disconnected() {
     localSession = null;
     enemies = [];
     game.state.start("chat");
 }
 
-function clientSessionBybody(body){
-    var htmlContent = document.createElement('span');
-    span.innerHTML = body;
-    return span.textContent || span.innerHTML;
-}
-
-/*
-    Pass across a player or enemy to create a Text box, representing them
+/**
+ * Pass across a player or enemy to create a Text box, representing them
  */
 function updateBoxes(lbID, name) {
     switch(lbID) {
@@ -209,4 +205,123 @@ function updateBoxes(lbID, name) {
             console.log('Error occured!');
             break;
     }
+}
+
+/**
+ * Sessions level has been updated
+ * @param data - Packet data from server
+ * @param data.name - Session name
+ * @param data.level - Sessions new levelID
+ */
+function onUpdateSessionLevel(data) {
+    if(data.name == lobbyName)
+        levelNum = data.level;
+}
+
+/**
+ * Remove session from front-end, and disconnect player if in said session
+ * @param data - Pass across session name(ID)
+ */
+function onClosedSession(data) {
+    // Retreive the sessions from the HTML
+    sessionCol = document.getElementsByClassName("session");
+
+    // Iterate over the sessions
+    for(var i = 0; i < sessionCol.length; i++) {
+        name = sessionCol[i].getElementsByClassName("session-name")[0].innerText;
+
+        // If the name parsed down from the server matches a session in the HTML
+        if (data == name) {
+            // Remove the session from the HTML
+            overlay = document.getElementById("session-area");
+            overlay.removeChild(sessionCol[i]);
+
+            // Iterate through sessions array and remove the session from it
+            sessions.forEach(function (s) {
+                if (s.id == data) {
+                    var index = sessions.indexOf(s);
+                    if(index > -1) {
+                        sessions.splice(index, 1);
+                        console.log(sessions);
+                    }
+                }
+            });
+        }
+    }
+    if (localSession.name === data.name) {
+        disconnected();
+    }
+}
+
+/**
+ * This player has joined the session, move to lobby
+ * @param data - Pass across session name, level and players lobbyID
+ */
+function onJoinedSession(data) {
+    console.log("Joined session: " + data.name);
+    localSession = new session(data.name, 0, "", 1);
+    levelNum = data.level;
+    lobbyID = data.lobbyID;
+    game.state.start("menu");
+}
+
+/**
+ * A new player has joined the Lobby
+ * @param data - Contains new players x, y, name, ID and LobbyID
+ */
+function onNewPlayer (data) {
+    if (localSession.id === data.name ) {
+        console.log("New player connected (" + data.lobbyID + "):", data.id);
+
+        // Avoid possible duplicate players
+        var duplicate = playerById(data.id);
+        if (duplicate) {
+            console.log("Duplicate player!");
+            return false;
+        }
+
+        // Add new player to the remote players array
+        var enemy = new Enemy(data.x, data.y, data.enemyName);
+        enemy.lobbyID = data.lobbyID;
+        enemy.id = data.id;
+        enemies.push(enemy);
+    }
+}
+
+/**
+ * Another player has selected a character
+ * @param data - Contains players ID and their new character ID
+ */
+function onCharacterSelected(data) {
+    if (localSession.id === data.name ) {
+        var charPlayer = playerById(data.id);
+        if (!charPlayer) {
+            console.log("Player not found: ", data.id);
+            return false;
+        }
+        charPlayer.characterID = data.charID;
+        // Update Rectangle
+    }
+}
+
+/**
+ * Move to play state. Let the games begin!
+ * @param data - Pass across session name (ID)
+ */
+function onStartSession(data) {
+    console.log(data.name + " is starting!");
+    if (localSession.id === data.name ) {
+        game.state.start("play");
+    }
+}
+
+/**
+ * Handles spectating. Changes to spectate state
+ * @param data - Pass across session ID and level.
+ */
+function onSpectateSession(data) {
+    localSession.id = data.name;
+    levelNum = data.level;
+    lobbyID = 0;
+    game.state.start("spectate");
 }

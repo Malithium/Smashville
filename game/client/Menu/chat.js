@@ -7,6 +7,10 @@ var sessions = [];
 var numOfMessages = 0;
 var numOfSessions = 0;
 
+/**
+ * Handles Chat State (Message box and sessions list)
+ * @type {{preload: chatState.preload, create: chatState.create, update: chatState.update, hostSession: chatState.hostSession}}
+ */
 var chatState = {
     preload: function(){
     // Something(?)
@@ -101,6 +105,9 @@ var chatState = {
     }
 };
 
+/**
+ * Return to local state and screen
+ */
 function back() {
     sendPacket("disconnected", {}); // Tell server
     onSocketDisconnect({}); // Tell itself
@@ -116,4 +123,46 @@ function back() {
     host = "";
     localID = -1;
     game.state.start("menu");
+}
+
+/**
+ * New message recieved
+ * @param data - Contains message poster and contents
+ */
+function onNewMessage(data) {
+    var msg = "<div class=\"message\"> <p>" + data.name + ": " + data.message + "</p></div>";
+    messages.push(msg);
+}
+
+/**
+ * New session recieved
+ * @param data - Contains session host, player count and state (Menu/Spectate)
+ */
+function onNewSession(data) {
+    var sessionbody = "<div class=\"session\"> <div class=\"session-name\">" + data.name + "</div> " + "<div class=\"session-count\">" + data.playerCount + "/4</div></div>";
+    var sess = new session(data.name, data.playerCount, sessionbody, data.state);
+    sessions.push(sess);
+}
+
+/**
+ * Session List has been updated (Player count)
+ * @param data - Pass across new player count, if session exists
+ */
+function onUpdateSessionList(data) {
+    sessionCol = document.getElementsByClassName("session");
+    for(var p = 0;p < sessionCol.length; p++) {
+        if (typeof sessionCol[p] != 'undefined') {
+            name = sessionCol[p].getElementsByClassName("session-name")[0].innerText;
+
+            //if the name parsed down from the server matches a session in the HTML
+            if (data == name) {
+                sessionCol[p].getElementsByClassName("session-count")[0].innerText = data.playerCount;
+            }
+        }
+    }
+    for(var i = 0; i < sessions.length; i++) {
+        if(sessions[i].name === data.name) {
+            sessions[i].count = data.playerCount
+        }
+    }
 }

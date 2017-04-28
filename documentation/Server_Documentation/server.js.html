@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: server.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: server.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// Based off codee from: https://github.com/xicombd/phaser-multiplayer-game
+
+var util = require("util");
+var http = require("http");
+var path = require("path");
+var ecstatic = require("ecstatic");
+
+// Pull external classes
+var Client = require("./objects/client");
+var SearchServices = require("./services/searchServices");
+var SessionServices = require("./services/sessionServices");
+var LobbyServices = require("./services/lobbyServices");
+var GameServices = require("./services/gameServices");
+
+// Create and start the http server
+var socket;	// Socket controller
+var io = require("socket.io");
+var port = process.env.PORT || 44555;
+var server = http.createServer(
+    ecstatic({ root: path.resolve(__dirname, "../client") })
+).listen(port, function (err) {
+    if (err) {
+        util.log(err);
+        throw err
+    }
+    init()
+});
+
+/**
+ * Run initalise (And tests)
+ */
+function init () {
+    // Attach Socket.IO to server
+    socket = io.listen(server);
+
+    // Log Port selected
+    util.log("#Listening on: " + port);
+
+    // Start listening for events
+    setEventHandlers();
+
+    // Running tests
+    util.log("#Running tests");
+    var Debug = require("./debug");
+    Debug.runAllTests();
+    util.log("#All tests run");
+}
+
+/**
+ * Setup event threads and empty arrays
+ */
+function setEventHandlers() {
+    // Socket.IO
+    socket.sockets.on("connection", onSocketConnection);
+    // Reset Sessions and Messages
+    clients = [];
+    sessions = [];
+}
+
+/**
+ * Actual method to create event threads. Client is new player connected.
+ * @param client
+ */
+function onSocketConnection (client) {
+    util.log("New player has connected: " + client.id);
+
+    // SERVER CONNECTING METHODS
+    // Listen for new player message
+    client.on("new player", onNewPlayer);
+
+    // Listen for client disconnected
+    client.on("disconnected", onClientDisconnect);
+
+    // MESSAGES AND SESSION METHODS
+    // Listen for new lobby message
+    client.on("new message", SessionServices.onNewMessage);
+
+    // New session created
+    client.on("new session", SessionServices.onNewSession);
+
+    // Join new session
+    client.on("join session", SessionServices.onJoinSession);
+
+    // LOBBY METHODS
+    // Start session
+    client.on("start session", LobbyServices.onStartSession);
+
+    // Session updated
+    client.on("update session", LobbyServices.onUpdateSession);
+
+    // Player has selected character
+    client.on("character selected", LobbyServices.onCharSelection);
+
+    // Leave session
+    client.on("left session", LobbyServices.onLeaveSession);
+
+    // IN-GAME METHODS
+    // Listen for move player message
+    client.on("move player", GameServices.onMovePlayer);
+
+    // Listen for hit player messages
+    client.on("hit player", GameServices.onPlayerHit);
+}
+
+/**
+ * New player has joined
+ * @param data - Contains Player Name
+ */
+function onNewPlayer (data) {
+    // Create a new player
+    var newPlayer = new Client(data.name);
+    newPlayer.id = this.id;
+    newPlayer.setPercentage(0);
+
+    // Send existing clients to the new player
+    for (var i = 0; i &lt; sessions.length; i++) {
+        this.emit("new session", {name: sessions[i].name, playerCount: sessions[i].players.length, state: sessions[i].getState()});
+    }
+
+    // Send details
+    this.emit("connect details", {id: newPlayer.id});
+
+    // Add new player to the clients array
+    SearchServices.addClient(newPlayer);
+}
+
+/**
+ * Client has disconnected. Return false if player not found
+ * @returns {boolean}
+ */
+function onClientDisconnect () {
+    util.log("Player has disconnected: " + this.id);
+
+    var removePlayer = SearchServices.playerById(this.id);
+
+    // Player not found
+    if (!removePlayer) {
+        util.log("Player not found: " + this.id);
+        return false;
+    }
+
+    // Closed session if host disconnects
+    var leaveSession = SearchServices.sessionByID(removePlayer.id);
+    if (leaveSession) {
+        leaveSession.players.splice(leaveSession.players.indexOf(removePlayer), 1);
+        if(leaveSession.host.id === removePlayer.id) {
+            this.broadcast.emit("session closed", {name: leaveSession.name});
+            SearchServices.removeSession(leaveSession);
+        } else {
+            // Broadcast removed player to connected socket clients
+            this.broadcast.emit("remove player", {name: leaveSession.name, id: this.id});
+        }
+    }
+    SearchServices.removeClient(removePlayer);
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Client.html">Client</a></li><li><a href="Message.html">Message</a></li><li><a href="Session.html">Session</a></li></ul><h3>Global</h3><ul><li><a href="global.html#calculateKnockback">calculateKnockback</a></li><li><a href="global.html#checkCollision">checkCollision</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#onCharSelection">onCharSelection</a></li><li><a href="global.html#onClientDisconnect">onClientDisconnect</a></li><li><a href="global.html#onJoinSession">onJoinSession</a></li><li><a href="global.html#onLeaveSession">onLeaveSession</a></li><li><a href="global.html#onMovePlayer">onMovePlayer</a></li><li><a href="global.html#onNewMessage">onNewMessage</a></li><li><a href="global.html#onNewPlayer">onNewPlayer</a></li><li><a href="global.html#onNewSession">onNewSession</a></li><li><a href="global.html#onPlayerHit">onPlayerHit</a></li><li><a href="global.html#onSocketConnection">onSocketConnection</a></li><li><a href="global.html#onStartSession">onStartSession</a></li><li><a href="global.html#onUpdateSession">onUpdateSession</a></li><li><a href="global.html#registerDamage">registerDamage</a></li><li><a href="global.html#runAllTests">runAllTests</a></li><li><a href="global.html#setEventHandlers">setEventHandlers</a></li><li><a href="global.html#testCalculateKnockback">testCalculateKnockback</a></li><li><a href="global.html#testRegisterDamage">testRegisterDamage</a></li><li><a href="global.html#updateStock">updateStock</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Apr 28 2017 14:52:41 GMT+0100 (GMT Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

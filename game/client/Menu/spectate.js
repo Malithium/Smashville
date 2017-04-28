@@ -1,6 +1,10 @@
 // Last Updated: 20/01/2017
 var exitButton;
 
+/**
+ * Similar to play state but without input or player object.
+ * @type {{preload: specState.preload, create: specState.create, update: specState.update, render: specState.render}}
+ */
 var specState = {
     preload: function() {
         // ...

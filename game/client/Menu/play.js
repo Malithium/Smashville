@@ -16,6 +16,11 @@ var playerNum;
 var GroundLayer;
 var playerName;
 var playerStock;
+
+/**
+ * Handles play state. Loads then Updates player object and Enemy array (Objects)
+ * @type {{preload: playState.preload, create: playState.create, update: playState.update, render: playState.render}}
+ */
 var playState = {
     preload: function() {
         // ...
@@ -38,6 +43,9 @@ var playState = {
     } // render()
 };
 
+/**
+ * Loads in from tilemap .jsons
+ */
 function loadLevel() {
     //very early map loader implementation, will have to look into moving this to a different class
     map = game.add.tilemap("map" + levelNum);
@@ -49,11 +57,12 @@ function loadLevel() {
     }
     GroundLayer = map.createLayer("GroundLayer");
     GroundLayer.resizeWorld();
-    //GroundLayer.fixedToCamera = false;
-    //GroundLayer.anchor.setTo(0.1, 0.1);
     map.setCollisionBetween(0, 100, true, GroundLayer);
 }
 
+/**
+ * Actually creates the game (Loads all relevent objects)
+ */
 function createGame() {
     loadLevel();
     for (var i = 0; i < enemies.length; i++) {
@@ -67,17 +76,10 @@ function createGame() {
     music.queueSong('battleMusic'); // Change to "in-game" song
 }
 
-function mapEffects() {
-    // Issue with anchors and such, needs looking into
-    switch(levelNum) {
-        case 3:
-            //GroundLayer.angle += 1;
-            break;
-    }
-}
-
+/**
+ * Updates game reguarly and accordingly
+ */
 function updateGame() {
-    mapEffects();
     music.musicUpdate();
     if(debugButton.isDown && !debugPressed) {
         if (debug) {debug = false; }
@@ -95,6 +97,9 @@ function updateGame() {
     }
 }
 
+/**
+ * Misnamed as only renders text and potentially players hitbox
+ */
 function renderGame() {
     // Render text to screen
     game.debug.reset();
@@ -107,5 +112,94 @@ function renderGame() {
     }
     for (var i = 0; i < enemies.length; i++) {
         game.debug.text(enemies[i].percentage, (30*enemies[i].lobbyID), 540, "#00ff00"); // Prints FPS
+    }
+}
+
+/**
+ * If in current session. Player has moved, update X & Y.
+ * @param data - Contains session name (ID), playerID and new position.
+ */
+function onMovePlayer (data) {
+    if (localSession.id === data.name ) {
+        var movePlayer = playerById(data.id);
+        if (data.id === localID) {
+            movePlayer = player;
+            movePlayer.resetPosition();
+        }
+        // Player not found
+        if (!movePlayer) {
+            console.log("Player not found: ", data.id);
+            return false;
+        }
+
+        // Update player position
+        movePlayer.playerSprite.x = data.x;
+        movePlayer.playerSprite.y = data.y;
+        movePlayer.percentage = data.percentage;
+
+    }
+}
+
+/**
+ * If in current session. Player has been hit, update percentage, or run hit method (registerHit).
+ * @param data - Contains session name (ID) and playerID.
+ */
+function onPlayerHit(data) {
+    if (localSession.id === data.name ) {
+        if (localID === data.id) {
+            player.percentage = data.percent;
+            player.registerHit(data.knockback, data.dir, data.up);
+        }
+        else {
+            var hitPlayer = playerById(data.id);
+            // Player not found
+            if (!hitPlayer) {
+                console.log("Player not found: ", data.id);
+                return false;
+            }
+            hitPlayer.percentage = data.percent;
+        }
+    }
+}
+
+/**
+ * If in current session. Player has left, remove from session.
+ * @param data - Contains session name (ID) and playerID.
+ */
+function onRemovePlayer (data) {
+    if (localSession.id === data.name ) {
+        var removePlayer = playerById(data.id);
+
+        // Player not found
+        if (!removePlayer) {
+            console.log("Player not found: ", data.id);
+            return false;
+        }
+        removePlayer.remove();
+
+        // Remove player from array
+        enemies.splice(enemies.indexOf(removePlayer), 1);
+    }
+}
+
+/**
+ * If in current session. Session has ended, change music and return to menu state.
+ * @param data - Contains session name (ID).
+ */
+function onSessionOver(data) {
+    if (localSession.id === data.name ) {
+        localSession.state = 1;
+        music.queueSong('menuMusic'); // Change to "in-game" song
+        game.state.start("menu");
+    }
+}
+
+/**
+ * Player has died.
+ * @param data - Contains session name (ID) and playerID.
+ */
+function onPlayerDeath(data){
+    if (localSession.id === data.name ) {
+        console.log(data.id + " is dead");
     }
 }

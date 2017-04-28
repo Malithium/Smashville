@@ -2,6 +2,10 @@
 
 var music;
 
+/**
+ * Handles loading in all in-game and menu assets. Then progresses to Menu state
+ * @type {{preload: loadState.preload, create: loadState.create}}
+ */
 var loadState = {
   preload: function() {
       // Stops game from pausing when clicking off

@@ -1,5 +1,9 @@
 // Sound object to manage sound files
 
+/**
+ * Simple sound object. Used to manage sounds and transitioning.
+ * @param song
+ */
 function sound(song) {
     // Init
     this.music = game.add.audio(song);

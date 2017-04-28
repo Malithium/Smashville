@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: services/gameServices.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: services/gameServices.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var GAMEWIDTH = 900;
+var GAMEHEIGHT = 600;
+
+var Logic = require("../logic");
+var SearchServices = require("./searchServices");
+
+/**
+ * Player has moved
+ * @param data - Pass across playerID
+ */
+function onMovePlayer (data) {
+    // Find player in array
+    var movePlayer = SearchServices.playerById(this.id);
+
+    // Player not found
+    if (!movePlayer) {
+        console.log("Player not found: " + this.id);
+        return false;
+    }
+
+    var moveSession = SearchServices.sessionByID(this.id);
+
+    // Session not found
+    if (!moveSession) {
+        console.log("Session not found with player: " + this.id);
+        return false;
+    }
+
+    // TODO: Insert Latency Compensation (Check diff then react accordingly)
+    // Update player position
+    movePlayer.setX(data.x);
+    movePlayer.setY(data.y);
+
+    if(movePlayer.getX() > GAMEWIDTH+40 || movePlayer.getX() &lt; -40 || movePlayer.getY() > GAMEHEIGHT+40 || movePlayer.getY() &lt; -40) {
+        updateStock(movePlayer, this);
+    }
+
+    // Broadcast updated position to connected socket clients
+    this.broadcast.emit("move player", {name: moveSession.name, id: movePlayer.id, x: movePlayer.getX(),
+        y: movePlayer.getY(), percentage: movePlayer.getPercentage()});
+}
+
+/**
+ * Check if player has been hit. Return hit players ID if true
+ * @param data - Pass across playerID
+ */
+function onPlayerHit(data) {
+    var hitSession = SearchServices.sessionByID(this.id);
+    var hitPlayer = Logic.checkCollision(SearchServices.playerById(this.id), hitSession.players);
+    if(hitPlayer) {
+        hitPlayer.setPercentage(Logic.registerDamage(hitPlayer.getPercentage(), data.dmg));
+        var knockback = Logic.calculateKnockback(hitPlayer.getPercentage(), data.dmg);
+        var dir = 0;
+        var up = 0;
+
+        if (data.action &lt; 3) {
+            dir = data.action;
+        } else {
+            up = (data.action - 2);
+        }
+
+        this.emit("hit player", {name: hitSession.name, id: hitPlayer.id,
+            percent: hitPlayer.getPercentage(),
+            knockback: knockback, dir: dir, up: up});
+
+        this.broadcast.emit("hit player", {name: hitSession.name, id: hitPlayer.id,
+            percent: hitPlayer.getPercentage(),
+            knockback: knockback, dir: dir, up: up});
+    }
+}
+
+/**
+ * Update stock if player has been hit off map. Broadcast end of game is lives === 0
+ * @param player - player object
+ * @param socket - Socket Server used to broadcast
+ */
+function updateStock (player, socket) {
+    var deadSession = SearchServices.sessionByID(player.id);
+    if(deadSession) {
+        if (player.stock > 0) {
+            player.resetPosition();
+            player.percentage = 0;
+            socket.emit("move player", {id: player.id, name: deadSession.name, x: player.getX(), y: player.getY()});
+        }
+        else {
+            if(deadSession.checkGameOver()) {
+                // TODO: Include winner id in data
+                socket.emit("sessions over", {name: deadSession.name});
+                socket.broadcast.emit("sessions over", {name: deadSession.name});
+            }
+            else
+            {
+                socket.emit("player death", {id: player.id, name: deadSession.name});
+                socket.broadcast.emit("player death", {id: player.id, name: deadSession.name});
+            }
+        }
+        player.stock = player.stock - 1;
+    }
+    else {
+        console.log("Error session not found");
+    }
+}
+
+var GameServices = {
+    onMovePlayer: onMovePlayer,
+    onPlayerHit: onPlayerHit
+};
+
+module.exports = GameServices;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Client.html">Client</a></li><li><a href="Message.html">Message</a></li><li><a href="Session.html">Session</a></li></ul><h3>Global</h3><ul><li><a href="global.html#calculateKnockback">calculateKnockback</a></li><li><a href="global.html#checkCollision">checkCollision</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#onCharSelection">onCharSelection</a></li><li><a href="global.html#onClientDisconnect">onClientDisconnect</a></li><li><a href="global.html#onJoinSession">onJoinSession</a></li><li><a href="global.html#onLeaveSession">onLeaveSession</a></li><li><a href="global.html#onMovePlayer">onMovePlayer</a></li><li><a href="global.html#onNewMessage">onNewMessage</a></li><li><a href="global.html#onNewPlayer">onNewPlayer</a></li><li><a href="global.html#onNewSession">onNewSession</a></li><li><a href="global.html#onPlayerHit">onPlayerHit</a></li><li><a href="global.html#onSocketConnection">onSocketConnection</a></li><li><a href="global.html#onStartSession">onStartSession</a></li><li><a href="global.html#onUpdateSession">onUpdateSession</a></li><li><a href="global.html#registerDamage">registerDamage</a></li><li><a href="global.html#runAllTests">runAllTests</a></li><li><a href="global.html#setEventHandlers">setEventHandlers</a></li><li><a href="global.html#testCalculateKnockback">testCalculateKnockback</a></li><li><a href="global.html#testRegisterDamage">testRegisterDamage</a></li><li><a href="global.html#updateStock">updateStock</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Apr 28 2017 14:52:41 GMT+0100 (GMT Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,4 +1,8 @@
-
+/**
+ * Basic Client object.
+ * @param name
+ * @constructor
+ */
 function Client(name) {
     this.id;
     this.x = 0;

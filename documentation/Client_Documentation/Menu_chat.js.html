@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Menu/chat.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Menu/chat.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Created by Kyle Tuckey on 14/02/2017.
+ */
+
+var messages = [];
+var sessions = [];
+var numOfMessages = 0;
+var numOfSessions = 0;
+
+/**
+ * Handles Chat State (Message box and sessions list)
+ * @type {{preload: chatState.preload, create: chatState.create, update: chatState.update, hostSession: chatState.hostSession}}
+ */
+var chatState = {
+    preload: function(){
+    // Something(?)
+    },
+
+    create: function () {
+        netMode = true;
+        nameLabel = game.add.text(10, 10, "Chat", {font: "30px Arial", fill: "#ffffff"});
+        d = document.getElementById("chat-overlay");
+        d.style.left = GAMEWIDTH / 8 + "px";
+        d.style.top = GAMEHEIGHT / 8 + "px";
+        d.style.display = "block";
+
+        a = document.getElementById("chat-button");
+        a.style.cursor = "pointer";
+
+        backButton = game.add.button(10, GAMEHEIGHT-40, "back", back, this, 1, 2);
+        a.onclick = function () {
+
+            txt = document.getElementById("chat-text").value;
+            if (txt != "") {
+                sendPacket("new message", {name: playerName, message: txt.toString()});
+                document.getElementById("chat-text").value = "";
+            }
+        };
+
+        a.onmouseover = function () {
+            this.style.backgroundColor = "white";
+            this.style.color = "black";
+        };
+
+        a.onmouseout = function () {
+            this.style.backgroundColor = "transparent";
+            this.style.color = "white";
+        };
+
+        s = document.getElementById("session-overlay");
+        s.style.left = GAMEWIDTH - (300 + (GAMEWIDTH / 8)) + "px";
+        s.style.top = GAMEHEIGHT/ 8 + "px";
+        s.style.display = "block";
+    },
+
+    update: function () {
+         if (numOfMessages != messages.length) {
+             m = document.getElementById("chat-area");
+             m.innerHTML = "";
+             messages.forEach(function(msg) {
+                 m.innerHTML += msg;
+             });
+             numOfMessages = messages.length;
+         }
+
+        if(numOfSessions != sessions.length) {
+            innerSessions = document.getElementById("session-area");
+            sessions.forEach(function (sess) {
+                innerSessions.innerHTML += sess.body;
+            });
+
+            sessionCol = document.getElementsByClassName("session");
+
+            for(var i = 0; i &lt; sessionCol.length; i++) {
+                console.log(sessionCol[i]);
+                sessionCol[i].onmouseover = function () {
+                    this.style.backgroundColor = "white";
+                    this.style.color = "black";
+                };
+
+                sessionCol[i].onmouseout = function () {
+                    this.style.backgroundColor = "transparent";
+                    this.style.color = "white";
+                };
+
+                sessionCol[i].onclick = function () {
+                    d = document.getElementById("chat-overlay").style.display = "none";
+                    s = document.getElementById("session-overlay").style.display = "none";
+                    var sessionName = this.getElementsByClassName("session-name")[0].innerText;
+                    sendPacket("join session", {name: sessionName});
+                    lobbyName = sessionName;
+                };
+            }
+            numOfSessions = sessions.length;
+        }
+    },
+
+    hostSession: function() {
+        d = document.getElementById("chat-overlay").style.display = "none";
+        s = document.getElementById("session-overlay").style.display = "none";
+        isHost = true;
+        lobbyName = playerName + " Session";
+        sendPacket("new session", {id: localID, name: playerName});
+        game.state.start("menu");
+    }
+};
+
+/**
+ * Return to local state and screen
+ */
+function back() {
+    sendPacket("disconnected", {}); // Tell server
+    onSocketDisconnect({}); // Tell itself
+    socket = null;
+    var elements = document.getElementsByClassName("session");
+    while (elements.length > 0) {
+        elements[0].parentNode.removeChild(elements[0]);
+    }
+    netMode = false;
+    d = document.getElementById("chat-overlay").style.display = "none";
+    s = document.getElementById("session-overlay").style.display = "none";
+    ip = "";
+    host = "";
+    localID = -1;
+    game.state.start("menu");
+}
+
+/**
+ * New message recieved
+ * @param data - Contains message poster and contents
+ */
+function onNewMessage(data) {
+    var msg = "&lt;div class=\"message\"> &lt;p>" + data.name + ": " + data.message + "&lt;/p>&lt;/div>";
+    messages.push(msg);
+}
+
+/**
+ * New session recieved
+ * @param data - Contains session host, player count and state (Menu/Spectate)
+ */
+function onNewSession(data) {
+    var sessionbody = "&lt;div class=\"session\"> &lt;div class=\"session-name\">" + data.name + "&lt;/div> " + "&lt;div class=\"session-count\">" + data.playerCount + "/4&lt;/div>&lt;/div>";
+    var sess = new session(data.name, data.playerCount, sessionbody, data.state);
+    sessions.push(sess);
+}
+
+/**
+ * Session List has been updated (Player count)
+ * @param data - Pass across new player count, if session exists
+ */
+function onUpdateSessionList(data) {
+    sessionCol = document.getElementsByClassName("session");
+    for(var p = 0;p &lt; sessionCol.length; p++) {
+        if (typeof sessionCol[p] != 'undefined') {
+            name = sessionCol[p].getElementsByClassName("session-name")[0].innerText;
+
+            //if the name parsed down from the server matches a session in the HTML
+            if (data == name) {
+                sessionCol[p].getElementsByClassName("session-count")[0].innerText = data.playerCount;
+            }
+        }
+    }
+    for(var i = 0; i &lt; sessions.length; i++) {
+        if(sessions[i].name === data.name) {
+            sessions[i].count = data.playerCount
+        }
+    }
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Enemy.html">Enemy</a></li><li><a href="Player.html">Player</a></li></ul><h3>Global</h3><ul><li><a href="global.html#back">back</a></li><li><a href="global.html#chatState">chatState</a></li><li><a href="global.html#createGame">createGame</a></li><li><a href="global.html#disconnected">disconnected</a></li><li><a href="global.html#errorLabel">errorLabel</a></li><li><a href="global.html#game">game</a></li><li><a href="global.html#ip">ip</a></li><li><a href="global.html#loadLevel">loadLevel</a></li><li><a href="global.html#loadState">loadState</a></li><li><a href="global.html#menuState">menuState</a></li><li><a href="global.html#messages">messages</a></li><li><a href="global.html#onCharacterSelected">onCharacterSelected</a></li><li><a href="global.html#onClosedSession">onClosedSession</a></li><li><a href="global.html#onConnection">onConnection</a></li><li><a href="global.html#onJoinedSession">onJoinedSession</a></li><li><a href="global.html#onMovePlayer">onMovePlayer</a></li><li><a href="global.html#onNewMessage">onNewMessage</a></li><li><a href="global.html#onNewPlayer">onNewPlayer</a></li><li><a href="global.html#onNewSession">onNewSession</a></li><li><a href="global.html#onPlayerDeath">onPlayerDeath</a></li><li><a href="global.html#onPlayerHit">onPlayerHit</a></li><li><a href="global.html#onRemovePlayer">onRemovePlayer</a></li><li><a href="global.html#onSessionOver">onSessionOver</a></li><li><a href="global.html#onSocketConnected">onSocketConnected</a></li><li><a href="global.html#onSocketDisconnect">onSocketDisconnect</a></li><li><a href="global.html#onSpectateSession">onSpectateSession</a></li><li><a href="global.html#onStartSession">onStartSession</a></li><li><a href="global.html#onUpdateSessionLevel">onUpdateSessionLevel</a></li><li><a href="global.html#onUpdateSessionList">onUpdateSessionList</a></li><li><a href="global.html#playerById">playerById</a></li><li><a href="global.html#playState">playState</a></li><li><a href="global.html#renderGame">renderGame</a></li><li><a href="global.html#sendPacket">sendPacket</a></li><li><a href="global.html#session">session</a></li><li><a href="global.html#setEventHandlers">setEventHandlers</a></li><li><a href="global.html#sound">sound</a></li><li><a href="global.html#specState">specState</a></li><li><a href="global.html#updateBoxes">updateBoxes</a></li><li><a href="global.html#updateGame">updateGame</a></li><li><a href="global.html#userState">userState</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Apr 28 2017 14:32:41 GMT+0100 (GMT Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

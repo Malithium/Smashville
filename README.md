@@ -24,9 +24,14 @@ Once these are installed just follow the instructions below:
 -   Clone/Download this git repository.
 -   Open your terminal.
 -   CD to the cloned/downloaded game folder ("Smashville/game").
--   Type "npm install". Wait until download has finished.
+-   Type "npm install". Wait until download has finished. This should automatically kick off the next step.
 -   Type "npm run server". This will start hosting your server on port 44555.
 -   You're good to go!
+
+## Class Documentation
+Documentation for both our client side and server side can be found at the links below.
+Client: https://github.com/Malithium/Smashville/tree/develop/documentation/Client_Documentation/index.html
+Server: https://github.com/Malithium/Smashville/tree/develop/documentation/Server_Documentation/index.html
 
 # Project Logs
 ## Kyle Note 20/01/2017

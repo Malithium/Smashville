@@ -1,5 +1,10 @@
 // Last Updated: 20/01/2017
 
+/**
+ * Basic Session Object
+ * @param host
+ * @constructor
+ */
 function Session(host) {
     this.level = 0;
     this.host = host;

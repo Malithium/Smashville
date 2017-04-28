@@ -10,7 +10,10 @@ var socket;
 var localID = -1;
 var localSession;
 
-// Based off code in: https://github.com/xicombd/phaser-multiplayer-game
+/**
+ * Sets up the different event types (Independent threads handled by Socket.io)
+ * Based off code in: https://github.com/xicombd/phaser-multiplayer-game
+ */
 function setEventHandlers () {
     // SERVER CONNECTION METHODS
     // Socket connection successful
@@ -72,13 +75,20 @@ function setEventHandlers () {
     localID = 0;
 }
 
+/**
+ * Method designed to send packets, but also catch them if running locally
+ * @param type - Type of server message being sent
+ * @param data - The data being sent alongside packet Type
+ */
 function sendPacket(type, data) {
     if(!local) {
         socket.emit(type, data);
     }
 }
 
-// Socket connected (Clear Enemies)
+/**
+ * Socket connected to the server. Clear Enemies and sessions.
+ */
 function onSocketConnected () {
     console.log("Connected to socket server");
     localSession = new session("0", 0, "", 1);
@@ -94,7 +104,9 @@ function onSocketConnected () {
     sendPacket("new player", {name: playerName});
 }
 
-// Socket disconnected
+/**
+ * Socket has disconnected from the server
+ */
 function onSocketDisconnect () {
     console.log("Disconnected from socket server");
     for (var i = 0; i < enemies.length; i++) {
@@ -107,217 +119,20 @@ function onSocketDisconnect () {
     game.state.start("menu"); // Reset to local screen as have disconnected
 }
 
-// Get connection details
+/**
+ * Get connection details from server
+ * @param data - Passes across players serverID
+ */
 function onConnection(data) {
     console.log("id: " + data.id);
     localID = data.id;
     game.state.start("chat"); // Connected so proceed
 }
 
-// New message recieved
-function onNewMessage(data) {
-    var msg = "<div class=\"message\"> <p>" + data.name + ": " + data.message + "</p></div>";
-    messages.push(msg);
-}
-
-// New session recieved
-function onNewSession(data) {
-    var sessionbody = "<div class=\"session\"> <div class=\"session-name\">" + data.name + "</div> " + "<div class=\"session-count\">" + data.playerCount + "/4</div></div>";
-    var sess = new session(data.name, data.playerCount, sessionbody, data.state);
-    sessions.push(sess);
-}
-
-// Session has been updated
-function onUpdateSessionList(data) {
-    sessionCol = document.getElementsByClassName("session");
-    for(var p = 0;p < sessionCol.length; p++) {
-        if (typeof sessionCol[p] != 'undefined') {
-            name = sessionCol[p].getElementsByClassName("session-name")[0].innerText;
-
-            //if the name parsed down from the server matches a session in the HTML
-            if (data == name) {
-                sessionCol[p].getElementsByClassName("session-count")[0].innerText = data.playerCount;
-            }
-        }
-    }
-    for(var i = 0; i < sessions.length; i++) {
-        if(sessions[i].name === data.name) {
-            sessions[i].count = data.playerCount
-        }
-    }
-}
-
 /**
- * Sessions level has been updated
- * @param data - Packet data from server
- * @param data.name - Session name
- * @param data.level - Sessions new levelID
+ * Find player by ID.
+ * @param id - Contains playerID.
  */
-function onUpdateSessionLevel(data) {
-    if(data.name == lobbyName)
-        levelNum = data.level;
-}
-
-/**
- * Remove session from front-end and array
- */
-function onClosedSession(data) {
-    // Retreive the sessions from the HTML
-    sessionCol = document.getElementsByClassName("session");
-
-    // Iterate over the sessions
-    for(var i = 0; i < sessionCol.length; i++) {
-        name = sessionCol[i].getElementsByClassName("session-name")[0].innerText;
-
-        // If the name parsed down from the server matches a session in the HTML
-        if (data == name) {
-            // Remove the session from the HTML
-            overlay = document.getElementById("session-area");
-            overlay.removeChild(sessionCol[i]);
-
-            // Iterate through sessions array and remove the session from it
-            sessions.forEach(function (s) {
-                if (s.id == data) {
-                    var index = sessions.indexOf(s);
-                    if(index > -1) {
-                        sessions.splice(index, 1);
-                        console.log(sessions);
-                    }
-                }
-            });
-        }
-    }
-    if (localSession.name === data.name) {
-        disconnected();
-    }
-}
-
-// This player has joined the lobby
-function onJoinedSession(data) {
-    console.log("Joined session: " + data.name);
-    localSession = new session(data.name, 0, "", 1);
-    levelNum = data.level;
-    lobbyID = data.lobbyID;
-    game.state.start("menu");
-}
-
-// A new player has joined the Lobby
-function onNewPlayer (data) {
-    if (localSession.id === data.name ) {
-        console.log("New player connected (" + data.lobbyID + "):", data.id);
-
-        // Avoid possible duplicate players
-        var duplicate = playerById(data.id);
-        if (duplicate) {
-            console.log("Duplicate player!");
-            return false;
-        }
-
-        // Add new player to the remote players array
-        var enemy = new Enemy(data.x, data.y, data.enemyName);
-        enemy.lobbyID = data.lobbyID;
-        enemy.id = data.id;
-        enemies.push(enemy);
-    }
-}
-
-// Another player has selected a character
-function onCharacterSelected(data) {
-    if (localSession.id === data.name ) {
-        var charPlayer = playerById(data.id);
-        if (!charPlayer) {
-            console.log("Player not found: ", data.id);
-            return false;
-        }
-        charPlayer.characterID = data.charID;
-        // Update Rectangle
-    }
-}
-
-// Let the games begin!!!
-function onStartSession(data) {
-    console.log(data.name + " is starting!");
-    if (localSession.id === data.name ) {
-        game.state.start("play");
-    }
-}
-
-// Handle spectating
-function onSpectateSession(data) {
-    localSession.id = data.name;
-    levelNum = data.level;
-    lobbyID = 0;
-    game.state.start("spectate");
-}
-
-// Move player
-function onMovePlayer (data) {
-    if (localSession.id === data.name ) {
-        var movePlayer = playerById(data.id);
-        if (data.id === localID) {
-            movePlayer = player;
-            movePlayer.resetPosition();
-        }
-        // Player not found
-        if (!movePlayer) {
-            console.log("Player not found: ", data.id);
-            return false;
-        }
-
-        // Update player position
-        movePlayer.playerSprite.x = data.x;
-        movePlayer.playerSprite.y = data.y;
-        movePlayer.percentage = data.percentage;
-
-    }
-}
-
-// Player has been hit
-function onPlayerHit(data) {
-    if (localSession.id === data.name ) {
-        if (localID === data.id) {
-            player.percentage = data.percent;
-            player.registerHit(data.knockback, data.dir, data.up);
-        }
-        else {
-            var hitPlayer = playerById(data.id);
-            // Player not found
-            if (!hitPlayer) {
-                console.log("Player not found: ", data.id);
-                return false;
-            }
-            hitPlayer.percentage = data.percent;
-        }
-    }
-}
-
-// Remove player
-function onRemovePlayer (data) {
-    if (localSession.id === data.name ) {
-        var removePlayer = playerById(data.id);
-
-        // Player not found
-        if (!removePlayer) {
-            console.log("Player not found: ", data.id);
-            return false;
-        }
-        removePlayer.remove();
-
-        // Remove player from array
-        enemies.splice(enemies.indexOf(removePlayer), 1);
-    }
-}
-
-// Session is over, return to Lobby state
-function onSessionOver(data) {
-    if (localSession.id === data.name ) {
-        localSession.state = 1;
-        music.queueSong('menuMusic'); // Change to "in-game" song
-        game.state.start("menu");
-    }
-}
-
-// Find player by ID
 function playerById (id) {
     for (var i = 0; i < enemies.length; i++) {
         if (enemies[i].id === id) {
@@ -325,8 +140,4 @@ function playerById (id) {
         }
     }
     return false;
-}
-
-function onPlayerDeath(data){
-    console.log(data.id + " is dead");
 }

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Objects/player.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Objects/player.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// Last Updated: 20/01/2017
+
+/**
+ * Handles everything Player related (e.g. Input, Physics, etc).
+ * @param x
+ * @param y
+ * @param stock
+ * @constructor
+ */
+function Player(x, y, stock) {
+    // Init
+    this.playerSprite = game.add.sprite(x, y, "player" + playerNum);
+    this.playerSprite.width = 32;
+    this.playerSprite.height = 32;
+    this.x = x;
+    this.y = y;
+    this.stock = stock;
+
+    // Physics
+    game.physics.arcade.enable(this.playerSprite);
+
+    // Input
+    //  Movement
+    this.moveLeft = game.input.keyboard.addKey(Phaser.Keyboard.A);
+    this.moveRight = game.input.keyboard.addKey(Phaser.Keyboard.D);
+    this.moveJump = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    this.jumpPressed = false;
+    //  Actions
+    this.action1 = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+    this.action1Pressed = false;
+    this.action2 = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+    this.action2Pressed = false;
+    this.action3 = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+    this.action3Pressed = false;
+    this.action4 = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+    this.action4Pressed = false;
+
+    // Properties
+    //  Body
+    this.playerSprite.body.setSize(64, 64, 0, 0); // 64x64 is default sprite size
+    //  Jump
+    this.jumpOnce = false;
+    this.resetJump = false;
+    this.jumpHeight = 200;
+    //  Miscellaneous
+    this.hit = false;
+    this.speed = 100; // Set base speed here!
+    this.percentage = 0;
+
+    this.resetPosition = function(){
+        this.playerSprite.x = GAMEWIDTH/2;
+        this.playerSprite.y = GAMEHEIGHT/2;
+        this.playerSprite.body.velocity.x = 0;
+        this.playerSprite.body.velocity.y = 0;
+        this.percentage = 0;
+    };
+
+    // Functions
+    this.handleInput = function() {
+        // Movement
+        if(this.moveLeft.isDown) {
+            if (!this.hit) {
+                this.playerSprite.body.velocity.x = -this.speed;// Move Left
+            }
+            else {
+                this.playerSprite.body.velocity.x = this.playerSprite.body.velocity.x - (this.speed / 20);
+            }
+        }
+        if (this.moveRight.isDown) {
+            if (!this.hit) {
+                this.playerSprite.body.velocity.x = this.speed;// Move Left
+            }
+            else {
+                this.playerSprite.body.velocity.x = this.playerSprite.body.velocity.x + (this.speed / 20);
+            }
+        }
+        if (this.moveJump.isDown &amp;&amp; !this.jumpPressed) {
+            if (this.jumpOnce &amp;&amp; !this.resetJump) {
+                console.log("Jumped Twice");
+                this.resetJump = true;
+                this.playerSprite.body.velocity.y = -this.jumpHeight
+            }
+            else if (!this.jumpOnce) {
+                console.log("Jumped Once");
+                this.jumpOnce = true;
+                this.playerSprite.body.velocity.y = -this.jumpHeight; // Jump
+            }
+            this.jumpPressed = true;
+        }
+        else if (this.moveJump.isUp) {
+            this.jumpPressed = false;
+        }
+
+        // Actions
+        if(this.action1.isDown &amp;&amp; !this.action1Pressed) {
+            console.log("Attack Left");
+            sendPacket("hit player", { action: 1, dmg: 6, id: localID });
+            this.action1Pressed = true;
+        }
+        else if (this.action1.isUp) {
+            this.action1Pressed = false;
+        }
+
+        if(this.action2.isDown &amp;&amp; !this.action2Pressed) {
+            console.log("Attack Right");
+            sendPacket("hit player", { action: 2, dmg: 6, id: localID });
+            this.action2Pressed = true;
+        }
+        else if (this.action2.isUp) {
+            this.action2Pressed = false;
+        }
+
+        if(this.action3.isDown &amp;&amp; !this.action3Pressed) {
+            console.log("Uppercut");
+            sendPacket("hit player", { action: 3, dmg: 8, id: localID });
+            this.action3Pressed = true;
+        }
+        else if (this.action3.isUp) {
+            this.action3Pressed = false;
+        }
+
+        if(this.action4.isDown &amp;&amp; !this.action4Pressed) {
+            console.log("Low Blow");
+            sendPacket("hit player", { action: 4, dmg: 3, id: localID });
+            this.action4Pressed = true;
+        }
+        else if (this.action4.isUp) {
+            this.action4Pressed = false;
+        }
+    };
+
+    this.playerUpdate = function() {
+        // Stops from falling through the floor
+        if (!this.hit) {
+            this.playerSprite.body.velocity.x = 0;
+        }
+
+        if (game.physics.arcade.collide(this.playerSprite, GroundLayer)) {
+            this.jumpOnce = false;
+            this.resetJump = false;
+        }
+
+        if(((this.playerSprite.body.velocity.x &lt;= 10 &amp;&amp; this.dir === 2) ||
+            (this.playerSprite.body.velocity.x >= -10 &amp;&amp; this.dir === 1) ||
+            this.dir === 0 ) &amp;&amp; this.hit) {
+            this.playerSprite.body.gravity.x = 0;
+            this.hit = false;
+        }
+
+        this.handleInput();
+
+        this.lastX = Math.round(this.x);
+        this.lastY = Math.round(this.y);
+        this.x = Math.round(this.playerSprite.x);
+        this.y = Math.round(this.playerSprite.y);
+    };
+
+    this.registerHit = function(knockback, dir, up) {
+        this.hit = true;
+        this.dir = dir;
+        switch(dir)
+        {
+            case 1:
+                this.playerSprite.body.gravity.x = 50;
+                this.playerSprite.body.velocity.x = -knockback;
+                break;
+
+            case 2:
+                this.playerSprite.body.gravity.x = -50;
+                this.playerSprite.body.velocity.x = knockback;
+                break;
+        }
+        switch(up)
+        {
+            case 1:
+                this.playerSprite.y = this.playerSprite.y - 10;
+                this.playerSprite.body.velocity.y = -knockback;
+                break;
+
+            case 2:
+                this.playerSprite.body.velocity.y = knockback;
+                break;
+        }
+    };
+
+    this.checkRingOut = function(){
+        if((this.x > GAMEWIDTH+40 || this.x &lt; 0-40) || (this.y > GAMEHEIGHT+40 || this.y &lt; 0-40)) {
+            this.stock = player.stock - 1;
+            sendPacket("update stock", {id: playerName, stock: this.stock});
+
+            if(this.stock > 0) {
+                this.resetPosition();
+            }
+            else {
+                console.log(stock)
+                this.death()
+            }
+        }
+    };
+
+    this.death = function(){
+        player.x = 0;
+        player.y = 0;
+        this.playerSprite.kill();
+    }
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Enemy.html">Enemy</a></li><li><a href="Player.html">Player</a></li></ul><h3>Global</h3><ul><li><a href="global.html#back">back</a></li><li><a href="global.html#chatState">chatState</a></li><li><a href="global.html#createGame">createGame</a></li><li><a href="global.html#disconnected">disconnected</a></li><li><a href="global.html#errorLabel">errorLabel</a></li><li><a href="global.html#game">game</a></li><li><a href="global.html#ip">ip</a></li><li><a href="global.html#loadLevel">loadLevel</a></li><li><a href="global.html#loadState">loadState</a></li><li><a href="global.html#menuState">menuState</a></li><li><a href="global.html#messages">messages</a></li><li><a href="global.html#onCharacterSelected">onCharacterSelected</a></li><li><a href="global.html#onClosedSession">onClosedSession</a></li><li><a href="global.html#onConnection">onConnection</a></li><li><a href="global.html#onJoinedSession">onJoinedSession</a></li><li><a href="global.html#onMovePlayer">onMovePlayer</a></li><li><a href="global.html#onNewMessage">onNewMessage</a></li><li><a href="global.html#onNewPlayer">onNewPlayer</a></li><li><a href="global.html#onNewSession">onNewSession</a></li><li><a href="global.html#onPlayerDeath">onPlayerDeath</a></li><li><a href="global.html#onPlayerHit">onPlayerHit</a></li><li><a href="global.html#onRemovePlayer">onRemovePlayer</a></li><li><a href="global.html#onSessionOver">onSessionOver</a></li><li><a href="global.html#onSocketConnected">onSocketConnected</a></li><li><a href="global.html#onSocketDisconnect">onSocketDisconnect</a></li><li><a href="global.html#onSpectateSession">onSpectateSession</a></li><li><a href="global.html#onStartSession">onStartSession</a></li><li><a href="global.html#onUpdateSessionLevel">onUpdateSessionLevel</a></li><li><a href="global.html#onUpdateSessionList">onUpdateSessionList</a></li><li><a href="global.html#playerById">playerById</a></li><li><a href="global.html#playState">playState</a></li><li><a href="global.html#renderGame">renderGame</a></li><li><a href="global.html#sendPacket">sendPacket</a></li><li><a href="global.html#session">session</a></li><li><a href="global.html#setEventHandlers">setEventHandlers</a></li><li><a href="global.html#sound">sound</a></li><li><a href="global.html#specState">specState</a></li><li><a href="global.html#updateBoxes">updateBoxes</a></li><li><a href="global.html#updateGame">updateGame</a></li><li><a href="global.html#userState">userState</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Apr 28 2017 14:32:41 GMT+0100 (GMT Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

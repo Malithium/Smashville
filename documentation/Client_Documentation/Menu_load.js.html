@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Menu/load.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Menu/load.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// Last Updated: 20/01/2017
+
+var music;
+
+/**
+ * Handles loading in all in-game and menu assets. Then progresses to Menu state
+ * @type {{preload: loadState.preload, create: loadState.create}}
+ */
+var loadState = {
+  preload: function() {
+      // Stops game from pausing when clicking off
+      game.stage.disableVisibilityChange = true;
+      // Used for FPS counter
+      game.time.advancedTiming = true;
+      // Levels
+      game.load.tilemap("map1", "assets/levels/level1.json", null, Phaser.Tilemap.TILED_JSON);
+      game.load.tilemap("map2", "assets/levels/level2.json", null, Phaser.Tilemap.TILED_JSON);
+      game.load.tilemap("map3", "assets/levels/level3.json", null, Phaser.Tilemap.TILED_JSON);
+      // Buttons
+      game.load.spritesheet("level1_btn", "assets/images/Level1_button.png", 200, 133, 2);
+      game.load.spritesheet("level2_btn", "assets/images/Level2_button.png", 200, 133, 2);
+      game.load.spritesheet("connect_btn", "assets/images/connect_button.png", 180, 63, 2);
+      game.load.spritesheet("start_btn", "assets/images/start_button.png", 180, 63, 2);
+      // Image Assets
+      game.load.image("player1", "assets/images/playerTest.png");
+      game.load.image("player2", "assets/images/playerTest2.png");
+      game.load.image("tiles1", "assets/images/tiles1.png");
+      game.load.image("tiles2", "assets/images/tiles2.png");
+      game.load.image("back", "assets/images/back_button.png");
+      // Sound Clips
+      game.load.audio('menuMusic', 'assets/sounds/RnB_Loop3.wav');
+      game.load.audio('battleMusic', 'assets/sounds/Defense_Line.mp3');
+
+      var overlayX = (GAMEWIDTH/2 - 300/2);
+      var overlayY = (GAMEHEIGHT/2 - 300/2);
+      var d = document.getElementById("ip-host");
+      d.style.left = overlayX+"px";
+      d.style.top = overlayY+"px";
+      d.style.display = "none";
+
+      game.physics.startSystem(Phaser.Physics.ARCADE);
+      game.physics.arcade.gravity.y = 350;
+  },
+
+  create: function() {
+      music = new sound('menuMusic');
+      music.setVolume(0.2); // Reduce sound to background level
+      music.musicLoop();
+      game.state.start("user");
+  }
+
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Enemy.html">Enemy</a></li><li><a href="Player.html">Player</a></li></ul><h3>Global</h3><ul><li><a href="global.html#back">back</a></li><li><a href="global.html#chatState">chatState</a></li><li><a href="global.html#createGame">createGame</a></li><li><a href="global.html#disconnected">disconnected</a></li><li><a href="global.html#errorLabel">errorLabel</a></li><li><a href="global.html#game">game</a></li><li><a href="global.html#ip">ip</a></li><li><a href="global.html#loadLevel">loadLevel</a></li><li><a href="global.html#loadState">loadState</a></li><li><a href="global.html#menuState">menuState</a></li><li><a href="global.html#messages">messages</a></li><li><a href="global.html#onCharacterSelected">onCharacterSelected</a></li><li><a href="global.html#onClosedSession">onClosedSession</a></li><li><a href="global.html#onConnection">onConnection</a></li><li><a href="global.html#onJoinedSession">onJoinedSession</a></li><li><a href="global.html#onMovePlayer">onMovePlayer</a></li><li><a href="global.html#onNewMessage">onNewMessage</a></li><li><a href="global.html#onNewPlayer">onNewPlayer</a></li><li><a href="global.html#onNewSession">onNewSession</a></li><li><a href="global.html#onPlayerDeath">onPlayerDeath</a></li><li><a href="global.html#onPlayerHit">onPlayerHit</a></li><li><a href="global.html#onRemovePlayer">onRemovePlayer</a></li><li><a href="global.html#onSessionOver">onSessionOver</a></li><li><a href="global.html#onSocketConnected">onSocketConnected</a></li><li><a href="global.html#onSocketDisconnect">onSocketDisconnect</a></li><li><a href="global.html#onSpectateSession">onSpectateSession</a></li><li><a href="global.html#onStartSession">onStartSession</a></li><li><a href="global.html#onUpdateSessionLevel">onUpdateSessionLevel</a></li><li><a href="global.html#onUpdateSessionList">onUpdateSessionList</a></li><li><a href="global.html#playerById">playerById</a></li><li><a href="global.html#playState">playState</a></li><li><a href="global.html#renderGame">renderGame</a></li><li><a href="global.html#sendPacket">sendPacket</a></li><li><a href="global.html#session">session</a></li><li><a href="global.html#setEventHandlers">setEventHandlers</a></li><li><a href="global.html#sound">sound</a></li><li><a href="global.html#specState">specState</a></li><li><a href="global.html#updateBoxes">updateBoxes</a></li><li><a href="global.html#updateGame">updateGame</a></li><li><a href="global.html#userState">userState</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Apr 28 2017 14:32:41 GMT+0100 (GMT Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
