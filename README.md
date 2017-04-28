@@ -7,13 +7,21 @@ will be able to run a local version of our game, or connect to a hosted server, 
 either host an open session for others to join, or connect to an already existing session.
 
 The controls for the game are simple:
+
 Move Left       -   A
+
 Move Right      -   D
+
 Jump            -   Space bar
+
 Double Jump     -   (Double tap) Space bar
+
 Attack Left     -   Left Arrow Key
+
 Attack Right    -   Right Arrow Key
+
 Uppercut        -   Up Arrow Key
+
 Low Blow        -   Down Arrow Key
 
 ## How to Install
@@ -31,9 +39,9 @@ Once these are installed just follow the instructions below:
 ## Class Documentation
 Documentation for both our client side and server side can be found at the links below.
 
-Client: https://malithium.github.io/Smashville/tree/develop/documentation/Client_Documentation/index.html
+Client: https://malithium.github.io/Smashville/documentation/Client_Documentation/index.html
 
-Server: https://malithium.github.io/Smashville/tree/develop/documentation/Server_Documentation/index.html
+Server: https://malithium.github.io/Smashville/documentation/Server_Documentation/index.html
 
 # Project Logs
 ## Kyle Note 20/01/2017
