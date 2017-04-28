@@ -2,6 +2,14 @@
 var clients = []; // Array of connected players
 var sessions = []; // Array of Sessions
 
+/**
+ * Reset Sessions and Messages
+ */
+function emptyArrays() {
+    clients = [];
+    sessions = [];
+}
+
 function addClient(newPlayer) {
     // Add new player to array
     clients.push(newPlayer);
@@ -61,6 +69,7 @@ function sessionByID (id) {
 }
 
 var SearchServices = {
+    emptyArray: emptyArrays,
     addClient: addClient,
     addSession: addSession,
     removeClient: removeClient,

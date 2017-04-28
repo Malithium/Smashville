@@ -31,15 +31,16 @@ function onNewSession(data) {
     var newPlayer = SearchServices.playerById(this.id);
     newPlayer.setLobbyID(1);
     var newSession = new Session(newPlayer);
+    var tempSessions = SearchServices.getSessions();
     // Creates Unique Session Name/ID
-    if (sessions.length > 1) {
+    if (tempSessions.length > 1) {
         var x = 0;
         while (SearchServices.sessionByName(newSession.getName())) {
             x++;
             newSession.name = newPlayer.name + x + " Session";
         }
     }
-    console.log("New session created: " + newSession.getName());
+    util.log("New session created: " + newSession.getName());
     this.emit("joined session", {name: newSession.name, level: 0, lobbyID: 1});
     this.broadcast.emit("new session", {name: newSession.getName(), playerCount: 1, state: newSession.getState()});
     SearchServices.addSession(newSession);
@@ -77,7 +78,7 @@ function onJoinSession(data) {
             var joinPlayer = SearchServices.playerById(this.id);
             joinPlayer.setLobbyID(joinSession.nxtLobbyID);
             joinSession.addPlayer(joinPlayer);
-            console.log("Joined session: " + joinSession.name);
+            util.log("Joined session: " + joinSession.name);
 
             // Tell other players new player has connected
             this.broadcast.emit("new player", {

@@ -11,23 +11,13 @@ var SearchServices = require("./services/searchServices");
 var SessionServices = require("./services/sessionServices");
 var LobbyServices = require("./services/lobbyServices");
 var GameServices = require("./services/gameServices");
-
-// Create and start the http server
+// Server variables
 var socket;	// Socket controller
 var io = require("socket.io");
 var port = process.env.PORT || 44555;
-var server = http.createServer(
-    ecstatic({ root: path.resolve(__dirname, "../client") })
-).listen(port, function (err) {
-    if (err) {
-        util.log(err);
-        throw err
-    }
-    init()
-});
 
 /**
- * Run initalise (And tests)
+ * Run initialise (And tests)
  */
 function init () {
     // Attach Socket.IO to server
@@ -52,9 +42,7 @@ function init () {
 function setEventHandlers() {
     // Socket.IO
     socket.sockets.on("connection", onSocketConnection);
-    // Reset Sessions and Messages
-    clients = [];
-    sessions = [];
+    SearchServices.emptyArray();
 }
 
 /**
@@ -112,9 +100,10 @@ function onNewPlayer (data) {
     newPlayer.id = this.id;
     newPlayer.setPercentage(0);
 
+    var tempSessions = SearchServices.getSessions();
     // Send existing clients to the new player
-    for (var i = 0; i < sessions.length; i++) {
-        this.emit("new session", {name: sessions[i].name, playerCount: sessions[i].players.length, state: sessions[i].getState()});
+    for (var i = 0; i < tempSessions.length; i++) {
+        this.emit("new session", {name: sessions[i].name, playerCount: tempSessions[i].players.length, state: tempSessions[i].getState()});
     }
 
     // Send details
@@ -153,3 +142,14 @@ function onClientDisconnect () {
     }
     SearchServices.removeClient(removePlayer);
 }
+
+// Create and start the http server
+var server = http.createServer(
+    ecstatic({ root: path.resolve(__dirname, "../client") })
+).listen(port, function (err) {
+    if (err) {
+        util.log(err);
+        throw err;
+    }
+    init();
+});

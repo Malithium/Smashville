@@ -34,17 +34,17 @@ var userState = {
         var errorMsg = "";
         var t = document.getElementsByName("username")[0].value;
 
-        if(t.toString() == "") {
+        if(t.toString() === "") {
             error = true;
             errorMsg = "Textbox is empty! please input a name";
         }
 
-        if(t.toString().length > 12 && error == false) {
+        if(t.toString().length > 12 && error === false) {
             error = true;
             errorMsg = "Name must be less than 12 characters"
         }
 
-        if(error == false) {
+        if(error === false) {
             playerName = t.toString();
             var u = document.getElementById("user-overlay").style.display = "none";
             game.state.start("menu");
@@ -54,4 +54,4 @@ var userState = {
         }
 
     }
-}
+};

@@ -176,22 +176,22 @@ function Player(x, y, stock) {
 
     this.checkRingOut = function(){
         if((this.x > GAMEWIDTH+40 || this.x < 0-40) || (this.y > GAMEHEIGHT+40 || this.y < 0-40)) {
-            this.stock = player.stock - 1;
+            this.stock = this.stock - 1;
             sendPacket("update stock", {id: playerName, stock: this.stock});
 
             if(this.stock > 0) {
                 this.resetPosition();
             }
             else {
-                console.log(stock)
-                this.death()
+                console.log(stock);
+                this.death();
             }
         }
     };
 
     this.death = function(){
-        player.x = 0;
-        player.y = 0;
+        this.x = 0;
+        this.y = 0;
         this.playerSprite.kill();
-    }
+    };
 }

@@ -29,8 +29,8 @@ var loadState = {
       game.load.image("tiles2", "assets/images/tiles2.png");
       game.load.image("back", "assets/images/back_button.png");
       // Sound Clips
-      game.load.audio('menuMusic', 'assets/sounds/RnB_Loop3.wav');
-      game.load.audio('battleMusic', 'assets/sounds/Defense_Line.mp3');
+      game.load.audio("menuMusic", "assets/sounds/RnB_Loop3.wav");
+      game.load.audio("battleMusic", "assets/sounds/Defense_Line.mp3");
 
       var overlayX = (GAMEWIDTH/2 - 300/2);
       var overlayY = (GAMEHEIGHT/2 - 300/2);
@@ -44,7 +44,7 @@ var loadState = {
   },
 
   create: function() {
-      music = new sound('menuMusic');
+      music = new sound("menuMusic");
       music.setVolume(0.2); // Reduce sound to background level
       music.musicLoop();
       game.state.start("user");

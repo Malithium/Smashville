@@ -46,13 +46,8 @@ function Session(host) {
     };
 
     this.getPlayerById = function(id) {
-        // var result = this.players.forEach(function(player) {
-        //    if (player.id === id) {
-        //        return player;
-        //    }
-        //});
         for (var i = 0; i < this.players.length; i++) {
-            if (this.players[i].id == id) {
+            if (this.players[i].id === id) {
                 return this.players[i];
             }
         }
@@ -62,16 +57,16 @@ function Session(host) {
     this.checkGameOver = function(){
         var theLiving = 0;
         for(i in this.players){
-            if(this.players[i].getStock() > 0)
+            if(this.players[i].getStock() > 0) {
                 theLiving++;
+            }
         }
 
         if (theLiving > 1) {
             return false;
         }
-
         return true;
-    }
+    };
 
 }
 

@@ -14,7 +14,7 @@ function onStartSession(data) {
             // Check each player has CharacterID
             for (var i = 0; i < startingSession.players.length; i++) {
                 if (startingSession.players[i].characterID === 0) {
-                    console.log("No character selected");
+                    util.log("No character selected");
                     start = false;
                     // Send error message
                 }
@@ -22,7 +22,7 @@ function onStartSession(data) {
         }
         else {
             // Send error message
-            console.log("No level selected")
+            util.log("No level selected");
         }
         // All checks cleared
         if (start) {
@@ -30,8 +30,9 @@ function onStartSession(data) {
                 startingSession.players[j].stock = 3;
                 startingSession.players[j].percentage = 0;
             }
-            console.log("Starting session: " + startingSession.name);
+            util.log("Starting session: " + startingSession.name);
             startingSession.sessionState = startingSession.sessionStates.STARTING;
+
             this.emit("start session", {name: startingSession.name});
             this.broadcast.emit("start session", {name: startingSession.name});
             // Assign positions then update players that session has started
@@ -58,13 +59,13 @@ function onUpdateSession(data) {
 function onCharSelection(data) {
     var charPlayer = SearchServices.playerById(this.id);
     if (!charPlayer) {
-        console.log("Player not found: " + this.id);
+        util.log("Player not found: " + this.id);
         return false;
     }
 
     var charSession = SearchServices.sessionByName(data.name);
     if (!charSession) {
-        console.log("Session not found: " + data.name);
+        util.log("Session not found: " + data.name);
         return false;
     }
     for(var i = 0; i < charSession.players.length; i++) {
@@ -84,7 +85,7 @@ function onLeaveSession(data) {
     var leftSession = SearchServices.sessionByName(data.name);
     leftSession.players.splice(leftSession.players.indexOf(leftPlayer), 1);
     if (leftSession.host.id === this.id) {
-        this.broadcast.emit("session closed", leaveSession.name);
+        this.broadcast.emit("session closed", leftSession.name);
         SearchServices.removeSession(leftSession);
     }
     else {

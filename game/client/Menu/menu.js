@@ -40,8 +40,8 @@ var menuState = {
         action3 = game.input.keyboard.addKey(Phaser.Keyboard.UP);
         action4 = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
 
-        characterLabel = game.add.text(10, 240,"choose a character", {font: "25px Arial", fill: "#ffffff"});
-        backButton = game.add.button(10, GAMEHEIGHT-40, "back", this.back, this, 1, 2);
+        var characterLabel = game.add.text(10, 240,"choose a character", {font: "25px Arial", fill: "#ffffff"});
+        var backButton = game.add.button(10, GAMEHEIGHT-40, "back", this.back, this, 1, 2);
         if((!netMode) || (netMode && isHost)) {
             levelLabel = game.add.text(10, 60,"choose a level", {font: "25px Arial", fill: "#ffffff"});
             var level1 = game.add.button(10, 100, "level1_btn", this.levelSelect1, this, 1, 2);
@@ -50,6 +50,7 @@ var menuState = {
 
         var character1 = game.add.button(10, 280, "player1", this.playerSelect1, this, 1, 2);
         var character2 = game.add.button(100, 280, "player2", this.playerSelect2, this, 1, 2);
+        var nameLabel;
 
         if(!netMode) {
             var connect = game.add.button(GAMEWIDTH-200, 10, "connect_btn", this.showConUI, this, 1, 2);
@@ -86,14 +87,16 @@ var menuState = {
 
     levelSelect1: function() {
         levelNum = 1;
-        if(isHost)
-            sendPacket("update session", {name: lobbyName,level: 1})
+        if(isHost) {
+            sendPacket("update session", {name: lobbyName, level: 1});
+        }
     },
 
     levelSelect2: function() {
         levelNum = 2;
-        if(isHost)
-            sendPacket("update session", {name: lobbyName,level: 2})
+        if(isHost) {
+            sendPacket("update session", {name: lobbyName, level: 2});
+        }
     },
 
     playerSelect1: function() {
@@ -170,14 +173,14 @@ var menuState = {
     {
         var error = false;
         if(!levelNum > 0) {
-            levelErrorLabel = game.add.text(10, GAMEHEIGHT - 60, "Please choose a level", {
+            var levelErrorLabel = game.add.text(10, GAMEHEIGHT - 60, "Please choose a level", {
                 font: "25px Arial",
                 fill: "#ff0000"
             });
             error = true;
         }
         if(!playerNum > 0) {
-            CharacterErrorLabel = game.add.text(10, GAMEHEIGHT - 120, "Please choose a character", {
+            var CharacterErrorLabel = game.add.text(10, GAMEHEIGHT - 120, "Please choose a character", {
                 font: "25px Arial",
                 fill: "#ff0000"
             });
@@ -281,7 +284,7 @@ function updateBoxes(lbID, name) {
  * @param data.level - Sessions new levelID
  */
 function onUpdateSessionLevel(data) {
-    if(data.name == lobbyName)
+    if(data.name === lobbyName)
         levelNum = data.level;
 }
 
@@ -298,14 +301,14 @@ function onClosedSession(data) {
         name = sessionCol[i].getElementsByClassName("session-name")[0].innerText;
 
         // If the name parsed down from the server matches a session in the HTML
-        if (data == name) {
+        if (data === name) {
             // Remove the session from the HTML
             overlay = document.getElementById("session-area");
             overlay.removeChild(sessionCol[i]);
 
             // Iterate through sessions array and remove the session from it
             sessions.forEach(function (s) {
-                if (s.id == data) {
+                if (s.id === data) {
                     var index = sessions.indexOf(s);
                     if(index > -1) {
                         sessions.splice(index, 1);

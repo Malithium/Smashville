@@ -5,6 +5,38 @@ var Logic = require("../logic");
 var SearchServices = require("./searchServices");
 
 /**
+ * Update stock if player has been hit off map. Broadcast end of game is lives === 0
+ * @param player - player object
+ * @param socket - Socket Server used to broadcast
+ */
+function updateStock (player, socket) {
+    var deadSession = SearchServices.sessionByID(player.id);
+    if(deadSession) {
+        if (player.stock > 0) {
+            player.resetPosition();
+            player.percentage = 0;
+            socket.emit("move player", {id: player.id, name: deadSession.name, x: player.getX(), y: player.getY()});
+        }
+        else {
+            if(deadSession.checkGameOver()) {
+                // TODO: Include winner id in data
+                socket.emit("sessions over", {name: deadSession.name});
+                socket.broadcast.emit("sessions over", {name: deadSession.name});
+            }
+            else
+            {
+                socket.emit("player death", {id: player.id, name: deadSession.name});
+                socket.broadcast.emit("player death", {id: player.id, name: deadSession.name});
+            }
+        }
+        player.stock = player.stock - 1;
+    }
+    else {
+        util.log("Error session not found");
+    }
+}
+
+/**
  * Player has moved
  * @param data - Pass across playerID
  */
@@ -14,7 +46,7 @@ function onMovePlayer (data) {
 
     // Player not found
     if (!movePlayer) {
-        console.log("Player not found: " + this.id);
+        util.log("Player not found: " + this.id);
         return false;
     }
 
@@ -22,7 +54,7 @@ function onMovePlayer (data) {
 
     // Session not found
     if (!moveSession) {
-        console.log("Session not found with player: " + this.id);
+        util.log("Session not found with player: " + this.id);
         return false;
     }
 
@@ -66,38 +98,6 @@ function onPlayerHit(data) {
         this.broadcast.emit("hit player", {name: hitSession.name, id: hitPlayer.id,
             percent: hitPlayer.getPercentage(),
             knockback: knockback, dir: dir, up: up});
-    }
-}
-
-/**
- * Update stock if player has been hit off map. Broadcast end of game is lives === 0
- * @param player - player object
- * @param socket - Socket Server used to broadcast
- */
-function updateStock (player, socket) {
-    var deadSession = SearchServices.sessionByID(player.id);
-    if(deadSession) {
-        if (player.stock > 0) {
-            player.resetPosition();
-            player.percentage = 0;
-            socket.emit("move player", {id: player.id, name: deadSession.name, x: player.getX(), y: player.getY()});
-        }
-        else {
-            if(deadSession.checkGameOver()) {
-                // TODO: Include winner id in data
-                socket.emit("sessions over", {name: deadSession.name});
-                socket.broadcast.emit("sessions over", {name: deadSession.name});
-            }
-            else
-            {
-                socket.emit("player death", {id: player.id, name: deadSession.name});
-                socket.broadcast.emit("player death", {id: player.id, name: deadSession.name});
-            }
-        }
-        player.stock = player.stock - 1;
-    }
-    else {
-        console.log("Error session not found");
     }
 }
 

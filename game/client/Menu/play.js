@@ -73,7 +73,7 @@ function createGame() {
         enemies[i].startGame();
     }
     debugButton = game.input.keyboard.addKey(Phaser.Keyboard.TAB);
-    music.queueSong('battleMusic'); // Change to "in-game" song
+    music.queueSong("battleMusic"); // Change to "in-game" song
 }
 
 /**
@@ -91,7 +91,7 @@ function updateGame() {
         if (!netMode) {
             player.checkRingOut();
         }
-        if (player.lastX != player.x || player.lastY != player.y) {
+        if (player.lastX !== player.x || player.lastY !== player.y) {
             sendPacket("move player", {x: player.x, y: player.y});
         }
     }
@@ -189,7 +189,7 @@ function onRemovePlayer (data) {
 function onSessionOver(data) {
     if (localSession.id === data.name ) {
         localSession.state = 1;
-        music.queueSong('menuMusic'); // Change to "in-game" song
+        music.queueSong("menuMusic"); // Change to "in-game" song
         game.state.start("menu");
     }
 }
