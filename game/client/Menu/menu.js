@@ -106,6 +106,11 @@ var menuState = {
         sendPacket("character selected", {name: lobbyName, charID: 2, charName: playerName});
     },
 
+    playerSelect3: function() {
+        playerNum = 3;
+        sendPacket("character selected", {name: lobbyName, charID: 3, charName: playerName});
+    },
+
     secretCode: function () {
         if(action1.isDown && !action1Pressed) {
             code += "1";
@@ -146,7 +151,7 @@ var menuState = {
         }
         else if (code === "1234") {
             // Unlock secret character
-            playerNum = 3;
+            var character3 = game.add.button(190, 280, "player3", this.playerSelect3, this, 1, 2);
         }
     },
 
