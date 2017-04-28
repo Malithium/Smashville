@@ -16,6 +16,17 @@ var player2;
 var player3;
 var player4;
 
+// Inputs
+var code = "";
+var action1;
+var action2;
+var action3;
+var action4;
+var action1Pressed = false;
+var action2Pressed = false;
+var action3Pressed = false;
+var action4Pressed = false;
+
 /**
  * Very early menu implementation, Im not sure how to have 1 method for multiple buttons it appears that adding an parameter to the
  * "actionOnClick" method forces it to be used without clicking, so this will have to do until I find a solution
@@ -23,6 +34,12 @@ var player4;
  */
 var menuState = {
     create: function() {
+        // Store action to global inputs
+        action1 = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+        action2 = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+        action3 = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+        action4 = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+
         characterLabel = game.add.text(10, 240,"choose a character", {font: "25px Arial", fill: "#ffffff"});
         backButton = game.add.button(10, GAMEHEIGHT-40, "back", this.back, this, 1, 2);
         if((!netMode) || (netMode && isHost)) {
@@ -60,9 +77,10 @@ var menuState = {
                 updateBoxes(enemies[i].lobbyID, enemies[i].name);
             }
         }
-        if(lobbyID != 0) {
+        if(lobbyID !== 0) {
             updateBoxes(lobbyID, playerName);
         }
+        this.secretCode();
         music.musicUpdate();
     },
 
@@ -86,6 +104,50 @@ var menuState = {
     playerSelect2: function() {
         playerNum = 2;
         sendPacket("character selected", {name: lobbyName, charID: 2, charName: playerName});
+    },
+
+    secretCode: function () {
+        if(action1.isDown && !action1Pressed) {
+            code += "1";
+            action1Pressed = true;
+            console.log(code);
+        }
+        else if (action1.isUp) {
+            action1Pressed = false;
+        }
+        if(action2.isDown && !action2Pressed) {
+            code += "3";
+            action2Pressed = true;
+            console.log(code);
+        }
+        else if (action2.isUp) {
+            action2Pressed = false;
+        }
+        if(action3.isDown && !action3Pressed) {
+            code += "2";
+            action3Pressed = true;
+            console.log(code);
+        }
+        else if (action3.isUp) {
+            action3Pressed = false;
+        }
+        if(action4.isDown && !action4Pressed) {
+            code += "4";
+            action4Pressed = true;
+            console.log(code);
+        }
+        else if (action4.isUp) {
+            action4Pressed = false;
+        }
+
+        if(code.length > 4) {
+            code = code.substring(1); // Remove first character
+            console.log(code);
+        }
+        else if (code === "1234") {
+            // Unlock secret character
+            playerNum = 3;
+        }
     },
 
     /**

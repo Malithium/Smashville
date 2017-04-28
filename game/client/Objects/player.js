@@ -25,15 +25,6 @@ function Player(x, y, stock) {
     this.moveRight = game.input.keyboard.addKey(Phaser.Keyboard.D);
     this.moveJump = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     this.jumpPressed = false;
-    //  Actions
-    this.action1 = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
-    this.action1Pressed = false;
-    this.action2 = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
-    this.action2Pressed = false;
-    this.action3 = game.input.keyboard.addKey(Phaser.Keyboard.UP);
-    this.action3Pressed = false;
-    this.action4 = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
-    this.action4Pressed = false;
 
     // Properties
     //  Body
@@ -92,40 +83,40 @@ function Player(x, y, stock) {
         }
 
         // Actions
-        if(this.action1.isDown && !this.action1Pressed) {
+        if(action1.isDown && !action1Pressed) {
             console.log("Attack Left");
             sendPacket("hit player", { action: 1, dmg: 6, id: localID });
-            this.action1Pressed = true;
+            action1Pressed = true;
         }
-        else if (this.action1.isUp) {
-            this.action1Pressed = false;
+        else if (action1.isUp) {
+            action1Pressed = false;
         }
 
-        if(this.action2.isDown && !this.action2Pressed) {
+        if(action2.isDown && !action2Pressed) {
             console.log("Attack Right");
             sendPacket("hit player", { action: 2, dmg: 6, id: localID });
-            this.action2Pressed = true;
+            action2Pressed = true;
         }
-        else if (this.action2.isUp) {
-            this.action2Pressed = false;
+        else if (action2.isUp) {
+            action2Pressed = false;
         }
 
-        if(this.action3.isDown && !this.action3Pressed) {
+        if(action3.isDown && !action3Pressed) {
             console.log("Uppercut");
             sendPacket("hit player", { action: 3, dmg: 8, id: localID });
-            this.action3Pressed = true;
+            action3Pressed = true;
         }
-        else if (this.action3.isUp) {
-            this.action3Pressed = false;
+        else if (action3.isUp) {
+            action3Pressed = false;
         }
 
-        if(this.action4.isDown && !this.action4Pressed) {
+        if(action4.isDown && !action4Pressed) {
             console.log("Low Blow");
             sendPacket("hit player", { action: 4, dmg: 3, id: localID });
-            this.action4Pressed = true;
+            action4Pressed = true;
         }
-        else if (this.action4.isUp) {
-            this.action4Pressed = false;
+        else if (action4.isUp) {
+            action4Pressed = false;
         }
     };
 

@@ -22,8 +22,9 @@ var loadState = {
       game.load.spritesheet("connect_btn", "assets/images/connect_button.png", 180, 63, 2);
       game.load.spritesheet("start_btn", "assets/images/start_button.png", 180, 63, 2);
       // Image Assets
-      game.load.image("player1", "assets/images/playerTest.png");
-      game.load.image("player2", "assets/images/playerTest2.png");
+      game.load.image("player1", "assets/images/character1.png");
+      game.load.image("player2", "assets/images/character2.png");
+      game.load.image("player3", "assets/images/character3.png");
       game.load.image("tiles1", "assets/images/tiles1.png");
       game.load.image("tiles2", "assets/images/tiles2.png");
       game.load.image("back", "assets/images/back_button.png");
