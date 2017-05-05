@@ -14,7 +14,7 @@ function onStartSession(data) {
             // Check each player has CharacterID
             for (var i = 0; i < startingSession.players.length; i++) {
                 if (startingSession.players[i].characterID === 0) {
-                    util.log("No character selected");
+                    console.log("No character selected");
                     start = false;
                     // Send error message
                 }
@@ -22,7 +22,7 @@ function onStartSession(data) {
         }
         else {
             // Send error message
-            util.log("No level selected");
+            console.log("No level selected");
         }
         // All checks cleared
         if (start) {
@@ -30,7 +30,7 @@ function onStartSession(data) {
                 startingSession.players[j].stock = 3;
                 startingSession.players[j].percentage = 0;
             }
-            util.log("Starting session: " + startingSession.name);
+            console.log("Starting session: " + startingSession.name);
             startingSession.sessionState = startingSession.sessionStates.STARTING;
 
             this.emit("start session", {name: startingSession.name});
@@ -59,13 +59,13 @@ function onUpdateSession(data) {
 function onCharSelection(data) {
     var charPlayer = SearchServices.playerById(this.id);
     if (!charPlayer) {
-        util.log("Player not found: " + this.id);
+        console.log("Player not found: " + this.id);
         return false;
     }
 
     var charSession = SearchServices.sessionByName(data.name);
     if (!charSession) {
-        util.log("Session not found: " + data.name);
+        console.log("Session not found: " + data.name);
         return false;
     }
     for(var i = 0; i < charSession.players.length; i++) {

@@ -59,7 +59,13 @@ function Client(name) {
         this.y = 600/2;
     };
 
+    this.getResetPositionX = function() {
+        return 800/2;
+    };
 
+    this.getResetPositionY = function() {
+        return 600/2;
+    };
 }
 
 // Export the Player class so you can use it in

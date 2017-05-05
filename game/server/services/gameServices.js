@@ -1,5 +1,6 @@
 var GAMEWIDTH = 900;
 var GAMEHEIGHT = 600;
+var latencyFix = false;
 
 var Logic = require("../logic");
 var SearchServices = require("./searchServices");
@@ -12,10 +13,14 @@ var SearchServices = require("./searchServices");
 function updateStock (player, socket) {
     var deadSession = SearchServices.sessionByID(player.id);
     if(deadSession) {
+        player.stock = player.stock - 1;
         if (player.stock > 0) {
-            player.resetPosition();
             player.percentage = 0;
+            player.resetPosition();
             socket.emit("move player", {id: player.id, name: deadSession.name, x: player.getX(), y: player.getY()});
+            // Let others know they've died
+            socket.emit("player death", {id: player.id, name: deadSession.name});
+            socket.broadcast.emit("player death", {id: player.id, name: deadSession.name});
         }
         else {
             if(deadSession.checkGameOver()) {
@@ -23,16 +28,10 @@ function updateStock (player, socket) {
                 socket.emit("sessions over", {name: deadSession.name});
                 socket.broadcast.emit("sessions over", {name: deadSession.name});
             }
-            else
-            {
-                socket.emit("player death", {id: player.id, name: deadSession.name});
-                socket.broadcast.emit("player death", {id: player.id, name: deadSession.name});
-            }
         }
-        player.stock = player.stock - 1;
     }
     else {
-        util.log("Error session not found");
+        console.log("Error session not found");
     }
 }
 
@@ -46,7 +45,7 @@ function onMovePlayer (data) {
 
     // Player not found
     if (!movePlayer) {
-        util.log("Player not found: " + this.id);
+        console.log("Player not found: " + this.id);
         return false;
     }
 
@@ -54,22 +53,31 @@ function onMovePlayer (data) {
 
     // Session not found
     if (!moveSession) {
-        util.log("Session not found with player: " + this.id);
+        console.log("Session not found with player: " + this.id);
         return false;
     }
 
-    // TODO: Insert Latency Compensation (Check diff then react accordingly)
-    // Update player position
-    movePlayer.setX(data.x);
-    movePlayer.setY(data.y);
-
-    if(movePlayer.getX() > GAMEWIDTH+40 || movePlayer.getX() < -40 || movePlayer.getY() > GAMEHEIGHT+40 || movePlayer.getY() < -40) {
-        updateStock(movePlayer, this);
+    if (latencyFix) {
+        if (data.x == movePlayer.getResetPositionX() && data.y == movePlayer.getResetPositionY()) {
+            latencyFix = false;
+        }
     }
+    if (!latencyFix) {
+        // Update player position
+        movePlayer.setX(data.x);
+        movePlayer.setY(data.y);
 
-    // Broadcast updated position to connected socket clients
-    this.broadcast.emit("move player", {name: moveSession.name, id: movePlayer.id, x: movePlayer.getX(),
-        y: movePlayer.getY(), percentage: movePlayer.getPercentage()});
+        // Broadcast updated position to connected socket clients
+        this.broadcast.emit("move player", {
+            name: moveSession.name, id: movePlayer.id, x: movePlayer.getX(),
+            y: movePlayer.getY(), percentage: movePlayer.getPercentage()
+        });
+
+        if (movePlayer.getX() > GAMEWIDTH + 40 || movePlayer.getX() < -40 || movePlayer.getY() > GAMEHEIGHT + 40 || movePlayer.getY() < -40) {
+            updateStock(movePlayer, this);
+            latencyFix = true;
+        }
+    }
 }
 
 /**

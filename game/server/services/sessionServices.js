@@ -40,7 +40,7 @@ function onNewSession(data) {
             newSession.name = newPlayer.name + x + " Session";
         }
     }
-    util.log("New session created: " + newSession.getName());
+    console.log("New session created: " + newSession.getName());
     this.emit("joined session", {name: newSession.name, level: 0, lobbyID: 1});
     this.broadcast.emit("new session", {name: newSession.getName(), playerCount: 1, state: newSession.getState()});
     SearchServices.addSession(newSession);
@@ -61,7 +61,8 @@ function onJoinSession(data) {
                 this.emit("new player", {
                     name: joinSession.name, id: joinSession.players[i].id,
                     x: joinSession.players[i].x, y: joinSession.players[i].y,
-                    enemyName: joinSession.players[i].getName(), lobbyID: joinSession.players[i].lobbyID});
+                    enemyName: joinSession.players[i].getName(), lobbyID: joinSession.players[i].lobbyID,
+                    charID: joinSession.players[i].characterID});
             }
         } else {
             // Send new player connection details
@@ -72,19 +73,22 @@ function onJoinSession(data) {
                 this.emit("new player", {
                     name: joinSession.name, id: joinSession.players[j].id,
                     x: joinSession.players[j].x, y: joinSession.players[j].y,
-                    enemyName: joinSession.players[j].getName(), lobbyID: joinSession.players[j].lobbyID});
+                    enemyName: joinSession.players[j].getName(), lobbyID: joinSession.players[j].lobbyID,
+                    charID: joinSession.players[j].characterID});
             }
             // Get new player to add to Array
             var joinPlayer = SearchServices.playerById(this.id);
             joinPlayer.setLobbyID(joinSession.nxtLobbyID);
             joinSession.addPlayer(joinPlayer);
-            util.log("Joined session: " + joinSession.name);
+            console.log("Joined session: " + joinSession.name);
 
             // Tell other players new player has connected
             this.broadcast.emit("new player", {
                 name: joinSession.name, id: joinPlayer.id,
                 x: joinPlayer.x, y: joinPlayer.y,
-                enemyName: joinPlayer.getName(), lobbyID: joinPlayer.lobbyID});
+                enemyName: joinPlayer.getName(), lobbyID: joinPlayer.lobbyID,
+                charID: joinPlayer.characterID});
+
             // Update player count list
             this.broadcast.emit("update session list", {name: joinSession.name, playerCount: joinSession.players.length});
         }

@@ -40,6 +40,7 @@ var playState = {
     render: function() {
         renderGame();
         game.debug.text(player.percentage, (30*lobbyID), 540, "#00ff00"); // Prints FPS
+        game.debug.text(player.getStock(), (30*lobbyID), 570, "#ff0000"); // Prints Lives
     } // render()
 };
 
@@ -112,6 +113,7 @@ function renderGame() {
     }
     for (var i = 0; i < enemies.length; i++) {
         game.debug.text(enemies[i].percentage, (30*enemies[i].lobbyID), 540, "#00ff00"); // Prints FPS
+        game.debug.text(enemies[i].getStock(), (30*enemies[i].lobbyID), 570, "#ff0000");
     }
 }
 
@@ -200,6 +202,15 @@ function onSessionOver(data) {
  */
 function onPlayerDeath(data){
     if (localSession.id === data.name ) {
-        console.log(data.id + " is dead");
+        console.log("Player died: " + data.id);
+        var deadPlayer = playerById(data.id);
+        if (!deadPlayer) {
+            if (localID == data.id) {
+                deadPlayer = player;
+            }
+        }
+        if (deadPlayer) {
+            deadPlayer.stock = deadPlayer.stock - 1;
+        }
     }
 }

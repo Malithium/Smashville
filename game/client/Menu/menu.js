@@ -351,7 +351,7 @@ function onNewPlayer (data) {
         }
 
         // Add new player to the remote players array
-        var enemy = new Enemy(data.x, data.y, data.enemyName);
+        var enemy = new Enemy(data.x, data.y, data.enemyName, data.charID);
         enemy.lobbyID = data.lobbyID;
         enemy.id = data.id;
         enemies.push(enemy);
@@ -370,6 +370,7 @@ function onCharacterSelected(data) {
             return false;
         }
         charPlayer.characterID = data.charID;
+        console.log(data.charID);
         // Update Rectangle
     }
 }

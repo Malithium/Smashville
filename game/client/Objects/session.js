@@ -14,4 +14,8 @@ function session(id, playerCount, body, state){
     this.body = body;
     this.playerCount = playerCount;
     this.state = state;
+
+    this.checkGameOver = function() {
+
+    }
 }

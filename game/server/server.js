@@ -103,7 +103,7 @@ function onNewPlayer (data) {
     var tempSessions = SearchServices.getSessions();
     // Send existing clients to the new player
     for (var i = 0; i < tempSessions.length; i++) {
-        this.emit("new session", {name: sessions[i].name, playerCount: tempSessions[i].players.length, state: tempSessions[i].getState()});
+        this.emit("new session", {name: tempSessions[i].name, playerCount: tempSessions[i].players.length, state: tempSessions[i].getState()});
     }
 
     // Send details

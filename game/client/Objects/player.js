@@ -183,10 +183,17 @@ function Player(x, y, stock) {
                 this.resetPosition();
             }
             else {
-                console.log(stock);
                 this.death();
+                game.state.start("menu");
             }
         }
+    };
+
+    this.getStock = function() {
+        if (this.stock < 1) {
+            return 0;
+        }
+        return this.stock;
     };
 
     this.death = function(){
